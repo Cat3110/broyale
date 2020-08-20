@@ -123,7 +123,7 @@ namespace RemoteConfig
     public class CharacterInfo
     {
         public string Id;
-        public int Speed;
+        public float Speed;
         public int Health;
         public string SkinName;
     }
