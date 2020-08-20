@@ -14,6 +14,8 @@
     "com.unity.mobile.android-logcat": "1.1.1",
     "com.unity.netcode": "0.2.0-preview.5",
     "com.unity.physics": "0.4.1-preview",
+    "com.unity.platforms.android": "0.4.0-preview.5",
+    "com.unity.platforms.linux": "0.4.0-preview.5",
     "com.unity.postprocessing": "2.3.0",
     "com.unity.probuilder": "4.2.3",
     "com.unity.progrids": "3.0.3-preview.6",
