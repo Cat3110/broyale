@@ -52,5 +52,13 @@ MonoBehaviour:
       width: 0
       height: 0
   uiController: {fileID: 0}
-  port: 7979
-  address: 127.0.0.1
+  useLocalServer: 1
+  maxFps: 30
+  fxData:
+    FireBall: {fileID: 2266498162254450016, guid: 466261e2c514d144fa9685892cf64e5b,
+      type: 3}
+    MagicRay: {fileID: 4101692921743219505, guid: 3411a09982b1f474d84822f728a47448,
+      type: 3}
+    FxSpeed: 10
+    FxTime: 1
+    FxOffset: 1

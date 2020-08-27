@@ -6,7 +6,6 @@ using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Networking.Transport.Utilities;
 using Unity.NetCode;
 using Unity.Entities;
-using Unity.Transforms;
 
 [UpdateInGroup(typeof(GhostUpdateSystemGroup))]
 public class SpawnerGhostUpdateSystem : JobComponentSystem
@@ -24,8 +23,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
 #endif
         [ReadOnly] public ArchetypeChunkBufferType<SpawnerSnapshotData> ghostSnapshotDataType;
         [ReadOnly] public ArchetypeChunkEntityType ghostEntityType;
-        public ArchetypeChunkComponentType<Rotation> ghostRotationType;
-        public ArchetypeChunkComponentType<Translation> ghostTranslationType;
 
         public uint targetTick;
         public float targetTickFraction;
@@ -37,8 +34,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
             };
             var ghostEntityArray = chunk.GetNativeArray(ghostEntityType);
             var ghostSnapshotDataArray = chunk.GetBufferAccessor(ghostSnapshotDataType);
-            var ghostRotationArray = chunk.GetNativeArray(ghostRotationType);
-            var ghostTranslationArray = chunk.GetNativeArray(ghostTranslationType);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var minMaxOffset = ThreadIndex * (JobsUtility.CacheLineSize/4);
 #endif
@@ -60,12 +55,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
                 if (!snapshot.GetDataAtTick(targetTick, targetTickFraction, out snapshotData))
                     return;
 
-                var ghostRotation = ghostRotationArray[entityIndex];
-                var ghostTranslation = ghostTranslationArray[entityIndex];
-                ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
-                ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
-                ghostRotationArray[entityIndex] = ghostRotation;
-                ghostTranslationArray[entityIndex] = ghostTranslation;
             }
         }
     }
@@ -84,8 +73,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
         [ReadOnly] public ArchetypeChunkBufferType<SpawnerSnapshotData> ghostSnapshotDataType;
         [ReadOnly] public ArchetypeChunkEntityType ghostEntityType;
         public ArchetypeChunkComponentType<PredictedGhostComponent> predictedGhostComponentType;
-        public ArchetypeChunkComponentType<Rotation> ghostRotationType;
-        public ArchetypeChunkComponentType<Translation> ghostTranslationType;
         public uint targetTick;
         public uint lastPredictedTick;
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
@@ -97,8 +84,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
             var ghostEntityArray = chunk.GetNativeArray(ghostEntityType);
             var ghostSnapshotDataArray = chunk.GetBufferAccessor(ghostSnapshotDataType);
             var predictedGhostComponentArray = chunk.GetNativeArray(predictedGhostComponentType);
-            var ghostRotationArray = chunk.GetNativeArray(ghostRotationType);
-            var ghostTranslationArray = chunk.GetNativeArray(ghostTranslationType);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var minMaxOffset = ThreadIndex * (JobsUtility.CacheLineSize/4);
 #endif
@@ -130,12 +115,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
                 if (lastPredictedTickInst != snapshotData.Tick)
                     continue;
 
-                var ghostRotation = ghostRotationArray[entityIndex];
-                var ghostTranslation = ghostTranslationArray[entityIndex];
-                ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
-                ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
-                ghostRotationArray[entityIndex] = ghostRotation;
-                ghostTranslationArray[entityIndex] = ghostTranslation;
             }
         }
     }
@@ -155,8 +134,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
             All = new []{
                 ComponentType.ReadWrite<SpawnerSnapshotData>(),
                 ComponentType.ReadOnly<GhostComponent>(),
-                ComponentType.ReadWrite<Rotation>(),
-                ComponentType.ReadWrite<Translation>(),
             },
             None = new []{ComponentType.ReadWrite<PredictedGhostComponent>()}
         });
@@ -166,8 +143,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
                 ComponentType.ReadOnly<SpawnerSnapshotData>(),
                 ComponentType.ReadOnly<GhostComponent>(),
                 ComponentType.ReadOnly<PredictedGhostComponent>(),
-                ComponentType.ReadWrite<Rotation>(),
-                ComponentType.ReadWrite<Translation>(),
             }
         });
         RequireForUpdate(GetEntityQuery(ComponentType.ReadWrite<SpawnerSnapshotData>(),
@@ -191,8 +166,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
                 ghostSnapshotDataType = GetArchetypeChunkBufferType<SpawnerSnapshotData>(true),
                 ghostEntityType = GetArchetypeChunkEntityType(),
                 predictedGhostComponentType = GetArchetypeChunkComponentType<PredictedGhostComponent>(),
-                ghostRotationType = GetArchetypeChunkComponentType<Rotation>(),
-                ghostTranslationType = GetArchetypeChunkComponentType<Translation>(),
 
                 targetTick = m_ClientSimulationSystemGroup.ServerTick,
                 lastPredictedTick = m_LastPredictedTick
@@ -213,8 +186,6 @@ public class SpawnerGhostUpdateSystem : JobComponentSystem
 #endif
                 ghostSnapshotDataType = GetArchetypeChunkBufferType<SpawnerSnapshotData>(true),
                 ghostEntityType = GetArchetypeChunkEntityType(),
-                ghostRotationType = GetArchetypeChunkComponentType<Rotation>(),
-                ghostTranslationType = GetArchetypeChunkComponentType<Translation>(),
                 targetTick = m_ClientSimulationSystemGroup.InterpolationTick,
                 targetTickFraction = m_ClientSimulationSystemGroup.InterpolationTickFraction
             };

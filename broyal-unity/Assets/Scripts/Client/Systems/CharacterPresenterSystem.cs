@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bootstrappers;
+using RemoteConfig;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -31,7 +32,10 @@ public class CharacterPresenterSystem : ComponentSystem
     private static readonly int Death = Animator.StringToHash("Death");
     private MaterialPropertyBlock _matBlock;
     private static readonly int Fill = Shader.PropertyToID("_Fill");
-
+    private static readonly int Type = Animator.StringToHash("Type");
+    private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
+    private Session _session => BaseBootStrapper.Container.Resolve<Session>();
+    private FXData _fxData => BaseBootStrapper.Container.Resolve<FXData>();
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -79,21 +83,22 @@ public class CharacterPresenterSystem : ComponentSystem
             var healthBarRenderer = EntityManager.GetComponentObject<MeshRenderer>(e);
             
             healthBarRenderer.GetPropertyBlock(_matBlock);
-            _matBlock.SetFloat(Fill, player.health / (float)100);
+            _matBlock.SetFloat(Fill, player.health / (float)_appConfig.Characters[0].Health);
             healthBarRenderer.SetPropertyBlock(_matBlock);
 
             var prevPosition = new float3(go.transform.position);
 
-            var dist = Unity.Mathematics.math.distance(prevPosition, translation.Value);
-            var direction = Unity.Mathematics.math.normalize(translation.Value - prevPosition);
+            var dist = math.distance(prevPosition, translation.Value);
+            var direction = math.normalize(translation.Value - prevPosition);
 
             animator.SetFloat(Speed, dist);
 
             go.transform.position = translation.Value;
             
-            if (dist > 0.01f)
+            if (dist > 0.1f)
             {
-                go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
+                go.transform.forward = direction;
+                //go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
             }
 
             var attack = EntityManager.GetComponentData<Attack>(e);
@@ -104,17 +109,21 @@ public class CharacterPresenterSystem : ComponentSystem
                 if (data.AttackTransId != attack.Seed)
                 {
                     Debug.LogWarning($"Client:Attack To => {attack.Target} => {attack.AttackType}");
-                    
+                    animator.SetInteger(Type, player.primarySkillId);
                     animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
                     EntityManager.SetComponentData(e, data);
+
+                    _fxData.Start(player.primarySkillId, go, go.transform.position, math.normalize(attack.PredTrans));
                 }
                 
                 var target = attack.Target;
-                if (target != Entity.Null)
+                if (target != Entity.Null && player.primarySkillId < 2 )
                 {
                     var lookdirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
-                    go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(lookdirection), RotationSpeed * Time.DeltaTime);
+                    //go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(lookdirection), RotationSpeed * Time.DeltaTime);
+
+                    go.transform.forward = math.normalize(lookdirection);
                 }
             }
 

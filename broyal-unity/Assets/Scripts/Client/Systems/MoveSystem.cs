@@ -35,7 +35,7 @@ public class MoveSystem : ComponentSystem
         var deltaTime = Time.DeltaTime;
 
         Entities.ForEach((Entity e, DynamicBuffer<PlayerInput> inputBuffer, ref Attack attack, ref Damage damage,
-            ref Translation trans, ref PredictedGhostComponent prediction) =>
+            ref Translation trans, ref PlayerData pdata, ref PredictedGhostComponent prediction) =>
         {
             if (!GhostPredictionSystemGroup.ShouldPredict(tick, prediction))
                 return;
@@ -56,23 +56,50 @@ public class MoveSystem : ComponentSystem
                 trans.Value.z += input.vertical/10.0f * deltaTime;
             if (input.vertical < 0)
                 trans.Value.z -= input.vertical/10.0f * deltaTime;*/
+            if (math.abs(input.horizontal) > 0 || math.abs(input.vertical) > 0)
+            {
+                attack.PredTrans = new float3(input.horizontal, 0,input.vertical );
+            }
 
             if (input.attackType == 1 && attack.AttackType == 0) //Range
             {
                 Debug.Log(
                     $"{(_isServer ? "Server" : "Client")}({tick})({input.tick}):Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
-                InitAttackByType(input.attackType, ref attack, input.attackType * (int) (Time.ElapsedTime * 1000));
+                InitAttackByType(pdata.primarySkillId, trans.Value, ref attack, input.attackType * (int) (Time.ElapsedTime * 1000));
             }
         });
     }
 
-    private void InitAttackByType(int attackType, ref Attack attack, int seed)
+    private void InitAttackByType(int skillId, float3 transValue, ref Attack attack, int seed)
     {
-        attack.AttackType = attackType;
-
-        if (attackType == 1)
+        var skill = _appConfig.Skills[skillId];
+        
+        Debug.Log($"{(_isServer ? "Server" : "Client")}:Attack Start  => {skill.Id}");
+        
+        attack.Duration = skill.Cooldown;
+        attack.AttackType = skillId + 1;
+        //attack.PredTrans = transValue;
+        
+        if (attack.AttackType == 1)
         {
-            attack.Duration = _appConfig.Skills[1].Cooldown;
+            attack.DamageTime = 0.5f;
+            attack.Seed = seed;
+            attack.NeedApplyDamage = true;
+        }
+        else if (attack.AttackType == 2)
+        {
+            attack.DamageTime = 0.5f;
+            attack.Seed = seed;
+            attack.NeedApplyDamage = true;
+        }
+        else if (attack.AttackType == 3)
+        {
+            attack.DamageTime = 0.5f;
+            attack.Seed = seed;
+            attack.NeedApplyDamage = true;
+        }
+        else if (attack.AttackType == 4)
+        {
             attack.DamageTime = 0.5f;
             attack.Seed = seed;
             attack.NeedApplyDamage = true;

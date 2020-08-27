@@ -82,6 +82,8 @@ namespace RemoteConfig
 
             return fsResult;
         }
+
+        public SkillInfo GetSkillByAttackType(int attackType) => Skills[attackType - 1];
     }
 
 
@@ -116,7 +118,10 @@ namespace RemoteConfig
         public string Id { get; private set; }
         public int Damage { get; private set; }
         public int Range { get; private set; }
-        public int Cooldown{ get; private set; }
+        public float Cooldown{ get; private set; }
+        
+        public float PhysDMG { get; private set; }
+        public float MagDMG { get; private set; }
     }
     
     [Serializable]
@@ -126,5 +131,14 @@ namespace RemoteConfig
         public float Speed;
         public int Health;
         public string SkinName;
+        
+        public int HealthRegen;
+        public int Power;
+        public int Magic;	
+    }
+
+    public class Session
+    {
+        public int SkillId { get; set; }
     }
 }

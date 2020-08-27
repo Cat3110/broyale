@@ -7,4 +7,5 @@ public struct PlayerData : IComponentData {
         [GhostDefaultField]
         public int health;
         public int level;
+        public int primarySkillId;
 }

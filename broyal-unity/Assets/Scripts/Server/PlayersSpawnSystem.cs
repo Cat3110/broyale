@@ -31,7 +31,7 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 var prefab = EntityManager.GetBuffer<GhostPrefabBuffer>(ghostCollection.serverPrefabs)[ghostId].Value;
                 var player = EntityManager.Instantiate(prefab);
                 
-                EntityManager.SetComponentData(player, new PlayerData{health = _appConfig.Characters[0].Health});
+                EntityManager.SetComponentData(player, new PlayerData{health = _appConfig.Characters[0].Health, primarySkillId = req.skillId});
                 EntityManager.SetComponentData(player, new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
 
                 PostUpdateCommands.AddBuffer<PlayerInput>(player);

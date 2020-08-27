@@ -62,11 +62,22 @@ public class AttackSystem : ComponentSystem
                 if (enemy != Entity.Null)
                 {
                     var damage = EntityManager.GetComponentData<Damage>(enemy);
+
+                    Vector3 forward = math.normalize(attack.PredTrans);
+                    Vector3 other = EntityManager.GetComponentData<Translation>(enemy).Value - translation.Value;
+
+                    var dot = Vector3.Dot(forward, other );
+                    
+                    Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy} => d => {dot}");
+
+                    if (attack.AttackType == 1 || attack.AttackType == 2 ||
+                        attack.AttackType == 3 && dot > 0.0f )
+                    {
+                        ApplyDamageByAttackType(attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
+                            player, ref damage);
                 
-                    ApplyDamageByAttackType(attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
-                        player, ref damage);
-                
-                    EntityManager.SetComponentData(enemy, damage);
+                        EntityManager.SetComponentData(enemy, damage);
+                    }
                 }
             }
             else if (attack.AttackType != 0)
@@ -85,26 +96,20 @@ public class AttackSystem : ComponentSystem
 
     private float GetDistanceByAttackType(int attackType)
     {
-        switch (attackType)
-        {
-            case 1:
-                return _appConfig.Skills[1].Range;
-            case 2:
-                return 1.0f;
-            default:
-                return float.MaxValue;
-        }
+        var skill = _appConfig.GetSkillByAttackType(attackType);
+        return skill.Range;
     }
 
-    private static void ApplyDamageByAttackType(int attackType, int seed, Entity attacker, ref Damage damage)
+    private void ApplyDamageByAttackType(int attackType, int seed, Entity attacker, ref Damage damage)
     {
-        var damageValue = attackType * 1.0f;
+        var skill = _appConfig.GetSkillByAttackType(attackType);
+        var character = _appConfig.Characters[0];
         
+        damage.Value = (character.Magic * skill.MagDMG) + (character.Power * skill.PhysDMG);
         damage.DamageType = attackType;
         damage.Duration = 0.3f;
         damage.NeedApply = true;
         damage.Seed = seed;
         damage.Attacker = attacker;
-        
     }
 }

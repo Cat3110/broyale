@@ -33,7 +33,7 @@ public class DamageSystem : JobComponentSystem
             {
                 damage.NeedApply = false;
                 
-                playerData.health -= Mathf.RoundToInt( _appConfig.Skills[damage.DamageType].Damage );
+                playerData.health = Mathf.RoundToInt( playerData.health  - damage.Value );
                 
                 if (playerData.health <= 0.0f && !Dead.Exists(entity) )
                 {

@@ -5,6 +5,8 @@ using Unity.Networking.Transport;
 [BurstCompile]
 public struct PlayerSpawnRequest : IRpcCommand
 {
+    public int skillId;
+    
     [BurstCompile]
     private static void InvokeExecute(ref RpcExecutor.Parameters parameters)
     {
@@ -18,10 +20,12 @@ public struct PlayerSpawnRequest : IRpcCommand
 
     public void Serialize(ref DataStreamWriter writer)
     {
+        writer.WriteInt(skillId);
     }
 
     public void Deserialize(ref DataStreamReader reader)
     {
+        skillId = reader.ReadInt();
     }
 }
 

@@ -1,4 +1,6 @@
 
+using Bootstrappers;
+using RemoteConfig;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -70,7 +72,7 @@ public class PlayerInputReceiveCommandSystem : CommandReceiveSystem<PlayerInput>
 public class SamplePlayerInput : ComponentSystem
 {
     private readonly InputMaster _inputMaster = new InputMaster();
-    
+    //private Session _appConfig => BaseBootStrapper.Container.Resolve<Session>();
     protected override void OnCreate()
     {
         _inputMaster.Enable();

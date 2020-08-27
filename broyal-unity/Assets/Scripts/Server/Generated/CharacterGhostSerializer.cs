@@ -58,6 +58,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         snapshot.SetDamageType(chunkDataDamage[ent].Type, serializerState);
         snapshot.SetMovableCharacterComponentPlayerId(chunkDataMovableCharacterComponent[ent].PlayerId, serializerState);
         snapshot.SetPlayerDatahealth(chunkDataPlayerData[ent].health, serializerState);
+        snapshot.SetPlayerDataprimarySkillId(chunkDataPlayerData[ent].primarySkillId, serializerState);
         snapshot.SetRotationValue(chunkDataRotation[ent].Value, serializerState);
         snapshot.SetTranslationValue(chunkDataTranslation[ent].Value, serializerState);
     }

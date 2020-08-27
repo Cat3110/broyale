@@ -74,6 +74,7 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostAttack.Type = snapshotData.GetAttackType(deserializerState);
                 ghostDamage.Type = snapshotData.GetDamageType(deserializerState);
                 ghostPlayerData.health = snapshotData.GetPlayerDatahealth(deserializerState);
+                ghostPlayerData.primarySkillId = snapshotData.GetPlayerDataprimarySkillId(deserializerState);
                 ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
                 ghostAttackArray[entityIndex] = ghostAttack;
@@ -163,6 +164,7 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostDamage.Type = snapshotData.GetDamageType(deserializerState);
                 ghostMovableCharacterComponent.PlayerId = snapshotData.GetMovableCharacterComponentPlayerId(deserializerState);
                 ghostPlayerData.health = snapshotData.GetPlayerDatahealth(deserializerState);
+                ghostPlayerData.primarySkillId = snapshotData.GetPlayerDataprimarySkillId(deserializerState);
                 ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
                 ghostAttackArray[entityIndex] = ghostAttack;

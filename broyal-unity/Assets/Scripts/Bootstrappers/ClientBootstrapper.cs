@@ -27,6 +27,8 @@ namespace Bootstrappers
         
         [SerializeField] private bool useLocalServer = true;
         [SerializeField] private int maxFps = Int32.MaxValue;
+
+        [SerializeField] private FXData fxData;
         
         private World _world;
         private EntityManager _entityManager;
@@ -42,13 +44,29 @@ namespace Bootstrappers
             
             Container.Register(appConfig);
             
-            InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
+            uiController.LoadingUI.Hide();
+            uiController.MainUI.Show(
+                appConfig.Characters.Select( c => c.Id),
+                appConfig.Skills.Select( c => c.Id));
+
+
+            uiController.MainUI.OnGameStarted += skillId =>
+            {
+                uiController.MainUI.Hide();
+                uiController.GameUI.Show();
+
+                Container.Register(new Session{ SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId) } );
+                InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
+            };
+        }
+
+        private void OnGameStarted(string skillId)
+        {
+            
         }
 
         private void InitWorlds(string address, ushort port)
         {
-            uiController.LoadingUI.Show(false);
-            
             foreach (var world in World.All)
             {
                 if (world.GetExistingSystem<ClientSimulationSystemGroup>() == null) continue;
@@ -70,8 +88,9 @@ namespace Bootstrappers
             Container.Register(config);
             Container.Register(cameraSettings);
             Container.Register(uiController);
+            Container.Register(fxData);
 
-            uiController.LoadingUI.Show(true);
+            uiController.LoadingUI.Show();
             AppConfig.LoadByUrlAsync().ContinueWith(OnConfigLoaded);
         }
 

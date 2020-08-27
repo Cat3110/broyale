@@ -18,6 +18,8 @@ public struct Attack : IComponentData
     
     public bool NeedApplyDamage;
 
+    public float3 PredTrans;
+
     public float DamageTime;
 
     public Entity Target;

@@ -6,6 +6,7 @@ using Unity.Transforms;
 
 public struct SpawnerGhostSerializer : IGhostSerializer<SpawnerSnapshotData>
 {
+    private ComponentType componentTypeSpawnPoint;
     private ComponentType componentTypeLocalToWorld;
     private ComponentType componentTypeRotation;
     private ComponentType componentTypeTranslation;
@@ -22,6 +23,7 @@ public struct SpawnerGhostSerializer : IGhostSerializer<SpawnerSnapshotData>
     public int SnapshotSize => UnsafeUtility.SizeOf<SpawnerSnapshotData>();
     public void BeginSerialize(ComponentSystemBase system)
     {
+        componentTypeSpawnPoint = ComponentType.ReadWrite<SpawnPoint>();
         componentTypeLocalToWorld = ComponentType.ReadWrite<LocalToWorld>();
         componentTypeRotation = ComponentType.ReadWrite<Rotation>();
         componentTypeTranslation = ComponentType.ReadWrite<Translation>();

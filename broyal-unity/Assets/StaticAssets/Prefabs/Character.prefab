@@ -112,7 +112,10 @@ MonoBehaviour:
     - name: health
       quantization: -1
       interpolate: 0
-    manualFieldList: 0
+    - name: primarySkillId
+      quantization: -1
+      interpolate: 0
+    manualFieldList: 1
     entityIndex: 0
   - name: PrefabCreator
     interpolatedClient: 1
@@ -169,6 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   level: 1
+  primarySkillId: 0
 --- !u!114 &7185640376147542688
 MonoBehaviour:
   m_ObjectHideFlags: 0
