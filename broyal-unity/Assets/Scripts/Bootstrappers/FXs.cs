@@ -7,12 +7,15 @@ public class FXData
 {
     public GameObject FireBall;
     public GameObject MagicRay;
+    public GameObject DamageZone;
 
     public float FxSpeed = 10.0f; 
     public float FxTime= 1.0f;
 
     public float FxOffset = 0.5f;
     public float FxScale = 2.5f;
+    private static readonly int Radius = Shader.PropertyToID("_Radius");
+
     public void Start(int playerPrimarySkillId, GameObject root, Vector3 position, Vector3 direction)
     {
         if (playerPrimarySkillId == 2)
@@ -69,5 +72,10 @@ public class FXData
         
         GameObject.Destroy(obj);
         yield return null;
+    }
+
+    public void SetDeadZoneRadius(int radius)
+    {
+        DamageZone.GetComponent<MeshRenderer>().material.SetFloat(Radius, radius );
     }
 }

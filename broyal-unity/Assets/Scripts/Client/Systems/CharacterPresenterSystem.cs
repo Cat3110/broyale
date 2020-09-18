@@ -13,6 +13,14 @@ public struct CharacterPresenter : IComponentData
     public int AttackTransId;
     public int DamageTransId;
 }
+public struct Link : IComponentData
+{
+    public Entity entity;
+}
+public struct StateComponent : ISystemStateComponentData
+{
+    public int State;
+}
 
 [DisableAutoCreation]
 public class CharacterPresenterSystem : ComponentSystem
@@ -74,6 +82,8 @@ public class CharacterPresenterSystem : ComponentSystem
         foreach (var e in groupEntities)
         {
             var player = EntityManager.GetComponentData<PlayerData>(e);
+
+            _fxData.SetDeadZoneRadius(player.damageRadius);
             
             var data = EntityManager.GetComponentData<CharacterPresenter>(e);
             var translation = EntityManager.GetComponentData<Translation>(e);
@@ -83,7 +93,7 @@ public class CharacterPresenterSystem : ComponentSystem
             var healthBarRenderer = EntityManager.GetComponentObject<MeshRenderer>(e);
             
             healthBarRenderer.GetPropertyBlock(_matBlock);
-            _matBlock.SetFloat(Fill, player.health / (float)_appConfig.Characters[0].Health);
+            _matBlock.SetFloat(Fill, player.health / (float)player.maxHealth);
             healthBarRenderer.SetPropertyBlock(_matBlock);
 
             var prevPosition = new float3(go.transform.position);
@@ -91,7 +101,7 @@ public class CharacterPresenterSystem : ComponentSystem
             var dist = math.distance(prevPosition, translation.Value);
             var direction = math.normalize(translation.Value - prevPosition);
 
-            animator.SetFloat(Speed, dist);
+            animator.SetFloat(Speed, dist > 0.1f ? dist : 0.0f);
 
             go.transform.position = translation.Value;
             
@@ -115,7 +125,7 @@ public class CharacterPresenterSystem : ComponentSystem
                     EntityManager.SetComponentData(e, data);
 
                     _fxData.Start(player.primarySkillId, go, go.transform.position, math.normalize(attack.PredTrans));
-                }
+                }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
                 
                 var target = attack.Target;
                 if (target != Entity.Null && player.primarySkillId < 2 )
@@ -129,7 +139,7 @@ public class CharacterPresenterSystem : ComponentSystem
 
             if (damage.DamageType != 0 && data.DamageTransId != damage.Seed )
             {
-                Debug.LogWarning($"Client:Damage To => {e} => {damage.Type}");
+                Debug.LogWarning($"Client:Damage To => {e} => {damage.DamageType}");
                 animator.SetTrigger(DamageTrigger);
                 data.DamageTransId = damage.Seed;
                 EntityManager.SetComponentData(e, data);

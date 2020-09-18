@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 759251695442087263}
-  - component: {fileID: 9171491547512416164}
   - component: {fileID: 398357480597071758}
   - component: {fileID: 2687136711214018965}
   - component: {fileID: 7185640376147542688}
@@ -37,19 +36,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &9171491547512416164
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8433824504223897612}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &398357480597071758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,8 +62,11 @@ MonoBehaviour:
     server: 1
     sendDataTo: 0
     fields:
-    - name: Type
-      quantization: 100
+    - name: AttackType
+      quantization: -1
+      interpolate: 0
+    - name: Seed
+      quantization: -1
       interpolate: 0
     manualFieldList: 1
     entityIndex: 0
@@ -87,8 +76,8 @@ MonoBehaviour:
     server: 1
     sendDataTo: 0
     fields:
-    - name: Type
-      quantization: 100
+    - name: DamageType
+      quantization: 10
       interpolate: 0
     manualFieldList: 1
     entityIndex: 0
@@ -113,6 +102,18 @@ MonoBehaviour:
       quantization: -1
       interpolate: 0
     - name: primarySkillId
+      quantization: -1
+      interpolate: 0
+    - name: maxHealth
+      quantization: -1
+      interpolate: 0
+    - name: power
+      quantization: -1
+      interpolate: 0
+    - name: magic
+      quantization: -1
+      interpolate: 0
+    - name: damageRadius
       quantization: -1
       interpolate: 0
     manualFieldList: 1
@@ -171,8 +172,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  maxHealth: 0
   level: 1
   primarySkillId: 0
+  magic: 0
+  power: 0
+  damageRadius: 0
 --- !u!114 &7185640376147542688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,8 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b99e547f8aac141b9bfd8e28ffd7a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NameId:
-    Id: 0
+  NameId: 0
 --- !u!114 &3847855419462308977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,8 +226,13 @@ MonoBehaviour:
   Duration: 0
   Seed: 0
   NeedApplyDamage: 0
+  PredTrans:
+    x: 0
+    y: 0
+    z: 0
   DamageTime: 0
   Target: {fileID: 0}
+  BackAttackType: 0
 --- !u!114 &5867153278371217271
 MonoBehaviour:
   m_ObjectHideFlags: 0

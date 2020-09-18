@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 9ad2c4b34f0633e4087d4a2bd14987a8
   m_SerializeEntries:
+  - m_GUID: 1ac0988e3961f7144a36cb66fe8529cf
+    m_Address: Assets/StaticAssets/Prefabs/Items/RedCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 2e70fa9726ebe2246811ac5654f6d994
     m_Address: Medusa
     m_ReadOnly: 0
@@ -25,6 +31,18 @@ MonoBehaviour:
     m_TargetAsset: {fileID: 0}
   - m_GUID: 6b3b42d2d8783944f909cd90e5d20331
     m_Address: Assets/Plugins/NetworkedDOTSTool/Prefabs/Character_Medusa_01.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 7948d06978037f042bc9b7319d52f312
+    m_Address: Assets/StaticAssets/Prefabs/Items/GreenCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
+    m_Address: Assets/StaticAssets/Prefabs/Items/BlueCrystal.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}

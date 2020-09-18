@@ -54,11 +54,16 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         var chunkDataPlayerData = chunk.GetNativeArray(ghostPlayerDataType);
         var chunkDataRotation = chunk.GetNativeArray(ghostRotationType);
         var chunkDataTranslation = chunk.GetNativeArray(ghostTranslationType);
-        snapshot.SetAttackType(chunkDataAttack[ent].Type, serializerState);
-        snapshot.SetDamageType(chunkDataDamage[ent].Type, serializerState);
+        snapshot.SetAttackAttackType(chunkDataAttack[ent].AttackType, serializerState);
+        snapshot.SetAttackSeed(chunkDataAttack[ent].Seed, serializerState);
+        snapshot.SetDamageDamageType(chunkDataDamage[ent].DamageType, serializerState);
         snapshot.SetMovableCharacterComponentPlayerId(chunkDataMovableCharacterComponent[ent].PlayerId, serializerState);
         snapshot.SetPlayerDatahealth(chunkDataPlayerData[ent].health, serializerState);
         snapshot.SetPlayerDataprimarySkillId(chunkDataPlayerData[ent].primarySkillId, serializerState);
+        snapshot.SetPlayerDatamaxHealth(chunkDataPlayerData[ent].maxHealth, serializerState);
+        snapshot.SetPlayerDatapower(chunkDataPlayerData[ent].power, serializerState);
+        snapshot.SetPlayerDatamagic(chunkDataPlayerData[ent].magic, serializerState);
+        snapshot.SetPlayerDatadamageRadius(chunkDataPlayerData[ent].damageRadius, serializerState);
         snapshot.SetRotationValue(chunkDataRotation[ent].Value, serializerState);
         snapshot.SetTranslationValue(chunkDataTranslation[ent].Value, serializerState);
     }

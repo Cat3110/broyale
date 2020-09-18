@@ -112,7 +112,7 @@
 		//finalcolor.g = map(finalcolor.g, 0, 1, -1, 1);
 		//finalcolor.b = map(finalcolor.b, 0, 1, -1, 1);
 		finalcolor.a = 1.0;
-		return finalcolor * finalcolor * finalcolor;
+		return finalcolor;
 	}
 		ENDCG
 	}

@@ -23,6 +23,8 @@ public struct Attack : IComponentData
     public float DamageTime;
 
     public Entity Target;
+
+    public int BackAttackType;
 }
 
 public struct DEAD : IComponentData

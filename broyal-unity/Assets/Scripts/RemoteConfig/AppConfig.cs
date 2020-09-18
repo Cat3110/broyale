@@ -20,6 +20,8 @@ namespace RemoteConfig
         public CharactersConfig Characters { get; private set; } = new CharactersConfig();
         public SkillsConfig Skills { get; private set; } = new SkillsConfig();
         
+        public ItemsConfig Items { get; private set; } = new ItemsConfig();
+        
         public CommonConfig Common { get; private set; } = new CommonConfig();
 
         private fsSerializer fsSerializer = new fsSerializer();
@@ -62,7 +64,7 @@ namespace RemoteConfig
                 LoadTable(sheets, "Characters", (CharactersConfig result) => Characters = result);
                 LoadTable(sheets, "Skills", (SkillsConfig result) => Skills = result);
                 //LoadTable(sheets, "Localization", (LocalizationConfig result) => Localization = result);
-                //LoadTable(sheets, "Items", (ItemsConfig result) => Items = result);
+                LoadTable(sheets, "Items", (ItemsConfig result) => Items = result);
                 //LoadTable(sheets, "Common", (CommonConfig result) => Common = result);               
             }
             Debug.Log("[AppConfig] Load Result:" + fsResult.Succeeded);
@@ -84,6 +86,8 @@ namespace RemoteConfig
         }
 
         public SkillInfo GetSkillByAttackType(int attackType) => Skills[attackType - 1];
+
+      
     }
 
 
@@ -107,6 +111,12 @@ namespace RemoteConfig
     {
 
     }
+    
+    public sealed class ItemsConfig : List<ItemInfo>
+    {
+        
+    }
+    
     public sealed class CommonConfig : List<fsData>
     {
 
@@ -135,6 +145,15 @@ namespace RemoteConfig
         public int HealthRegen;
         public int Power;
         public int Magic;	
+    }
+    
+    public class ItemInfo
+    {
+        public string Id;
+        
+        public int Power;
+        public int Magic;
+        public int Health;
     }
 
     public class Session

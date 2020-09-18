@@ -59,6 +59,8 @@ MonoBehaviour:
       type: 3}
     MagicRay: {fileID: 4101692921743219505, guid: 3411a09982b1f474d84822f728a47448,
       type: 3}
+    DamageZone: {fileID: 0}
     FxSpeed: 10
     FxTime: 1
     FxOffset: 1
+    FxScale: 2.5

@@ -1,11 +1,8 @@
 ﻿namespace Bootstrappers
 {
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
     using Unity.Entities;
     using Unity.Physics;
-    using Unity.Mathematics;
     using Unity.Transforms;
     using Unity.Rendering;
     using Unity.NetCode;
@@ -48,7 +45,7 @@
                     //systemGroup.AddSystemToUpdateList(world.CreateSystem<CharacterPresenterSystem>() );
                     //systemGroup.AddSystemToUpdateList(world.CreateSystem<UpdateCameraSystem>());
 
-                    var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup >();
+                    var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup>();
                     lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );
                     lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabCreatorSystem>() );
                     lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<UpdateCameraSystem>());
@@ -68,7 +65,9 @@
 //                 }
 // #endif
             }
-            
+
+
+
             /*var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, new BlobAssetStore());
             EPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(Player, settings);
                     

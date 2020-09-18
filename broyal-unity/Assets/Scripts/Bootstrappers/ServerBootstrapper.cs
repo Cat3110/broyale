@@ -1,20 +1,16 @@
-﻿using CUDLR;
-
-namespace Bootstrappers
+﻿namespace Bootstrappers
 {
+    using CUDLR;
+
     using UnityEngine;
     using Unity.Entities;
     using Unity.NetCode;
     using Unity.Networking.Transport;
-    using Utils;
-    
     using RemoteConfig;
     using UniRx.Async;
 
     public class ServerBootstrapper : BaseBootStrapper
     {
-        [SerializeField] private MainConfig config;
-
         private World _world;
         private EntityManager _entityManager;
 
@@ -47,8 +43,10 @@ namespace Bootstrappers
             }
         }
 
-        private void Start()
+        public override void Start()
         {
+            base.Start();
+            
             Console.AddCommandByMethod(() => RealoadConfig() );
             
             Container.Register(config);
@@ -78,6 +76,11 @@ namespace Bootstrappers
         {
             _world = world;
             _entityManager = world.EntityManager;
+            
+            var serverSimulationSystemGroup = world.GetOrCreateSystem<ServerSimulationSystemGroup >();
+            serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<ItemSpawnerSystem>());
+            serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<LootItemSystem>());
+            serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<ZoneDamageSystem>());
         }
         
         [CUDLR.Command("reload сonfig", "Reload config file from gdoc")]

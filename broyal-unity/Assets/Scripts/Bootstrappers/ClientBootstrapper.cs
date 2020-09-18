@@ -1,30 +1,27 @@
-﻿using RemoteConfig;
-using UniRx.Async;
+﻿using Unity.Physics;
+using Unity.Physics.Systems;
 
 namespace Bootstrappers
 {
     using System;
     using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
     using Unity.Entities;
-    using Unity.Physics;
-    using Unity.Mathematics;
-    using Unity.Transforms;
     using Unity.Rendering;
     using Unity.NetCode;
     using Unity.Networking.Transport;
-    using Utils;
+    using RemoteConfig;
+    using UniRx.Async;
+
 
     public class ClientBootstrapper : BaseBootStrapper
     {
         [SerializeField] private InputMaster controls;
 
-        [SerializeField] private MainConfig config;
+        //[SerializeField] private MainConfig config;
         [SerializeField] private CameraSettings cameraSettings;
         [SerializeField] private UIController uiController;
-        
+
         [SerializeField] private bool useLocalServer = true;
         [SerializeField] private int maxFps = Int32.MaxValue;
 
@@ -79,8 +76,10 @@ namespace Bootstrappers
             }
         }
 
-        private void Start()
+        public override void Start()
         {
+            base.Start();
+            
             Application.targetFrameRate = maxFps;
             
             SRDebug.Init();
@@ -129,6 +128,13 @@ namespace Bootstrappers
 
             world.GetOrCreateSystem<CopySkinnedEntityDataToRenderEntity>().Enabled = false;
             world.GetOrCreateSystem<RenderMeshSystemV2>().Enabled = false;
+            world.GetOrCreateSystem<BuildPhysicsWorld>().Enabled = false;
+            //world.GetOrCreateSystem<>().Enabled = false;
+            
+            var localClearingSystem = World.DefaultGameObjectInjectionWorld.CreateSystem<ClearingPresenterSystem>();
+            localClearingSystem.Init(world);
+            var localSimulationGroup = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>();
+            localSimulationGroup.AddSystemToUpdateList( localClearingSystem );
         }
         
         private void OnDestroy()

@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   duration: 1
+  spawnedItem: {fileID: 0}
 --- !u!114 &4008888373869769779
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -39,6 +39,7 @@ public class AttackSystem : ComponentSystem
         for (int i = 0; i < players.Length; i++)
         {
             var player = players[i];
+            var pdata = EntityManager.GetComponentData<PlayerData>(player);
             var attack = EntityManager.GetComponentData<Attack>(player);
             var translation = EntityManager.GetComponentData<Translation>(player);
             //var input = EntityManager.GetBuffer<PlayerInput>(player);
@@ -73,7 +74,7 @@ public class AttackSystem : ComponentSystem
                     if (attack.AttackType == 1 || attack.AttackType == 2 ||
                         attack.AttackType == 3 && dot > 0.0f )
                     {
-                        ApplyDamageByAttackType(attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
+                        ApplyDamageByAttackType(pdata, attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
                             player, ref damage);
                 
                         EntityManager.SetComponentData(enemy, damage);
@@ -86,6 +87,7 @@ public class AttackSystem : ComponentSystem
                 attack.DamageTime -= deltaTime;
                 
                 attack.AttackType = attack.Duration > 0 ? attack.AttackType : 0;
+                //attack.BackAttackType = attack.Duration > 0 ? attack.BackAttackType : 0;
             }
             
             EntityManager.SetComponentData(player, attack); 
@@ -100,12 +102,12 @@ public class AttackSystem : ComponentSystem
         return skill.Range;
     }
 
-    private void ApplyDamageByAttackType(int attackType, int seed, Entity attacker, ref Damage damage)
+    private void ApplyDamageByAttackType(PlayerData pdata, int attackType, int seed, Entity attacker, ref Damage damage)
     {
         var skill = _appConfig.GetSkillByAttackType(attackType);
-        var character = _appConfig.Characters[0];
+        //var character = _appConfig.Characters[0];
         
-        damage.Value = (character.Magic * skill.MagDMG) + (character.Power * skill.PhysDMG);
+        damage.Value = (pdata.magic * skill.MagDMG) + (pdata.power * skill.PhysDMG);
         damage.DamageType = attackType;
         damage.Duration = 0.3f;
         damage.NeedApply = true;

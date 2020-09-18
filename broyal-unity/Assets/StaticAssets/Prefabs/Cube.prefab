@@ -208,7 +208,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 10
+  maxHealth: 0
   level: 200
+  primarySkillId: 0
+  magic: 0
+  power: 0
+  damageRadius: 0
 --- !u!114 &367846395590210669
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -34,6 +34,7 @@ public class DamageSystem : JobComponentSystem
                 damage.NeedApply = false;
                 
                 playerData.health = Mathf.RoundToInt( playerData.health  - damage.Value );
+                damage.Value = 0;
                 
                 if (playerData.health <= 0.0f && !Dead.Exists(entity) )
                 {

@@ -8,4 +8,5 @@ public struct ItemSpawner : IComponentData
 {
     public int itemId;
     public float duration;
+    public Entity spawnedItem;
 }

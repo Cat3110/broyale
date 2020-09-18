@@ -15,6 +15,17 @@ MonoBehaviour:
   Names:
   - Medusa
   - Cube
+  - ID_GREENCRYSTAL
+  - ID_REDCRYSTAL
+  - ID_BLUECRYSTAL
   AssetRefMembers:
   - m_AssetGUID: 2e70fa9726ebe2246811ac5654f6d994
+    m_SubObjectName: 
+  - m_AssetGUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
+    m_SubObjectName: 
+  - m_AssetGUID: 7948d06978037f042bc9b7319d52f312
+    m_SubObjectName: 
+  - m_AssetGUID: 1ac0988e3961f7144a36cb66fe8529cf
+    m_SubObjectName: 
+  - m_AssetGUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
     m_SubObjectName: 
