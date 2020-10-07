@@ -21,7 +21,7 @@ public class ScriptBatch
         var target = BuildTarget.StandaloneWindows64;
         var option = BuildOptions.None;
 
-        var scenes = new[] {"Assets/StaticAssets/Scenes/Client.unity"};
+        var scenes = new[] { "Assets/StaticAssets/Scenes/SocketIOTest.unity", "Assets/StaticAssets/Scenes/Client.unity" };
         var scriptingImplementation = ScriptingImplementation.IL2CPP;
 
         BuildReport report = BuildGame(scenes, path, name, target, option, "1", scriptingImplementation);
@@ -58,7 +58,7 @@ public class ScriptBatch
         var target = BuildTarget.Android;
         var option = BuildOptions.None;
 
-        var scenes = new[] {"Assets/StaticAssets/Scenes/Client.unity"};
+        var scenes = new[] { "Assets/StaticAssets/Scenes/SocketIOTest.unity", "Assets/StaticAssets/Scenes/Client.unity" };
         var scriptingImplementation = ScriptingImplementation.IL2CPP;
 
         BuildReport report = BuildGame(scenes, path, name, target, option, "1", scriptingImplementation);

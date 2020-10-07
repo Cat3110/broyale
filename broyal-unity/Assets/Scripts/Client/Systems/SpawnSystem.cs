@@ -1,14 +1,10 @@
-﻿// When client has a connection with network id, go in game and tell server to also go in game
-
-using System.Security.Cryptography.X509Certificates;
-using Bootstrappers;
+﻿using Bootstrappers;
 using RemoteConfig;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
 public class PlayerSpawnClientSystem : ComponentSystem
@@ -26,7 +22,7 @@ public class PlayerSpawnClientSystem : ComponentSystem
             {
                 PostUpdateCommands.AddComponent<NetworkStreamInGame>(ent);
                 var req = PostUpdateCommands.CreateEntity();
-                PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest { skillId = _session.SkillId});
+                PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest { skillId = _session.SkillId });
                 PostUpdateCommands.AddComponent(req, new SendRpcCommandRequestComponent { TargetConnection = ent });
             });
     }
@@ -147,7 +143,6 @@ public class LootItemSystem : ComponentSystem
         players.Dispose();
     }
 }
-
 
 [DisableAutoCreation]
 [UpdateInGroup(typeof(ServerSimulationSystemGroup))]

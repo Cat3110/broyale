@@ -46,8 +46,7 @@ public struct PlayerInput : ICommandData<PlayerInput>
         writer.WriteShort(attackType);
     }
 
-    public void Deserialize(uint tick, ref DataStreamReader reader, PlayerInput baseline,
-        NetworkCompressionModel compressionModel)
+    public void Deserialize(uint tick, ref DataStreamReader reader, PlayerInput baseline, NetworkCompressionModel compressionModel)
     {
         Deserialize(tick, ref reader);
     }

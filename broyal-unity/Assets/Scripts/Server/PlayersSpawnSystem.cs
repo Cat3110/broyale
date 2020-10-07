@@ -65,6 +65,5 @@ public class PlayerSpawnServerSystem : ComponentSystem
             });
         
         spawners.Dispose();
-        
     }
 }

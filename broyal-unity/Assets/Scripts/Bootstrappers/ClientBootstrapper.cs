@@ -1,5 +1,7 @@
-﻿using Unity.Physics;
+﻿using System.Collections.Generic;
+using Unity.Physics;
 using Unity.Physics.Systems;
+using UnityEditor;
 
 namespace Bootstrappers
 {
@@ -37,6 +39,16 @@ namespace Bootstrappers
             if (!string.IsNullOrEmpty(jsonConfig))
             {
                 appConfig.Load(jsonConfig);
+            }
+
+            if (!string.IsNullOrEmpty(GlobalSettings.ServerAddress))
+            {
+                appConfig.Main.ServerAddress = GlobalSettings.ServerAddress;
+            }
+            
+            if (GlobalSettings.ServerPort.HasValue)
+            {
+                appConfig.Main.ServerPort = GlobalSettings.ServerPort.Value;
             }
             
             Container.Register(appConfig);
@@ -97,7 +109,42 @@ namespace Bootstrappers
         {
             //Debug.Log("MainAction " + controls.Player.Movement.ReadValue<Vector2>() );
         }
-        
+
+        private void OnDrawGizmos()
+        {
+            if (Container.TryResolve(typeof(List<ColliderData>), out object obj))
+            {
+                List<ColliderData> colliders = (List<ColliderData>)obj;
+                foreach (var collider in colliders)
+                {
+                    GizmoDrawCollider(collider, Color.magenta);
+                    //break;
+                }
+            }
+        }
+
+        public static void GizmoDrawCollider(ColliderData collider, Color color)
+        {
+            if (collider.Type == ColliderType.Box)
+            {
+                Gizmos.color = color;
+                // var p1 = new Vector3(collider.Position.x - collider.Min.x, 0, collider.Position.y - collider.Min.y);
+                // var p2 = new Vector3(collider.Position.x + collider.Max.x, 0, collider.Position.y - collider.Min.y);
+                // var p3 = new Vector3(collider.Position.x + collider.Max.x, 0, collider.Position.y + collider.Max.y);
+                // var p4 = new Vector3(collider.Position.x - collider.Min.x, 0, collider.Position.y + collider.Max.y);
+                        
+                var p1 = new Vector3(collider.Min.x, 0, collider.Min.y);
+                var p2 = new Vector3(collider.Max.x, 0, collider.Min.y);
+                var p3 = new Vector3(collider.Max.x, 0,  collider.Max.y);
+                var p4 = new Vector3(collider.Min.x, 0, collider.Max.y);
+                        
+                Gizmos.DrawLine(p1, p2);
+                Gizmos.DrawLine(p2, p3);
+                Gizmos.DrawLine(p3, p4);
+                Gizmos.DrawLine(p4, p1);
+            }
+        }
+
         private bool ConnectToServer(NetworkStreamReceiveSystem network, string address, ushort port)
         {
             NetworkEndPoint ep = NetworkEndPoint.Parse(address,port);
@@ -142,4 +189,10 @@ namespace Bootstrappers
           
         }
     }
+}
+
+public static class GlobalSettings
+{
+    public static string ServerAddress;
+    public static ushort? ServerPort;
 }

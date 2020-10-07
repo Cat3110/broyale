@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.ProceduralImage;
 using Object = UnityEngine.Object;
 
 public class UIController : MonoBehaviour
@@ -11,11 +14,11 @@ public class UIController : MonoBehaviour
     [SerializeField] private MainUI main;
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
-    
+    [SerializeField] private LobbyUI lobby;
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
-    
+    public LobbyUI Lobby => lobby;
     
     // Start is called before the first frame update
     void Start()
@@ -169,5 +172,160 @@ public class GameUI : SimpleUIController
     public void SetHealth(int playerDataHealth)
     {
         healthBar.value = playerDataHealth;
+    }
+}
+
+[Serializable]
+public class LobbyUI : SimpleUIController
+{
+    public enum ConnectionStatus
+    {
+        Disconnected,
+        Connecting,
+        Connected,
+        WaitForGameStart
+    }
+    
+    [SerializeField] private Button startGameButton;
+    [SerializeField] private Button newGameButton;
+    [SerializeField] private Button exitButton;
+
+    [SerializeField] private Image statusIcon;
+    [SerializeField] private TMP_Text statusText;
+        
+    [SerializeField] private RoomPanel roomPanel;
+    [SerializeField] private UsersPanel usersPanel;
+    
+    [SerializeField] private TMP_Text Title;
+    [SerializeField] private TMP_Text Timer;
+    
+    private Action<string> onSelectRoom;
+    private ConnectionStatus status;
+    public void Show(IEnumerable<string> rooms, ConnectionStatus status, Action<string> onSelectRoom,  Action onCreateRoom, Action onStartGame)
+    { 
+        base.Show();
+
+        Timer.text = "";
+        roomPanel.onSelectRoom = onSelectRoom;
+        
+        startGameButton.onClick.AddListener( () => onStartGame?.Invoke() );
+        newGameButton.onClick.AddListener( () => onCreateRoom?.Invoke() );
+
+        UpdateConnectionStatus(status);
+        SetInLobby();
+    }
+
+    public void SetInRoom(string roomName, bool isOwner)
+    {
+        Title.text = roomName;
+            
+        startGameButton.interactable = isOwner && status != ConnectionStatus.WaitForGameStart;
+        newGameButton.interactable = false;
+        
+        roomPanel.Hide();
+        usersPanel.Show();
+    }
+    
+    public void SetTimer(int time)
+    {
+        Timer.text = time > 0 ? time.ToString() : "";
+            
+        startGameButton.interactable = false;
+    }
+    
+    public void SetInLobby()
+    {
+        startGameButton.interactable = false;
+        newGameButton.interactable = true;
+        
+        roomPanel.Show();
+        usersPanel.Hide();
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+        
+        roomPanel.Clean();
+        usersPanel.Clean();
+    }
+
+    //public event Action<string> OnGameStarted;
+    public void UpdateRooms(GameData[] games)
+    {
+        roomPanel.Clean();
+        
+        foreach (var game in games)
+        {
+            roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
+        }
+    }
+    
+    public void UpdateUsers(IEnumerable<string> users)
+    {
+        usersPanel.Clean();
+        
+        foreach (var user in users)
+        {
+            usersPanel.Add(user);
+        }
+    }
+
+    public void UpdateConnectionStatus(ConnectionStatus connecting)
+    {
+        status = connecting;
+        statusText.text = connecting.ToString();
+        
+        if(connecting == ConnectionStatus.Disconnected || 
+           connecting == ConnectionStatus.Connecting )
+            statusIcon.color = Color.red;
+        else statusIcon.color = Color.green;
+    }
+}
+
+[Serializable]
+public class SimpleUIPanel : IGameObjectActivator
+{
+    [SerializeField] protected GameObject root;
+    [SerializeField] protected GameObject elementPrefab;
+    private IGameObjectActivator _gameObjectActivator => new MainGOActivator(root);
+    public virtual void Show() => _gameObjectActivator.Show();
+    public virtual void Hide() => _gameObjectActivator.Hide();
+    
+    public void Clean()
+    {
+        foreach (Transform obj in root.transform)
+        {
+            if(obj.gameObject.activeSelf)
+                Object.Destroy(obj.gameObject);
+        }
+    }
+}
+
+[Serializable]
+public class RoomPanel : SimpleUIPanel
+{
+  
+    [SerializeField] private ToggleGroup toggleGroup;
+    public Action<string> onSelectRoom;
+    public string CurrentSkillId { get; private set; }
+    public void Add(string id, string roomName)
+    {
+        var newInstance = Object.Instantiate(elementPrefab, root.transform, false);
+        newInstance.GetComponentInChildren<TMP_Text>().text = roomName;
+        newInstance.GetComponentInChildren<Button>().onClick.AddListener(() => onSelectRoom?.Invoke(id));
+        newInstance.SetActive(true);
+    }
+}
+
+[Serializable]
+public class UsersPanel : SimpleUIPanel
+{
+    public void Add(string userName)
+    {
+        var newInstance = Object.Instantiate(elementPrefab, root.transform, false);
+        newInstance.GetComponentInChildren<TMP_Text>().text = userName;
+        newInstance.SetActive(true);
+        //newInstance.SetName(characterId);
     }
 }

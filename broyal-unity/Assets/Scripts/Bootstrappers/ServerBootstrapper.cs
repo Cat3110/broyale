@@ -48,13 +48,20 @@
             base.Start();
             
             Console.AddCommandByMethod(() => RealoadConfig() );
-            
+
             Container.Register(config);
             
             Debug.Log("Remote config loading...");
             AppConfig.LoadByUrlAsync().ContinueWith( (json) =>
             {
                 var loadedConfig = OnConfigLoaded(json);
+                
+                var globalPort = CommandLine.GetArg("--port");
+                if (globalPort != null)
+                {
+                    loadedConfig.Main.ServerPort = ushort.Parse(globalPort);
+                }
+                
                 InitWorlds(loadedConfig.Main.ServerPort);
             });
         }
@@ -92,5 +99,21 @@
         {
           
         }
+    }
+}
+
+public static class CommandLine
+{
+    public static string GetArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == name && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
+        }
+        return null;
     }
 }

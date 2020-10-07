@@ -19,6 +19,7 @@
         void RegisterSingleton<T, T1>();
 
         T Resolve<T>();
+        bool TryResolve(Type service, out object obj);
         object ResolveGeneric(Type genericType, Type arg);
         object Resolve(Type type);
         void Inject(object instance);
@@ -137,6 +138,33 @@
                 return Parent.Resolve(service);
             }
             throw new Exception("Service not found: " + service);
+        }
+        
+        public bool TryResolve(Type service, out object obj)
+        {
+            obj = null;
+            
+            if (services.ContainsKey(service))
+            {
+                obj = services[service]();
+                return true;
+            }
+
+            if( service.IsGenericType && generics.ContainsKey(service.GetGenericTypeDefinition()))
+            {
+                var implementation = generics[service.GetGenericTypeDefinition()].MakeGenericType(service.GetGenericArguments());
+                Register(service, implementation);
+                obj = Resolve(service);
+                return true;
+            }
+            
+            if (Parent != null)
+            {
+                obj = Resolve(service);
+                return true;
+            }
+            
+            return false;
         }
 
         public void Inject(object instance)

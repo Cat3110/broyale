@@ -43,23 +43,21 @@ public static class SaveColliders
             {
                 case BoxCollider boxCollider:
                     colliderData.Type = ColliderType.Box;
-                    colliderData.Position -= boxCollider.center;
-                    
-                    var dot = Vector3.Dot(collider.transform.forward, Vector3.forward);
-                    if (Mathf.Abs(dot) < 0.2)
-                    {
-                        Debug.Log($"Flip => {dot}", collider.gameObject);
-                        colliderData.Size = new Vector3(boxCollider.size.z, 0, boxCollider.size.x);
-                    } else  colliderData.Size = boxCollider.size;
+                    colliderData.Position += boxCollider.center;
 
+                    colliderData.Size = boxCollider.size;
+                    
                     var x1 = colliderData.Position.x - (colliderData.Size.x * 0.5f);
                     var x2 = colliderData.Position.x + (colliderData.Size.x * 0.5f);
                     var y1 = colliderData.Position.z - (colliderData.Size.z * 0.5f);
                     var y2 = colliderData.Position.z + (colliderData.Size.z * 0.5f);
 
-                    colliderData.Min = new Vector2(math.min(x1, x2), math.min(y1, y2));
-                    colliderData.Max = new Vector2(math.max(x1, x2), math.max(y1, y2));
+                    var xx1 = new Vector3(x1, 0, y1).RotateAroundPivot(collider.transform.position, collider.transform.rotation);
+                    var xx2 = new Vector3(x2, 0, y2).RotateAroundPivot(collider.transform.position, collider.transform.rotation);
 
+                    colliderData.Min = new float2(math.min(xx1.x, xx2.x), math.min(xx1.z, xx2.z));
+                    colliderData.Max = new float2(math.max(xx1.x, xx2.x), math.max(xx1.z, xx2.z));
+                    
                     list.Add( colliderData );
                     break;
                 case SphereCollider sphereCollider:

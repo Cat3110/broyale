@@ -16,11 +16,12 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
             "ItemSpawnerGhostSerializer",
             "CharacterGhostSerializer",
             "ItemGhostSerializer",
+            "NetSessionGhostSerializer",
         };
         return arr;
     }
 
-    public int Length => 5;
+    public int Length => 6;
 #endif
     public void Initialize(World world)
     {
@@ -44,6 +45,10 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
         m_ItemSnapshotDataNewGhostIds = curItemGhostSpawnSystem.NewGhostIds;
         m_ItemSnapshotDataNewGhosts = curItemGhostSpawnSystem.NewGhosts;
         curItemGhostSpawnSystem.GhostType = 4;
+        var curNetSessionGhostSpawnSystem = world.GetOrCreateSystem<NetSessionGhostSpawnSystem>();
+        m_NetSessionSnapshotDataNewGhostIds = curNetSessionGhostSpawnSystem.NewGhostIds;
+        m_NetSessionSnapshotDataNewGhosts = curNetSessionGhostSpawnSystem.NewGhosts;
+        curNetSessionGhostSpawnSystem.GhostType = 5;
     }
 
     public void BeginDeserialize(JobComponentSystem system)
@@ -53,6 +58,7 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
         m_ItemSpawnerSnapshotDataFromEntity = system.GetBufferFromEntity<ItemSpawnerSnapshotData>();
         m_CharacterSnapshotDataFromEntity = system.GetBufferFromEntity<CharacterSnapshotData>();
         m_ItemSnapshotDataFromEntity = system.GetBufferFromEntity<ItemSnapshotData>();
+        m_NetSessionSnapshotDataFromEntity = system.GetBufferFromEntity<NetSessionSnapshotData>();
     }
     public bool Deserialize(int serializer, Entity entity, uint snapshot, uint baseline, uint baseline2, uint baseline3,
         ref DataStreamReader reader, NetworkCompressionModel compressionModel)
@@ -73,6 +79,9 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
                 baseline3, ref reader, compressionModel);
             case 4:
                 return GhostReceiveSystem<DOTSGhostDeserializerCollection>.InvokeDeserialize(m_ItemSnapshotDataFromEntity, entity, snapshot, baseline, baseline2,
+                baseline3, ref reader, compressionModel);
+            case 5:
+                return GhostReceiveSystem<DOTSGhostDeserializerCollection>.InvokeDeserialize(m_NetSessionSnapshotDataFromEntity, entity, snapshot, baseline, baseline2,
                 baseline3, ref reader, compressionModel);
             default:
                 throw new ArgumentException("Invalid serializer type");
@@ -103,6 +112,10 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
                 m_ItemSnapshotDataNewGhostIds.Add(ghostId);
                 m_ItemSnapshotDataNewGhosts.Add(GhostReceiveSystem<DOTSGhostDeserializerCollection>.InvokeSpawn<ItemSnapshotData>(snapshot, ref reader, compressionModel));
                 break;
+            case 5:
+                m_NetSessionSnapshotDataNewGhostIds.Add(ghostId);
+                m_NetSessionSnapshotDataNewGhosts.Add(GhostReceiveSystem<DOTSGhostDeserializerCollection>.InvokeSpawn<NetSessionSnapshotData>(snapshot, ref reader, compressionModel));
+                break;
             default:
                 throw new ArgumentException("Invalid serializer type");
         }
@@ -123,6 +136,9 @@ public struct DOTSGhostDeserializerCollection : IGhostDeserializerCollection
     private BufferFromEntity<ItemSnapshotData> m_ItemSnapshotDataFromEntity;
     private NativeList<int> m_ItemSnapshotDataNewGhostIds;
     private NativeList<ItemSnapshotData> m_ItemSnapshotDataNewGhosts;
+    private BufferFromEntity<NetSessionSnapshotData> m_NetSessionSnapshotDataFromEntity;
+    private NativeList<int> m_NetSessionSnapshotDataNewGhostIds;
+    private NativeList<NetSessionSnapshotData> m_NetSessionSnapshotDataNewGhosts;
 }
 public struct EnableDOTSGhostReceiveSystemComponent : IComponentData
 {}

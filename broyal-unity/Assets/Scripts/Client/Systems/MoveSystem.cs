@@ -102,7 +102,7 @@ public class MoveSystem : ComponentSystem
         });
         
     }
-    static bool Intersect(float3 posA, float3 sizeA, float3 posB, float3 sizeB)
+    public static bool Intersect(float3 posA, float3 sizeA, float3 posB, float3 sizeB)
     {
         float minAX = posA.x - sizeA.x * 0.5f;
         float maxAX = posA.x + sizeA.x * 0.5f;
@@ -119,7 +119,7 @@ public class MoveSystem : ComponentSystem
         return (minAX <= maxBX && maxAX >= minBX) && (minAY <= maxBY && maxAY >= minBY);
     }
     
-    static bool Intersect(float2 min1, float2 max1, float3 posB, float3 sizeB)
+    public static bool Intersect(float2 min1, float2 max1, float3 posB, float3 sizeB)
     {
         var x1 = posB.x - sizeB.x * 0.5f;
         var x2 = posB.x + sizeB.x * 0.5f;
