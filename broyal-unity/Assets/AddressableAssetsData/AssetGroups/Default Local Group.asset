@@ -29,8 +29,26 @@ MonoBehaviour:
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
+  - m_GUID: 3d950c2d64e750a4789002bf762b767d
+    m_Address: male_skin_3_rigged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 3f14f27f5ea5e8f4ea66186f3cd5ac44
+    m_Address: female_skin_3_rigged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 6b3b42d2d8783944f909cd90e5d20331
     m_Address: Assets/Plugins/NetworkedDOTSTool/Prefabs/Character_Medusa_01.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 7471943e29a6f504288728ddd46e1497
+    m_Address: male_skin_2_rigged
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
@@ -41,8 +59,26 @@ MonoBehaviour:
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
+  - m_GUID: 7a69730f7eb54074c8ccc1c545228fb5
+    m_Address: female_skin_1_rigged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
     m_Address: Assets/StaticAssets/Prefabs/Items/BlueCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: cc6616f647691344a98bfb3576ea0b07
+    m_Address: male_skin_1_rigged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: f74bb35257d72e440a67e0ab7039b93f
+    m_Address: female_skin_2_rigged
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}

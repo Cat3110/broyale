@@ -121,9 +121,12 @@ MonoBehaviour:
   - name: PrefabCreator
     interpolatedClient: 1
     predictedClient: 1
-    server: 0
+    server: 1
     sendDataTo: 0
-    fields: []
+    fields:
+    - name: NameId
+      quantization: -1
+      interpolate: 0
     manualFieldList: 0
     entityIndex: 0
   - name: Unity.Transforms.LocalToWorld

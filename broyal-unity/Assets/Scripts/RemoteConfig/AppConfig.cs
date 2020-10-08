@@ -159,5 +159,6 @@ namespace RemoteConfig
     public class Session
     {
         public int SkillId { get; set; }
+        public int CharacterId { get; set; }
     }
 }

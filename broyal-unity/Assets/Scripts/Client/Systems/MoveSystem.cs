@@ -48,6 +48,11 @@ public class MoveSystem : ComponentSystem
             float h = input.horizontal / 10.0f ;// > 0 ? 1.0f : (input.horizontal < 0) ? -1.0f : 0.0f;
             float v = input.vertical / 10.0f;//  > 0 ? 1.0f : (input.vertical < 0) ? -1.0f : 0.0f;
 
+            if (!_isServer)
+            {
+                Debug.Log("X");
+            }
+            
             var lastPos = trans.Value;
             
             if (math.abs(input.horizontal) > 0)

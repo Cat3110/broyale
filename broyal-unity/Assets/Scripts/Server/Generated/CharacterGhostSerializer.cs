@@ -10,6 +10,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
     private ComponentType componentTypeDamage;
     private ComponentType componentTypeMovableCharacterComponent;
     private ComponentType componentTypePlayerData;
+    private ComponentType componentTypePrefabCreator;
     private ComponentType componentTypeLocalToWorld;
     private ComponentType componentTypeRotation;
     private ComponentType componentTypeTranslation;
@@ -18,6 +19,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
     [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<Damage> ghostDamageType;
     [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<MovableCharacterComponent> ghostMovableCharacterComponentType;
     [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<PlayerData> ghostPlayerDataType;
+    [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<PrefabCreator> ghostPrefabCreatorType;
     [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<Rotation> ghostRotationType;
     [NativeDisableContainerSafetyRestriction][ReadOnly] private ArchetypeChunkComponentType<Translation> ghostTranslationType;
 
@@ -34,6 +36,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         componentTypeDamage = ComponentType.ReadWrite<Damage>();
         componentTypeMovableCharacterComponent = ComponentType.ReadWrite<MovableCharacterComponent>();
         componentTypePlayerData = ComponentType.ReadWrite<PlayerData>();
+        componentTypePrefabCreator = ComponentType.ReadWrite<PrefabCreator>();
         componentTypeLocalToWorld = ComponentType.ReadWrite<LocalToWorld>();
         componentTypeRotation = ComponentType.ReadWrite<Rotation>();
         componentTypeTranslation = ComponentType.ReadWrite<Translation>();
@@ -41,6 +44,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         ghostDamageType = system.GetArchetypeChunkComponentType<Damage>(true);
         ghostMovableCharacterComponentType = system.GetArchetypeChunkComponentType<MovableCharacterComponent>(true);
         ghostPlayerDataType = system.GetArchetypeChunkComponentType<PlayerData>(true);
+        ghostPrefabCreatorType = system.GetArchetypeChunkComponentType<PrefabCreator>(true);
         ghostRotationType = system.GetArchetypeChunkComponentType<Rotation>(true);
         ghostTranslationType = system.GetArchetypeChunkComponentType<Translation>(true);
     }
@@ -52,6 +56,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         var chunkDataDamage = chunk.GetNativeArray(ghostDamageType);
         var chunkDataMovableCharacterComponent = chunk.GetNativeArray(ghostMovableCharacterComponentType);
         var chunkDataPlayerData = chunk.GetNativeArray(ghostPlayerDataType);
+        var chunkDataPrefabCreator = chunk.GetNativeArray(ghostPrefabCreatorType);
         var chunkDataRotation = chunk.GetNativeArray(ghostRotationType);
         var chunkDataTranslation = chunk.GetNativeArray(ghostTranslationType);
         snapshot.SetAttackAttackType(chunkDataAttack[ent].AttackType, serializerState);
@@ -64,6 +69,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         snapshot.SetPlayerDatapower(chunkDataPlayerData[ent].power, serializerState);
         snapshot.SetPlayerDatamagic(chunkDataPlayerData[ent].magic, serializerState);
         snapshot.SetPlayerDatadamageRadius(chunkDataPlayerData[ent].damageRadius, serializerState);
+        snapshot.SetPrefabCreatorNameId(chunkDataPrefabCreator[ent].NameId, serializerState);
         snapshot.SetRotationValue(chunkDataRotation[ent].Value, serializerState);
         snapshot.SetTranslationValue(chunkDataTranslation[ent].Value, serializerState);
     }

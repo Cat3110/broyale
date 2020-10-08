@@ -1,6 +1,7 @@
 ﻿using System;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 
 [Serializable]
 public struct NameId
@@ -13,5 +14,6 @@ public struct NameId
 [GenerateAuthoringComponent]
 public struct PrefabCreator : IComponentData
 {
+    [GhostDefaultField]
     public uint NameId;
 }

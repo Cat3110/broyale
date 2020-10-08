@@ -15,6 +15,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     private int PlayerDatapower;
     private int PlayerDatamagic;
     private int PlayerDatadamageRadius;
+    private uint PrefabCreatorNameId;
     private int RotationValueX;
     private int RotationValueY;
     private int RotationValueZ;
@@ -185,6 +186,22 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     {
         PlayerDatadamageRadius = (int)val;
     }
+    public uint GetPrefabCreatorNameId(GhostDeserializerState deserializerState)
+    {
+        return (uint)PrefabCreatorNameId;
+    }
+    public uint GetPrefabCreatorNameId()
+    {
+        return (uint)PrefabCreatorNameId;
+    }
+    public void SetPrefabCreatorNameId(uint val, GhostSerializerState serializerState)
+    {
+        PrefabCreatorNameId = (uint)val;
+    }
+    public void SetPrefabCreatorNameId(uint val)
+    {
+        PrefabCreatorNameId = (uint)val;
+    }
     public quaternion GetRotationValue(GhostDeserializerState deserializerState)
     {
         return GetRotationValue();
@@ -236,6 +253,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         PlayerDatapower = predictor.PredictInt(PlayerDatapower, baseline1.PlayerDatapower, baseline2.PlayerDatapower);
         PlayerDatamagic = predictor.PredictInt(PlayerDatamagic, baseline1.PlayerDatamagic, baseline2.PlayerDatamagic);
         PlayerDatadamageRadius = predictor.PredictInt(PlayerDatadamageRadius, baseline1.PlayerDatadamageRadius, baseline2.PlayerDatadamageRadius);
+        PrefabCreatorNameId = (uint)predictor.PredictInt((int)PrefabCreatorNameId, (int)baseline1.PrefabCreatorNameId, (int)baseline2.PrefabCreatorNameId);
         RotationValueX = predictor.PredictInt(RotationValueX, baseline1.RotationValueX, baseline2.RotationValueX);
         RotationValueY = predictor.PredictInt(RotationValueY, baseline1.RotationValueY, baseline2.RotationValueY);
         RotationValueZ = predictor.PredictInt(RotationValueZ, baseline1.RotationValueZ, baseline2.RotationValueZ);
@@ -257,13 +275,14 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         changeMask0 |= (PlayerDatapower != baseline.PlayerDatapower) ? (1u<<7) : 0;
         changeMask0 |= (PlayerDatamagic != baseline.PlayerDatamagic) ? (1u<<8) : 0;
         changeMask0 |= (PlayerDatadamageRadius != baseline.PlayerDatadamageRadius) ? (1u<<9) : 0;
+        changeMask0 |= (PrefabCreatorNameId != baseline.PrefabCreatorNameId) ? (1u<<10) : 0;
         changeMask0 |= (RotationValueX != baseline.RotationValueX ||
                                            RotationValueY != baseline.RotationValueY ||
                                            RotationValueZ != baseline.RotationValueZ ||
-                                           RotationValueW != baseline.RotationValueW) ? (1u<<10) : 0;
+                                           RotationValueW != baseline.RotationValueW) ? (1u<<11) : 0;
         changeMask0 |= (TranslationValueX != baseline.TranslationValueX ||
                                            TranslationValueY != baseline.TranslationValueY ||
-                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<11) : 0;
+                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<12) : 0;
         writer.WritePackedUIntDelta(changeMask0, baseline.changeMask0, compressionModel);
         bool isPredicted = GetMovableCharacterComponentPlayerId() == networkId;
         writer.WritePackedUInt(isPredicted?1u:0, compressionModel);
@@ -286,13 +305,15 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         if ((changeMask0 & (1 << 9)) != 0)
             writer.WritePackedIntDelta(PlayerDatadamageRadius, baseline.PlayerDatadamageRadius, compressionModel);
         if ((changeMask0 & (1 << 10)) != 0)
+            writer.WritePackedUIntDelta(PrefabCreatorNameId, baseline.PrefabCreatorNameId, compressionModel);
+        if ((changeMask0 & (1 << 11)) != 0)
         {
             writer.WritePackedIntDelta(RotationValueX, baseline.RotationValueX, compressionModel);
             writer.WritePackedIntDelta(RotationValueY, baseline.RotationValueY, compressionModel);
             writer.WritePackedIntDelta(RotationValueZ, baseline.RotationValueZ, compressionModel);
             writer.WritePackedIntDelta(RotationValueW, baseline.RotationValueW, compressionModel);
         }
-        if ((changeMask0 & (1 << 11)) != 0)
+        if ((changeMask0 & (1 << 12)) != 0)
         {
             writer.WritePackedIntDelta(TranslationValueX, baseline.TranslationValueX, compressionModel);
             writer.WritePackedIntDelta(TranslationValueY, baseline.TranslationValueY, compressionModel);
@@ -348,6 +369,10 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         else
             PlayerDatadamageRadius = baseline.PlayerDatadamageRadius;
         if ((changeMask0 & (1 << 10)) != 0)
+            PrefabCreatorNameId = reader.ReadPackedUIntDelta(baseline.PrefabCreatorNameId, compressionModel);
+        else
+            PrefabCreatorNameId = baseline.PrefabCreatorNameId;
+        if ((changeMask0 & (1 << 11)) != 0)
         {
             RotationValueX = reader.ReadPackedIntDelta(baseline.RotationValueX, compressionModel);
             RotationValueY = reader.ReadPackedIntDelta(baseline.RotationValueY, compressionModel);
@@ -361,7 +386,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
             RotationValueZ = baseline.RotationValueZ;
             RotationValueW = baseline.RotationValueW;
         }
-        if ((changeMask0 & (1 << 11)) != 0)
+        if ((changeMask0 & (1 << 12)) != 0)
         {
             TranslationValueX = reader.ReadPackedIntDelta(baseline.TranslationValueX, compressionModel);
             TranslationValueY = reader.ReadPackedIntDelta(baseline.TranslationValueY, compressionModel);

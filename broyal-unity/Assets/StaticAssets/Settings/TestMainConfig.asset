@@ -18,6 +18,12 @@ MonoBehaviour:
   - ID_GREENCRYSTAL
   - ID_REDCRYSTAL
   - ID_BLUECRYSTAL
+  - ID_MALE1
+  - ID_FEMALE1
+  - ID_MALE2
+  - ID_FEMALE2
+  - ID_MALE3
+  - ID_FEMALE3
   AssetRefMembers:
   - m_AssetGUID: 2e70fa9726ebe2246811ac5654f6d994
     m_SubObjectName: 
@@ -28,4 +34,16 @@ MonoBehaviour:
   - m_AssetGUID: 1ac0988e3961f7144a36cb66fe8529cf
     m_SubObjectName: 
   - m_AssetGUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
+    m_SubObjectName: 
+  - m_AssetGUID: cc6616f647691344a98bfb3576ea0b07
+    m_SubObjectName: 
+  - m_AssetGUID: 7a69730f7eb54074c8ccc1c545228fb5
+    m_SubObjectName: 
+  - m_AssetGUID: 7471943e29a6f504288728ddd46e1497
+    m_SubObjectName: 
+  - m_AssetGUID: f74bb35257d72e440a67e0ab7039b93f
+    m_SubObjectName: 
+  - m_AssetGUID: 3d950c2d64e750a4789002bf762b767d
+    m_SubObjectName: 
+  - m_AssetGUID: 3f14f27f5ea5e8f4ea66186f3cd5ac44
     m_SubObjectName: 

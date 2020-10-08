@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using Data;
 using TMPro;
+using UniRx.Async.Triggers;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
@@ -15,6 +17,9 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
     [SerializeField] private LobbyUI lobby;
+    
+    
+    
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
@@ -63,17 +68,30 @@ public class MainUI : SimpleUIController
     [SerializeField] private Button startButton;
     [SerializeField] private Button exitButton;
 
+    [SerializeField] private Button nextCharacterButton;
+    [SerializeField] private Button prevCharacterButton;
+    
     [SerializeField] private CharactersPanel charactersPanel;
     
     [SerializeField] private SkillsPanelData skillsPanel;
     
-    public void Show(IEnumerable<string> characterIds, IEnumerable<string> skillIds)
+    [SerializeField] private OffScreenController offScreenController;
+
+   
+    
+    public void Show(IList<string> characterIds, IList<string> skillIds)
     { 
         base.Show();
         
-        startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId) );
+        startButton.onClick.RemoveAllListeners();
+        startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, characterIds[offScreenController.SelectedIndex]) );
         
+        nextCharacterButton.onClick.RemoveAllListeners();
+        nextCharacterButton.onClick.AddListener( () => offScreenController.Next() );
         
+        prevCharacterButton.onClick.RemoveAllListeners();
+        prevCharacterButton.onClick.AddListener( () => offScreenController.Prev() );
+
         foreach (var characterId in characterIds)
         {
             charactersPanel.Add(characterId);
@@ -95,7 +113,7 @@ public class MainUI : SimpleUIController
         skillsPanel.Clean();
     }
 
-    public event Action<string> OnGameStarted;
+    public event Action<string, string> OnGameStarted;
 }
 
 [Serializable]

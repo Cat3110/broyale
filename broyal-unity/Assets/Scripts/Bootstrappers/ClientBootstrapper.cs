@@ -55,16 +55,20 @@ namespace Bootstrappers
             
             uiController.LoadingUI.Hide();
             uiController.MainUI.Show(
-                appConfig.Characters.Select( c => c.Id),
-                appConfig.Skills.Select( c => c.Id));
+                appConfig.Characters.Select( c => c.Id).ToList(),
+                appConfig.Skills.Select( c => c.Id).ToList());
 
 
-            uiController.MainUI.OnGameStarted += skillId =>
+            uiController.MainUI.OnGameStarted += (skillId,characterId) =>
             {
                 uiController.MainUI.Hide();
                 uiController.GameUI.Show();
 
-                Container.Register(new Session{ SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId) } );
+                Container.Register(new Session
+                {
+                    SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId),
+                    CharacterId = (int)config.GetNameId(characterId).Id,
+                } );
                 InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
             };
         }
