@@ -44,6 +44,7 @@ public class CharacterPresenterSystem : ComponentSystem
     private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
     private Session _session => BaseBootStrapper.Container.Resolve<Session>();
     private FXData _fxData => BaseBootStrapper.Container.Resolve<FXData>();
+    private UIController _uiController => BaseBootStrapper.Container.Resolve<UIController>();
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -96,6 +97,7 @@ public class CharacterPresenterSystem : ComponentSystem
             _matBlock.SetFloat(Fill, player.health / (float)player.maxHealth);
             healthBarRenderer.SetPropertyBlock(_matBlock);
 
+
             var prevPosition = new float3(go.transform.position);
 
             var dist = math.distance(prevPosition, translation.Value);
@@ -104,6 +106,8 @@ public class CharacterPresenterSystem : ComponentSystem
             animator.SetFloat(Speed, dist > 0.1f ? dist : 0.0f);
 
             go.transform.position = translation.Value;
+            
+            _uiController.SetPlayerPosition(go.transform.position);
             
             if (dist > 0.1f)
             {
@@ -114,17 +118,17 @@ public class CharacterPresenterSystem : ComponentSystem
             var attack = EntityManager.GetComponentData<Attack>(e);
             var damage = EntityManager.GetComponentData<Damage>(e);
 
-            if (attack.AttackType != 0)
+            if (attack.ProccesedId != 0 || attack.AttackType != 0)
             {
                 if (data.AttackTransId != attack.Seed)
                 {
-                    Debug.LogWarning($"Client:Attack To => {attack.Target} => {attack.AttackType}");
+                    Debug.LogWarning($"Client:Attack To => {attack.Target} => {attack.AttackType} => {data.AttackTransId} != {attack.Seed}");
                     animator.SetInteger(Type, player.primarySkillId);
                     animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
                     EntityManager.SetComponentData(e, data);
 
-                    _fxData.Start(player.primarySkillId, go, go.transform.position, math.normalize(attack.PredTrans));
+                    _fxData.Start(player.primarySkillId, go, go.transform.position, new Vector3(attack.AttackDirection.x,0, attack.AttackDirection.y));
                 }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
                 
                 var target = attack.Target;

@@ -17,6 +17,18 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 9ad2c4b34f0633e4087d4a2bd14987a8
   m_SerializeEntries:
+  - m_GUID: 0d5ab89088e3d78448d6e537557a2a1c
+    m_Address: Crossbow
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 15368b2c37e432d45884d95fd99fa201
+    m_Address: Staff
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 1ac0988e3961f7144a36cb66fe8529cf
     m_Address: Assets/StaticAssets/Prefabs/Items/RedCrystal.prefab
     m_ReadOnly: 0
@@ -67,6 +79,12 @@ MonoBehaviour:
     m_TargetAsset: {fileID: 0}
   - m_GUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
     m_Address: Assets/StaticAssets/Prefabs/Items/BlueCrystal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: a46fbe1c6037ca44aa44967332161b03
+    m_Address: Sword
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}

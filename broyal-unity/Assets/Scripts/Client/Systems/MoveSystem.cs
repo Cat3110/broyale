@@ -48,11 +48,6 @@ public class MoveSystem : ComponentSystem
             float h = input.horizontal / 10.0f ;// > 0 ? 1.0f : (input.horizontal < 0) ? -1.0f : 0.0f;
             float v = input.vertical / 10.0f;//  > 0 ? 1.0f : (input.vertical < 0) ? -1.0f : 0.0f;
 
-            if (!_isServer)
-            {
-                Debug.Log("X");
-            }
-            
             var lastPos = trans.Value;
             
             if (math.abs(input.horizontal) > 0)
@@ -91,16 +86,22 @@ public class MoveSystem : ComponentSystem
                 trans.Value.z += input.vertical/10.0f * deltaTime;
             if (input.vertical < 0)
                 trans.Value.z -= input.vertical/10.0f * deltaTime;*/
-            if (math.abs(input.horizontal) > 0 || math.abs(input.vertical) > 0)
+            // if (math.abs(input.horizontal) > 0 || math.abs(input.vertical) > 0)
+            // {
+            //     attack.PredTrans = new float3(input.horizontal, 0, input.vertical);
+            // }
+            
+            if (math.abs(input.attackDirectionX) > 0 || math.abs(input.attackDirectionY) > 0)
             {
-                attack.PredTrans = new float3(input.horizontal, 0, input.vertical);
+                attack.AttackDirection = new float2(input.attackDirectionX / 10.0f, input.attackDirectionY / 10.0f);
             }
+            
 
-            if (input.attackType == 1 && attack.AttackType == 0)
+            if (input.attackType == 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
                 Debug.Log(
                     $"{(_isServer ? "Server" : "Client")}({tick})({input.tick}):Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
-                InitAttackByType(pdata.primarySkillId, trans.Value, ref attack, input.attackType * (int) (Time.ElapsedTime * 1000));
+                InitAttackByType(pdata.primarySkillId, trans.Value, ref attack, input.attackType * (int) (Time.ElapsedTime));
                 
                 //EntityManager.SetComponentData(e, attack);
             }
@@ -149,10 +150,12 @@ public class MoveSystem : ComponentSystem
         var skill = _appConfig.Skills[skillId];
         
         Debug.Log($"{(_isServer ? "Server" : "Client")}:Attack Start  => {skill.Id}");
-        
+
+       
         attack.Duration = skill.Cooldown;
         //attack.BackAttackType = 
         attack.AttackType = skillId + 1;
+        attack.ProccesedId = attack.AttackType;
         //attack.PredTrans = transValue;
         
         if (attack.AttackType == 1)

@@ -24,6 +24,10 @@ MonoBehaviour:
   - ID_FEMALE2
   - ID_MALE3
   - ID_FEMALE3
+  - ID_Melee
+  - ID_Crossbow
+  - ID_Fireball
+  - ID_Magicray
   AssetRefMembers:
   - m_AssetGUID: 2e70fa9726ebe2246811ac5654f6d994
     m_SubObjectName: 
@@ -46,4 +50,12 @@ MonoBehaviour:
   - m_AssetGUID: 3d950c2d64e750a4789002bf762b767d
     m_SubObjectName: 
   - m_AssetGUID: 3f14f27f5ea5e8f4ea66186f3cd5ac44
+    m_SubObjectName: 
+  - m_AssetGUID: a46fbe1c6037ca44aa44967332161b03
+    m_SubObjectName: 
+  - m_AssetGUID: 0d5ab89088e3d78448d6e537557a2a1c
+    m_SubObjectName: 
+  - m_AssetGUID: 15368b2c37e432d45884d95fd99fa201
+    m_SubObjectName: 
+  - m_AssetGUID: 15368b2c37e432d45884d95fd99fa201
     m_SubObjectName: 

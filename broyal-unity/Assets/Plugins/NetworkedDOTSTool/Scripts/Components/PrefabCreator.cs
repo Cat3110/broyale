@@ -17,3 +17,6 @@ public struct PrefabCreator : IComponentData
     [GhostDefaultField]
     public uint NameId;
 }
+
+public struct PrefabCreatorComplite : IComponentData
+{ }

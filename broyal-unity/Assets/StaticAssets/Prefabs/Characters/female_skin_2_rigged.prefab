@@ -1636,6 +1636,7 @@ GameObject:
   - component: {fileID: 4877140919438413895}
   - component: {fileID: 1535508704275450429}
   - component: {fileID: 2068593068114799721}
+  - component: {fileID: 3168380140759450665}
   m_Layer: 0
   m_Name: female_skin_2_rigged
   m_TagString: Untagged
@@ -1681,7 +1682,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7f0ec500b25955640a87d1149ac752fe, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -1699,6 +1700,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3168380140759450665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5252540218633243389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d6788ce1a9d094f8c821e9e01e8213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandPivot: {fileID: 8543155947725273915}
 --- !u!1 &5337003846330160021
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,7 +28,6 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
         public ArchetypeChunkComponentType<Damage> ghostDamageType;
         public ArchetypeChunkComponentType<PlayerData> ghostPlayerDataType;
         public ArchetypeChunkComponentType<PrefabCreator> ghostPrefabCreatorType;
-        public ArchetypeChunkComponentType<Rotation> ghostRotationType;
         public ArchetypeChunkComponentType<Translation> ghostTranslationType;
 
         public uint targetTick;
@@ -45,7 +44,6 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
             var ghostDamageArray = chunk.GetNativeArray(ghostDamageType);
             var ghostPlayerDataArray = chunk.GetNativeArray(ghostPlayerDataType);
             var ghostPrefabCreatorArray = chunk.GetNativeArray(ghostPrefabCreatorType);
-            var ghostRotationArray = chunk.GetNativeArray(ghostRotationType);
             var ghostTranslationArray = chunk.GetNativeArray(ghostTranslationType);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var minMaxOffset = ThreadIndex * (JobsUtility.CacheLineSize/4);
@@ -72,10 +70,10 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 var ghostDamage = ghostDamageArray[entityIndex];
                 var ghostPlayerData = ghostPlayerDataArray[entityIndex];
                 var ghostPrefabCreator = ghostPrefabCreatorArray[entityIndex];
-                var ghostRotation = ghostRotationArray[entityIndex];
                 var ghostTranslation = ghostTranslationArray[entityIndex];
                 ghostAttack.AttackType = snapshotData.GetAttackAttackType(deserializerState);
                 ghostAttack.Seed = snapshotData.GetAttackSeed(deserializerState);
+                ghostAttack.AttackDirection = snapshotData.GetAttackAttackDirection(deserializerState);
                 ghostDamage.DamageType = snapshotData.GetDamageDamageType(deserializerState);
                 ghostPlayerData.health = snapshotData.GetPlayerDatahealth(deserializerState);
                 ghostPlayerData.primarySkillId = snapshotData.GetPlayerDataprimarySkillId(deserializerState);
@@ -84,13 +82,11 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostPlayerData.magic = snapshotData.GetPlayerDatamagic(deserializerState);
                 ghostPlayerData.damageRadius = snapshotData.GetPlayerDatadamageRadius(deserializerState);
                 ghostPrefabCreator.NameId = snapshotData.GetPrefabCreatorNameId(deserializerState);
-                ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
                 ghostAttackArray[entityIndex] = ghostAttack;
                 ghostDamageArray[entityIndex] = ghostDamage;
                 ghostPlayerDataArray[entityIndex] = ghostPlayerData;
                 ghostPrefabCreatorArray[entityIndex] = ghostPrefabCreator;
-                ghostRotationArray[entityIndex] = ghostRotation;
                 ghostTranslationArray[entityIndex] = ghostTranslation;
             }
         }
@@ -110,12 +106,10 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
         [ReadOnly] public ArchetypeChunkBufferType<CharacterSnapshotData> ghostSnapshotDataType;
         [ReadOnly] public ArchetypeChunkEntityType ghostEntityType;
         public ArchetypeChunkComponentType<PredictedGhostComponent> predictedGhostComponentType;
-        public ArchetypeChunkComponentType<Attack> ghostAttackType;
         public ArchetypeChunkComponentType<Damage> ghostDamageType;
         public ArchetypeChunkComponentType<MovableCharacterComponent> ghostMovableCharacterComponentType;
         public ArchetypeChunkComponentType<PlayerData> ghostPlayerDataType;
         public ArchetypeChunkComponentType<PrefabCreator> ghostPrefabCreatorType;
-        public ArchetypeChunkComponentType<Rotation> ghostRotationType;
         public ArchetypeChunkComponentType<Translation> ghostTranslationType;
         public uint targetTick;
         public uint lastPredictedTick;
@@ -128,12 +122,10 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
             var ghostEntityArray = chunk.GetNativeArray(ghostEntityType);
             var ghostSnapshotDataArray = chunk.GetBufferAccessor(ghostSnapshotDataType);
             var predictedGhostComponentArray = chunk.GetNativeArray(predictedGhostComponentType);
-            var ghostAttackArray = chunk.GetNativeArray(ghostAttackType);
             var ghostDamageArray = chunk.GetNativeArray(ghostDamageType);
             var ghostMovableCharacterComponentArray = chunk.GetNativeArray(ghostMovableCharacterComponentType);
             var ghostPlayerDataArray = chunk.GetNativeArray(ghostPlayerDataType);
             var ghostPrefabCreatorArray = chunk.GetNativeArray(ghostPrefabCreatorType);
-            var ghostRotationArray = chunk.GetNativeArray(ghostRotationType);
             var ghostTranslationArray = chunk.GetNativeArray(ghostTranslationType);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var minMaxOffset = ThreadIndex * (JobsUtility.CacheLineSize/4);
@@ -166,15 +158,11 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 if (lastPredictedTickInst != snapshotData.Tick)
                     continue;
 
-                var ghostAttack = ghostAttackArray[entityIndex];
                 var ghostDamage = ghostDamageArray[entityIndex];
                 var ghostMovableCharacterComponent = ghostMovableCharacterComponentArray[entityIndex];
                 var ghostPlayerData = ghostPlayerDataArray[entityIndex];
                 var ghostPrefabCreator = ghostPrefabCreatorArray[entityIndex];
-                var ghostRotation = ghostRotationArray[entityIndex];
                 var ghostTranslation = ghostTranslationArray[entityIndex];
-                ghostAttack.AttackType = snapshotData.GetAttackAttackType(deserializerState);
-                ghostAttack.Seed = snapshotData.GetAttackSeed(deserializerState);
                 ghostDamage.DamageType = snapshotData.GetDamageDamageType(deserializerState);
                 ghostMovableCharacterComponent.PlayerId = snapshotData.GetMovableCharacterComponentPlayerId(deserializerState);
                 ghostPlayerData.health = snapshotData.GetPlayerDatahealth(deserializerState);
@@ -184,14 +172,11 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostPlayerData.magic = snapshotData.GetPlayerDatamagic(deserializerState);
                 ghostPlayerData.damageRadius = snapshotData.GetPlayerDatadamageRadius(deserializerState);
                 ghostPrefabCreator.NameId = snapshotData.GetPrefabCreatorNameId(deserializerState);
-                ghostRotation.Value = snapshotData.GetRotationValue(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
-                ghostAttackArray[entityIndex] = ghostAttack;
                 ghostDamageArray[entityIndex] = ghostDamage;
                 ghostMovableCharacterComponentArray[entityIndex] = ghostMovableCharacterComponent;
                 ghostPlayerDataArray[entityIndex] = ghostPlayerData;
                 ghostPrefabCreatorArray[entityIndex] = ghostPrefabCreator;
-                ghostRotationArray[entityIndex] = ghostRotation;
                 ghostTranslationArray[entityIndex] = ghostTranslation;
             }
         }
@@ -216,7 +201,6 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ComponentType.ReadWrite<Damage>(),
                 ComponentType.ReadWrite<PlayerData>(),
                 ComponentType.ReadWrite<PrefabCreator>(),
-                ComponentType.ReadWrite<Rotation>(),
                 ComponentType.ReadWrite<Translation>(),
             },
             None = new []{ComponentType.ReadWrite<PredictedGhostComponent>()}
@@ -227,12 +211,10 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ComponentType.ReadOnly<CharacterSnapshotData>(),
                 ComponentType.ReadOnly<GhostComponent>(),
                 ComponentType.ReadOnly<PredictedGhostComponent>(),
-                ComponentType.ReadWrite<Attack>(),
                 ComponentType.ReadWrite<Damage>(),
                 ComponentType.ReadWrite<MovableCharacterComponent>(),
                 ComponentType.ReadWrite<PlayerData>(),
                 ComponentType.ReadWrite<PrefabCreator>(),
-                ComponentType.ReadWrite<Rotation>(),
                 ComponentType.ReadWrite<Translation>(),
             }
         });
@@ -257,12 +239,10 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostSnapshotDataType = GetArchetypeChunkBufferType<CharacterSnapshotData>(true),
                 ghostEntityType = GetArchetypeChunkEntityType(),
                 predictedGhostComponentType = GetArchetypeChunkComponentType<PredictedGhostComponent>(),
-                ghostAttackType = GetArchetypeChunkComponentType<Attack>(),
                 ghostDamageType = GetArchetypeChunkComponentType<Damage>(),
                 ghostMovableCharacterComponentType = GetArchetypeChunkComponentType<MovableCharacterComponent>(),
                 ghostPlayerDataType = GetArchetypeChunkComponentType<PlayerData>(),
                 ghostPrefabCreatorType = GetArchetypeChunkComponentType<PrefabCreator>(),
-                ghostRotationType = GetArchetypeChunkComponentType<Rotation>(),
                 ghostTranslationType = GetArchetypeChunkComponentType<Translation>(),
 
                 targetTick = m_ClientSimulationSystemGroup.ServerTick,
@@ -288,7 +268,6 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostDamageType = GetArchetypeChunkComponentType<Damage>(),
                 ghostPlayerDataType = GetArchetypeChunkComponentType<PlayerData>(),
                 ghostPrefabCreatorType = GetArchetypeChunkComponentType<PrefabCreator>(),
-                ghostRotationType = GetArchetypeChunkComponentType<Rotation>(),
                 ghostTranslationType = GetArchetypeChunkComponentType<Translation>(),
                 targetTick = m_ClientSimulationSystemGroup.InterpolationTick,
                 targetTickFraction = m_ClientSimulationSystemGroup.InterpolationTickFraction

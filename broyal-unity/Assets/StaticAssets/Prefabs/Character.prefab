@@ -60,13 +60,16 @@ MonoBehaviour:
     interpolatedClient: 1
     predictedClient: 1
     server: 1
-    sendDataTo: 0
+    sendDataTo: 1
     fields:
     - name: AttackType
       quantization: -1
       interpolate: 0
     - name: Seed
       quantization: -1
+      interpolate: 0
+    - name: AttackDirection
+      quantization: 100
       interpolate: 0
     manualFieldList: 1
     entityIndex: 0
@@ -138,8 +141,8 @@ MonoBehaviour:
     manualFieldList: 0
     entityIndex: 0
   - name: Unity.Transforms.Rotation
-    interpolatedClient: 1
-    predictedClient: 1
+    interpolatedClient: 0
+    predictedClient: 0
     server: 1
     sendDataTo: 0
     fields:
@@ -229,10 +232,10 @@ MonoBehaviour:
   Duration: 0
   Seed: 0
   NeedApplyDamage: 0
-  PredTrans:
+  ProccesedId: 0
+  AttackDirection:
     x: 0
     y: 0
-    z: 0
   DamageTime: 0
   Target: {fileID: 0}
   BackAttackType: 0

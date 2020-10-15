@@ -17,8 +17,12 @@ public struct Attack : IComponentData
     public int Seed;
     
     public bool NeedApplyDamage;
+    
+    public int ProccesedId;
 
-    public float3 PredTrans;
+    //public float3 PredTrans;
+    
+    public float2 AttackDirection;
 
     public float DamageTime;
 

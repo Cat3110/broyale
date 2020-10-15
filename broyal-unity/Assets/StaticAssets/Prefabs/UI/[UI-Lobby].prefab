@@ -166,7 +166,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 65.95
+  m_fontSize: 61.85
   m_fontSizeBase: 55
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -266,7 +266,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 452, y: -203.4717}
+  m_AnchoredPosition: {x: 452, y: -188.88031}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1529624072
@@ -968,6 +968,8 @@ MonoBehaviour:
     body: {fileID: 2641170435882471540}
     startButton: {fileID: 2791585080208921167}
     exitButton: {fileID: 0}
+    nextCharacterButton: {fileID: 0}
+    prevCharacterButton: {fileID: 0}
     charactersPanel:
       root: {fileID: 5096584180465155493}
       characterSelectData: {fileID: 2899705454192335841, guid: bfb4cd42dcd467f40b994922545a1ade,
@@ -977,6 +979,7 @@ MonoBehaviour:
       toggleGroup: {fileID: 2790334919473950054}
       skillPrefab: {fileID: 8608366683974482086, guid: 176f9239738cf3f43a2b5e9488d968ff,
         type: 3}
+    offScreenController: {fileID: 0}
   game:
     body: {fileID: 2641170436706678987}
     action1Button: {fileID: 2641170436933305595}
@@ -6337,8 +6340,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 7720717275007777846}
-  m_Horizontal: 1
-  m_Vertical: 0
+  m_Horizontal: 0
+  m_Vertical: 1
   m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UniRx;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEditor;
@@ -56,26 +57,32 @@ namespace Bootstrappers
             uiController.LoadingUI.Hide();
             uiController.MainUI.Show(
                 appConfig.Characters.Select( c => c.Id).ToList(),
-                appConfig.Skills.Select( c => c.Id).ToList());
+                appConfig.Skills.Take(4).Select( c => c.Id).ToList());
 
 
             uiController.MainUI.OnGameStarted += (skillId,characterId) =>
             {
-                uiController.MainUI.Hide();
-                uiController.GameUI.Show();
-
                 Container.Register(new Session
                 {
                     SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId),
                     CharacterId = (int)config.GetNameId(characterId).Id,
                 } );
+                
+                uiController.MainUI.Hide();
+                uiController.LoadingUI.Show();
+                
+                
+                //TODO: need to find way for make it better
+                Observable.Timer(TimeSpan.FromSeconds(4))
+                    .Subscribe(
+                        (x) => { }, 
+                        () => {  
+                            uiController.LoadingUI.Hide();
+                            uiController.GameUI.Show(); })
+                    .AddTo(this);
+
                 InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
             };
-        }
-
-        private void OnGameStarted(string skillId)
-        {
-            
         }
 
         private void InitWorlds(string address, ushort port)
@@ -100,6 +107,10 @@ namespace Bootstrappers
             
             SRDebug.Init();
             
+            controls = new InputMaster();
+            controls.Enable();
+            
+            Container.Register(controls);
             Container.Register(config);
             Container.Register(cameraSettings);
             Container.Register(uiController);
@@ -163,15 +174,8 @@ namespace Bootstrappers
         {
             _world = world;
             _entityManager = world.EntityManager;
-            
-            var systemGroup = world.GetOrCreateSystem<ClientSimulationSystemGroup>();
-                    
-            //systemGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );
-            //systemGroup.AddSystemToUpdateList(world.CreateSystem<PrefabCreatorSystem>() );
-            //systemGroup.AddSystemToUpdateList(world.CreateSystem<CharacterPresenterSystem>() );
-            //systemGroup.AddSystemToUpdateList(world.CreateSystem<UpdateCameraSystem>());
 
-            var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup >();
+            var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup>();
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabCreatorSystem>() );
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<UpdateCameraSystem>());

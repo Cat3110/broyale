@@ -8,7 +8,8 @@ public class FXData
     public GameObject FireBall;
     public GameObject MagicRay;
     public GameObject DamageZone;
-
+    public GameObject AttackDirection;
+    
     public float FxSpeed = 10.0f; 
     public float FxTime= 1.0f;
 

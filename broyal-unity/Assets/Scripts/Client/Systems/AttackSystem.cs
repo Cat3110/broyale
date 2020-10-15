@@ -64,7 +64,7 @@ public class AttackSystem : ComponentSystem
                 {
                     var damage = EntityManager.GetComponentData<Damage>(enemy);
 
-                    Vector3 forward = math.normalize(attack.PredTrans);
+                    Vector3 forward = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
                     Vector3 other = EntityManager.GetComponentData<Translation>(enemy).Value - translation.Value;
 
                     var dot = Vector3.Dot(forward, other );
@@ -87,7 +87,8 @@ public class AttackSystem : ComponentSystem
                 attack.DamageTime -= deltaTime;
                 
                 attack.AttackType = attack.Duration > 0 ? attack.AttackType : 0;
-                //attack.BackAttackType = attack.Duration > 0 ? attack.BackAttackType : 0;
+                attack.ProccesedId = attack.Duration > 0 ? attack.ProccesedId : 0;
+                //attack.BackAttackType
             }
             
             EntityManager.SetComponentData(player, attack); 

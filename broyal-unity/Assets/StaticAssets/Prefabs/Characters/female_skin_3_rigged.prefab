@@ -2416,6 +2416,7 @@ GameObject:
   - component: {fileID: 7274281243245460502}
   - component: {fileID: 3608329892964558444}
   - component: {fileID: 7763314110720966993}
+  - component: {fileID: 4061712121476769283}
   m_Layer: 0
   m_Name: female_skin_3_rigged
   m_TagString: Untagged
@@ -2430,7 +2431,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8050360888779007660}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.94, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2461,7 +2462,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7f0ec500b25955640a87d1149ac752fe, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2479,6 +2480,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4061712121476769283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8050360888779007660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d6788ce1a9d094f8c821e9e01e8213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandPivot: {fileID: 5896064027995838314}
 --- !u!1 &8074026789207770996
 GameObject:
   m_ObjectHideFlags: 0

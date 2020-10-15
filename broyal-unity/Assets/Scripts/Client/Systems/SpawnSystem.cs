@@ -152,7 +152,7 @@ public class ZoneDamageSystem : ComponentSystem
     private MainConfig _config;
     private EntityQuery _playesQuery;
 
-    private int Radius = 100;
+    private int Radius = 110;
     private const float tick = 1.0f;
     private float lastTick = 0;
 

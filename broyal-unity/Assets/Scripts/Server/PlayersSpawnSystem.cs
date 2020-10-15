@@ -48,7 +48,8 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 var spawnComponent =  EntityManager.GetComponentData<SpawnPoint>(spawnPoint);
                 var spawnPosition = EntityManager.GetComponentData<Translation>(spawnPoint);
                 
-                EntityManager.SetComponentData(spawnPoint, new SpawnPoint{ radius = spawnComponent.radius, spawnCount = spawnComponent.spawnCount + 1});
+                EntityManager.SetComponentData(spawnPoint, 
+                    new SpawnPoint{ radius = spawnComponent.radius, spawnCount = spawnComponent.spawnCount + 1});
                 
                 EntityManager.SetComponentData(player, new Translation{ Value = spawnPosition.Value});
                 EntityManager.SetComponentData(player, new PlayerData{ 
@@ -57,8 +58,10 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     power = character.Power,
                     magic = character.Magic,
                     primarySkillId = req.skillId});
-                EntityManager.SetComponentData(player, new PrefabCreator{ NameId = (uint)req.characterId });
-                EntityManager.SetComponentData(player, new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
+                EntityManager.SetComponentData(player, 
+                    new PrefabCreator{ NameId = (uint)req.characterId });
+                EntityManager.SetComponentData(player, 
+                    new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
 
                 PostUpdateCommands.AddBuffer<PlayerInput>(player);
                 PostUpdateCommands.SetComponent(reqSrc.SourceConnection, new CommandTargetComponent { targetEntity = player });

@@ -2656,6 +2656,7 @@ GameObject:
   - component: {fileID: 7417040353096391486}
   - component: {fileID: 3462901099607982404}
   - component: {fileID: 8778677522147617336}
+  - component: {fileID: 2967517976348543328}
   m_Layer: 0
   m_Name: male_skin_1_rigged
   m_TagString: Untagged
@@ -2701,7 +2702,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7f0ec500b25955640a87d1149ac752fe, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -2719,6 +2720,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2967517976348543328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7900807209376547204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d6788ce1a9d094f8c821e9e01e8213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rightHandPivot: {fileID: 6039019401217601602}
 --- !u!1 &8021284274849011948
 GameObject:
   m_ObjectHideFlags: 0

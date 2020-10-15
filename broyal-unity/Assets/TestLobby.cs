@@ -125,7 +125,7 @@ public class TestLobby : MonoBehaviour
 
     private void onCreateRoom()
     {
-        var gameName = $"{user} + {Guid.NewGuid()}";
+        var gameName = $"{user}{DateTime.Now}";
         var json = new JSONObject();
         json.SetField("gameName", gameName);
         json.SetField("user", user);

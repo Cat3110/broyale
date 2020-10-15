@@ -121,7 +121,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!21 &182265114
+--- !u!21 &157750764
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -146,9 +146,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _ColorMask: 15
-    - _Height: 55.727997
+    - _Height: 51.119995
     - _LineWeight: 2
-    - _PixelWorldScale: 0.390625
+    - _PixelWorldScale: 0.625
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -435,7 +435,48 @@ Material:
     - _Width: 439
     m_Colors:
     - _Radius: {r: 7.19, g: 7.19, b: 7.19, a: 7.19}
---- !u!21 &617822840
+--- !u!28 &463327662
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 2
+  m_Width: 1
+  m_Height: 1
+  m_CompleteImageSize: 4
+  m_TextureFormat: 4
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_IgnoreMasterTextureLimit: 0
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_LightmapFormat: 0
+  m_ColorSpace: 1
+  image data: 4
+  _typelessdata: ffffffff
+  m_StreamData:
+    offset: 0
+    size: 0
+    path: 
+--- !u!21 &746622867
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -460,17 +501,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _ColorMask: 15
-    - _Height: 55.727997
-    - _LineWeight: 2
-    - _PixelWorldScale: 0.390625
+    - _Height: 18.271448
+    - _LineWeight: 0
+    - _PixelWorldScale: 0.62499994
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Width: 439
+    - _Width: 41
     m_Colors:
-    - _Radius: {r: 7.19, g: 7.19, b: 7.19, a: 7.19}
+    - _Radius: {r: 5.96, g: 5.96, b: 5.96, a: 5.96}
 --- !u!21 &878415224
 Material:
   serializedVersion: 6
@@ -762,7 +803,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b30cc084d923f0645b55bba668610d48, type: 3}
---- !u!213 &1288248536
+--- !u!21 &1225160525
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/Procedural UI Image
+  m_Shader: {fileID: 4800000, guid: 27d83044d20c5de4e9d57d35e4fda368, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _Height: 51.119995
+    - _LineWeight: 2
+    - _PixelWorldScale: 0.625
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _Width: 439
+    m_Colors:
+    - _Radius: {r: 7.19, g: 7.19, b: 7.19, a: 7.19}
+--- !u!213 &1263325440
 Sprite:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -789,7 +866,7 @@ Sprite:
   m_SpriteAtlas: {fileID: 0}
   m_RD:
     serializedVersion: 3
-    texture: {fileID: 1641410409}
+    texture: {fileID: 463327662}
     alphaTexture: {fileID: 0}
     secondaryTextures: []
     m_SubMeshes:
@@ -880,7 +957,7 @@ Sprite:
     downscaleMultiplier: 1
   m_AtlasRD:
     serializedVersion: 3
-    texture: {fileID: 1641410409}
+    texture: {fileID: 463327662}
     alphaTexture: {fileID: 0}
     secondaryTextures: []
     m_SubMeshes:
@@ -972,42 +1049,6 @@ Sprite:
   m_PhysicsShape: []
   m_Bones: []
   m_SpriteID: 
---- !u!21 &1368720752
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/Procedural UI Image
-  m_Shader: {fileID: 4800000, guid: 27d83044d20c5de4e9d57d35e4fda368, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _Height: 22.87948
-    - _LineWeight: 0
-    - _PixelWorldScale: 0.390625
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _Width: 41
-    m_Colors:
-    - _Radius: {r: 5.96, g: 5.96, b: 5.96, a: 5.96}
 --- !u!28 &1582643499
 Texture2D:
   m_ObjectHideFlags: 0
@@ -1085,47 +1126,6 @@ Material:
     - _Width: 314.24854
     m_Colors:
     - _Radius: {r: 15, g: 15, b: 15, a: 15}
---- !u!28 &1641410409
-Texture2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  serializedVersion: 2
-  m_Width: 1
-  m_Height: 1
-  m_CompleteImageSize: 4
-  m_TextureFormat: 4
-  m_MipCount: 1
-  m_IsReadable: 1
-  m_IgnoreMasterTextureLimit: 0
-  m_StreamingMipmaps: 0
-  m_StreamingMipmapsPriority: 0
-  m_AlphaIsTransparency: 0
-  m_ImageCount: 1
-  m_TextureDimension: 2
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_LightmapFormat: 0
-  m_ColorSpace: 1
-  image data: 4
-  _typelessdata: ffffffff
-  m_StreamData:
-    offset: 0
-    size: 0
-    path: 
 --- !u!28 &1764422948
 Texture2D:
   m_ObjectHideFlags: 0
@@ -1372,12 +1372,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 617822840}
+      objectReference: {fileID: 157750764}
     - target: {fileID: 5954058067467423744, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1288248536}
+      objectReference: {fileID: 1263325440}
     - target: {fileID: 5954058067467423750, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1442,22 +1442,22 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 182265114}
+      objectReference: {fileID: 1225160525}
     - target: {fileID: 5954058067630168762, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1288248536}
+      objectReference: {fileID: 1263325440}
     - target: {fileID: 5954058067852627210, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 1368720752}
+      objectReference: {fileID: 746622867}
     - target: {fileID: 5954058067852627210, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1288248536}
+      objectReference: {fileID: 1263325440}
     - target: {fileID: 5954058067915214197, guid: 980d61ce31886234ea6cfcca1019baa3,
         type: 3}
       propertyPath: m_Material

@@ -13,6 +13,8 @@ using Debug = UnityEngine.Debug;
 
 public class ScriptBatch 
 {
+    private static string[] clientScenes = { "Assets/StaticAssets/Scenes/Lobby.unity", "Assets/StaticAssets/Scenes/Client.unity" };
+    
     [MenuItem("Build/Client/Windows(64)(il2cpp)")]
     public static void BuildWindowsClient()
     {
@@ -21,10 +23,9 @@ public class ScriptBatch
         var target = BuildTarget.StandaloneWindows64;
         var option = BuildOptions.None;
 
-        var scenes = new[] { "Assets/StaticAssets/Scenes/SocketIOTest.unity", "Assets/StaticAssets/Scenes/Client.unity" };
         var scriptingImplementation = ScriptingImplementation.IL2CPP;
 
-        BuildReport report = BuildGame(scenes, path, name, target, option, "1", scriptingImplementation);
+        BuildReport report = BuildGame(clientScenes, path, name, target, option, "1", scriptingImplementation);
         BuildSummary summary = report.summary;
 
         if (summary.result == BuildResult.Succeeded)
@@ -58,10 +59,9 @@ public class ScriptBatch
         var target = BuildTarget.Android;
         var option = BuildOptions.None;
 
-        var scenes = new[] { "Assets/StaticAssets/Scenes/SocketIOTest.unity", "Assets/StaticAssets/Scenes/Client.unity" };
         var scriptingImplementation = ScriptingImplementation.IL2CPP;
 
-        BuildReport report = BuildGame(scenes, path, name, target, option, "1", scriptingImplementation);
+        BuildReport report = BuildGame(clientScenes, path, name, target, option, "1", scriptingImplementation);
         BuildSummary summary = report.summary;
 
         if (summary.result == BuildResult.Succeeded)

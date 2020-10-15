@@ -1,41 +1,124 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Bootstrappers;
 using Data;
+using Data.Util;
+using RemoteConfig;
 using TMPro;
+using UniRx;
 using UniRx.Async.Triggers;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
 using Object = UnityEngine.Object;
 
-public class UIController : MonoBehaviour
+public class UIController : MonoBehaviour, IUIOwner
 {
     [SerializeField] private MainUI main;
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
     [SerializeField] private LobbyUI lobby;
-    
-    
+
+    public static Vector2 AttackDirection;
     
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
     public LobbyUI Lobby => lobby;
+
+    //private InputMaster _inputMaster;
+
+    private Vector3 _playerPosition;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        //_inputMaster = ClientBootstrapper.Container.Resolve<InputMaster>();
+
+        GameUI.SetOwner(this);
+        GameUI.OnButtonClickedAndDirectionSet += MainActionOnStarted;
+        //GameUI.NeedSetDirection = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private Coroutine _cleanCoroutine = null;
+
+    private void MainActionOnStarted(Vector2 direction)
     {
+        var device = Keyboard.current;
+        using (StateEvent.From(device, out var eventPtr))
+        {
+            ((ButtonControl) device["space"]).WriteValueIntoEvent(1.0f, eventPtr);
+            InputSystem.QueueEvent(eventPtr);
+        }
+
+        AttackDirection = direction.normalized;
         
+        /*var leftStick = Gamepad.current;
+        using (StateEvent.From(leftStick, out var eventPtr))
+        {
+            ((ButtonControl) leftStick["rightStick"]).WriteValueIntoEvent(direction, eventPtr);
+            InputSystem.QueueEvent(eventPtr);
+        }*/
+
+        if (_cleanCoroutine != null)
+        {
+            StopCoroutine(_cleanCoroutine);
+        }
+        
+        _cleanCoroutine = StartCoroutine(CleanEvent());
+
+        /*using (StateEvent.From(device, out var eventPtr))
+        {
+            ((ButtonControl) device["space"]).WriteValueIntoEvent(0.0f, eventPtr);
+            InputSystem.QueueEvent(eventPtr);
+        }*/
+
+        //InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState());
+        //GameUI.CallAction();
+        //Keyboard.current.spaceKey.ProcessValue(1.0f);
+        //Keyboard.current.spaceKey.w
+        //_inputMaster.Player.MainAction.f
     }
+
+    //TODO:Have to find way out
+    IEnumerator CleanEvent()
+    {
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        
+        var device = Keyboard.current;
+        using (StateEvent.From(device, out var eventPtr))
+        {
+            ((ButtonControl) device["space"]).WriteValueIntoEvent(0.0f, eventPtr);
+            InputSystem.QueueEvent(eventPtr);
+        }
+    }
+    
+
+    // Update is called once per frame
+    // void Update()
+    // {
+    // }
+
+    public void SetPlayerPosition(Vector3 position) => _playerPosition = position;
+    public Vector3 GetPlayerPosition() => _playerPosition;
+}
+
+public interface IUIOwner
+{
+    Vector3 GetPlayerPosition();
+
+    void SetPlayerPosition(Vector3 position);
 }
 
 public interface IGameObjectActivator
@@ -77,11 +160,13 @@ public class MainUI : SimpleUIController
     
     [SerializeField] private OffScreenController offScreenController;
 
-   
+  
     
     public void Show(IList<string> characterIds, IList<string> skillIds)
     { 
         base.Show();
+        
+        offScreenController.gameObject.SetActive(true);
         
         startButton.onClick.RemoveAllListeners();
         startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, characterIds[offScreenController.SelectedIndex]) );
@@ -108,6 +193,8 @@ public class MainUI : SimpleUIController
     public override void Hide()
     {
         base.Hide();
+        
+        offScreenController.gameObject.SetActive(false);
         
         charactersPanel.Clean();
         skillsPanel.Clean();
@@ -186,11 +273,90 @@ public class GameUI : SimpleUIController
        
     [SerializeField] private Button exitButton;
     [SerializeField] private Button mainButton;
-
-    public void SetHealth(int playerDataHealth)
+    
+    [SerializeField] private MobileInputController rightStickInputController;
+    [SerializeField] private GameObject attackDirectionArrow;
+    
+    private IUIOwner _owner;
+    private Session _session;
+    public event Action<Vector2> OnButtonClickedAndDirectionSet;
+    public bool NeedSetDirection { get; set; }
+    
+    public override void Show()
     {
-        healthBar.value = playerDataHealth;
+        mainButton.onClick.AddListener( ActiveRightJoystick );
+        _session = ClientBootstrapper.Container.Resolve<Session>();
+        //TODO: need make some flag in table
+        NeedSetDirection = _session.SkillId > 1;
+        base.Show();
     }
+
+    public override void Hide()
+    {
+        mainButton.onClick.RemoveAllListeners();
+        base.Hide();
+    }
+
+    private void ActiveRightJoystick()
+    {
+        if (!NeedSetDirection)
+        {
+            OnButtonClickedAndDirectionSet?.Invoke(Vector2.zero);
+            return;
+        }
+            
+        rightStickInputController.gameObject.SetActive(true);
+        
+        mainButton.OnPointerUp(new PointerEventData(EventSystem.current){ button = PointerEventData.InputButton.Left } );
+        //mainButton.GetComponent<OnScreenButton>().enabled = false;
+        
+        // mainButton.OnPointerExit(new PointerEventData(EventSystem.current));
+        //mainButton.OnDeselect(new BaseEventData(EventSystem.current));
+        //mainButton.OnSubmit(new BaseEventData(EventSystem.current));
+        //EventSystem.current.SetSelectedGameObject(rightStickInputController.gameObject);
+
+        // rightStickInputController.OnBeginDrag(new PointerEventData(EventSystem.current)
+        // {
+        //     button = PointerEventData.InputButton.Left,
+        //     //position = Input.touches.Last().position,
+        //     dragging = true
+        // });
+        attackDirectionArrow.SetActive(true);
+        
+        Observable.EveryLateUpdate()
+            .TakeUntilDisable(rightStickInputController.gameObject)
+            .Subscribe(x =>
+            {
+                var center = _owner.GetPlayerPosition();
+                var direction = rightStickInputController.Coordinate().normalized;
+                
+                // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
+                // if (x < 0.0f) {
+                //     angle = -angle;
+                //     angle = angle + 360;
+                // }
+                
+                attackDirectionArrow.transform.up = direction;
+                attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
+                
+                attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
+            });
+        rightStickInputController.OnStopDrag += OnStopDrag;
+    }
+
+    private void OnStopDrag(Vector2 obj)
+    {
+        attackDirectionArrow.SetActive(false);
+        //mainButton.GetComponent<OnScreenButton>().enabled
+            
+        rightStickInputController.gameObject.SetActive(false);
+        rightStickInputController.OnStopDrag -= OnStopDrag;
+        
+        OnButtonClickedAndDirectionSet?.Invoke(obj);
+    }
+
+    public void SetHealth(int playerDataHealth) => healthBar.value = playerDataHealth;
+    public void SetOwner(IUIOwner uiController) =>  _owner = uiController;
 }
 
 [Serializable]
@@ -273,7 +439,7 @@ public class LobbyUI : SimpleUIController
     {
         roomPanel.Clean();
         
-        foreach (var game in games)
+        foreach (var game in games.Where(g => !g.gameStarted))
         {
             roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
         }

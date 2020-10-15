@@ -7,6 +7,8 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     public uint tick;
     private int AttackAttackType;
     private int AttackSeed;
+    private int AttackAttackDirectionX;
+    private int AttackAttackDirectionY;
     private int DamageDamageType;
     private int MovableCharacterComponentPlayerId;
     private int PlayerDatahealth;
@@ -57,6 +59,23 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     public void SetAttackSeed(int val)
     {
         AttackSeed = (int)val;
+    }
+    public float2 GetAttackAttackDirection(GhostDeserializerState deserializerState)
+    {
+        return GetAttackAttackDirection();
+    }
+    public float2 GetAttackAttackDirection()
+    {
+        return new float2(AttackAttackDirectionX * 0.01f, AttackAttackDirectionY * 0.01f);
+    }
+    public void SetAttackAttackDirection(float2 val, GhostSerializerState serializerState)
+    {
+        SetAttackAttackDirection(val);
+    }
+    public void SetAttackAttackDirection(float2 val)
+    {
+        AttackAttackDirectionX = (int)(val.x * 100);
+        AttackAttackDirectionY = (int)(val.y * 100);
     }
     public int GetDamageDamageType(GhostDeserializerState deserializerState)
     {
@@ -245,6 +264,8 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         var predictor = new GhostDeltaPredictor(tick, this.tick, baseline1.tick, baseline2.tick);
         AttackAttackType = predictor.PredictInt(AttackAttackType, baseline1.AttackAttackType, baseline2.AttackAttackType);
         AttackSeed = predictor.PredictInt(AttackSeed, baseline1.AttackSeed, baseline2.AttackSeed);
+        AttackAttackDirectionX = predictor.PredictInt(AttackAttackDirectionX, baseline1.AttackAttackDirectionX, baseline2.AttackAttackDirectionX);
+        AttackAttackDirectionY = predictor.PredictInt(AttackAttackDirectionY, baseline1.AttackAttackDirectionY, baseline2.AttackAttackDirectionY);
         DamageDamageType = predictor.PredictInt(DamageDamageType, baseline1.DamageDamageType, baseline2.DamageDamageType);
         MovableCharacterComponentPlayerId = predictor.PredictInt(MovableCharacterComponentPlayerId, baseline1.MovableCharacterComponentPlayerId, baseline2.MovableCharacterComponentPlayerId);
         PlayerDatahealth = predictor.PredictInt(PlayerDatahealth, baseline1.PlayerDatahealth, baseline2.PlayerDatahealth);
@@ -267,53 +288,51 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     {
         changeMask0 = (AttackAttackType != baseline.AttackAttackType) ? 1u : 0;
         changeMask0 |= (AttackSeed != baseline.AttackSeed) ? (1u<<1) : 0;
-        changeMask0 |= (DamageDamageType != baseline.DamageDamageType) ? (1u<<2) : 0;
-        changeMask0 |= (MovableCharacterComponentPlayerId != baseline.MovableCharacterComponentPlayerId) ? (1u<<3) : 0;
-        changeMask0 |= (PlayerDatahealth != baseline.PlayerDatahealth) ? (1u<<4) : 0;
-        changeMask0 |= (PlayerDataprimarySkillId != baseline.PlayerDataprimarySkillId) ? (1u<<5) : 0;
-        changeMask0 |= (PlayerDatamaxHealth != baseline.PlayerDatamaxHealth) ? (1u<<6) : 0;
-        changeMask0 |= (PlayerDatapower != baseline.PlayerDatapower) ? (1u<<7) : 0;
-        changeMask0 |= (PlayerDatamagic != baseline.PlayerDatamagic) ? (1u<<8) : 0;
-        changeMask0 |= (PlayerDatadamageRadius != baseline.PlayerDatadamageRadius) ? (1u<<9) : 0;
-        changeMask0 |= (PrefabCreatorNameId != baseline.PrefabCreatorNameId) ? (1u<<10) : 0;
+        changeMask0 |= (AttackAttackDirectionX != baseline.AttackAttackDirectionX ||
+                                           AttackAttackDirectionY != baseline.AttackAttackDirectionY) ? (1u<<2) : 0;
+        changeMask0 |= (DamageDamageType != baseline.DamageDamageType) ? (1u<<3) : 0;
+        changeMask0 |= (MovableCharacterComponentPlayerId != baseline.MovableCharacterComponentPlayerId) ? (1u<<4) : 0;
+        changeMask0 |= (PlayerDatahealth != baseline.PlayerDatahealth) ? (1u<<5) : 0;
+        changeMask0 |= (PlayerDataprimarySkillId != baseline.PlayerDataprimarySkillId) ? (1u<<6) : 0;
+        changeMask0 |= (PlayerDatamaxHealth != baseline.PlayerDatamaxHealth) ? (1u<<7) : 0;
+        changeMask0 |= (PlayerDatapower != baseline.PlayerDatapower) ? (1u<<8) : 0;
+        changeMask0 |= (PlayerDatamagic != baseline.PlayerDatamagic) ? (1u<<9) : 0;
+        changeMask0 |= (PlayerDatadamageRadius != baseline.PlayerDatadamageRadius) ? (1u<<10) : 0;
+        changeMask0 |= (PrefabCreatorNameId != baseline.PrefabCreatorNameId) ? (1u<<11) : 0;
         changeMask0 |= (RotationValueX != baseline.RotationValueX ||
                                            RotationValueY != baseline.RotationValueY ||
                                            RotationValueZ != baseline.RotationValueZ ||
-                                           RotationValueW != baseline.RotationValueW) ? (1u<<11) : 0;
+                                           RotationValueW != baseline.RotationValueW) ? (1u<<12) : 0;
         changeMask0 |= (TranslationValueX != baseline.TranslationValueX ||
                                            TranslationValueY != baseline.TranslationValueY ||
-                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<12) : 0;
+                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<13) : 0;
         writer.WritePackedUIntDelta(changeMask0, baseline.changeMask0, compressionModel);
         bool isPredicted = GetMovableCharacterComponentPlayerId() == networkId;
         writer.WritePackedUInt(isPredicted?1u:0, compressionModel);
-        if ((changeMask0 & (1 << 0)) != 0)
-            writer.WritePackedIntDelta(AttackAttackType, baseline.AttackAttackType, compressionModel);
-        if ((changeMask0 & (1 << 1)) != 0)
-            writer.WritePackedIntDelta(AttackSeed, baseline.AttackSeed, compressionModel);
-        if ((changeMask0 & (1 << 2)) != 0)
+        if ((changeMask0 & (1 << 3)) != 0)
             writer.WritePackedIntDelta(DamageDamageType, baseline.DamageDamageType, compressionModel);
-        if ((changeMask0 & (1 << 4)) != 0)
-            writer.WritePackedIntDelta(PlayerDatahealth, baseline.PlayerDatahealth, compressionModel);
         if ((changeMask0 & (1 << 5)) != 0)
-            writer.WritePackedIntDelta(PlayerDataprimarySkillId, baseline.PlayerDataprimarySkillId, compressionModel);
+            writer.WritePackedIntDelta(PlayerDatahealth, baseline.PlayerDatahealth, compressionModel);
         if ((changeMask0 & (1 << 6)) != 0)
-            writer.WritePackedIntDelta(PlayerDatamaxHealth, baseline.PlayerDatamaxHealth, compressionModel);
+            writer.WritePackedIntDelta(PlayerDataprimarySkillId, baseline.PlayerDataprimarySkillId, compressionModel);
         if ((changeMask0 & (1 << 7)) != 0)
-            writer.WritePackedIntDelta(PlayerDatapower, baseline.PlayerDatapower, compressionModel);
+            writer.WritePackedIntDelta(PlayerDatamaxHealth, baseline.PlayerDatamaxHealth, compressionModel);
         if ((changeMask0 & (1 << 8)) != 0)
-            writer.WritePackedIntDelta(PlayerDatamagic, baseline.PlayerDatamagic, compressionModel);
+            writer.WritePackedIntDelta(PlayerDatapower, baseline.PlayerDatapower, compressionModel);
         if ((changeMask0 & (1 << 9)) != 0)
-            writer.WritePackedIntDelta(PlayerDatadamageRadius, baseline.PlayerDatadamageRadius, compressionModel);
+            writer.WritePackedIntDelta(PlayerDatamagic, baseline.PlayerDatamagic, compressionModel);
         if ((changeMask0 & (1 << 10)) != 0)
-            writer.WritePackedUIntDelta(PrefabCreatorNameId, baseline.PrefabCreatorNameId, compressionModel);
+            writer.WritePackedIntDelta(PlayerDatadamageRadius, baseline.PlayerDatadamageRadius, compressionModel);
         if ((changeMask0 & (1 << 11)) != 0)
+            writer.WritePackedUIntDelta(PrefabCreatorNameId, baseline.PrefabCreatorNameId, compressionModel);
+        if ((changeMask0 & (1 << 12)) != 0)
         {
             writer.WritePackedIntDelta(RotationValueX, baseline.RotationValueX, compressionModel);
             writer.WritePackedIntDelta(RotationValueY, baseline.RotationValueY, compressionModel);
             writer.WritePackedIntDelta(RotationValueZ, baseline.RotationValueZ, compressionModel);
             writer.WritePackedIntDelta(RotationValueW, baseline.RotationValueW, compressionModel);
         }
-        if ((changeMask0 & (1 << 12)) != 0)
+        if ((changeMask0 & (1 << 13)) != 0)
         {
             writer.WritePackedIntDelta(TranslationValueX, baseline.TranslationValueX, compressionModel);
             writer.WritePackedIntDelta(TranslationValueY, baseline.TranslationValueY, compressionModel);
@@ -321,8 +340,20 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         }
         if (isPredicted)
         {
-            if ((changeMask0 & (1 << 3)) != 0)
+            if ((changeMask0 & (1 << 4)) != 0)
                 writer.WritePackedIntDelta(MovableCharacterComponentPlayerId, baseline.MovableCharacterComponentPlayerId, compressionModel);
+        }
+        if (!isPredicted)
+        {
+            if ((changeMask0 & (1 << 0)) != 0)
+                writer.WritePackedIntDelta(AttackAttackType, baseline.AttackAttackType, compressionModel);
+            if ((changeMask0 & (1 << 1)) != 0)
+                writer.WritePackedIntDelta(AttackSeed, baseline.AttackSeed, compressionModel);
+            if ((changeMask0 & (1 << 2)) != 0)
+            {
+                writer.WritePackedIntDelta(AttackAttackDirectionX, baseline.AttackAttackDirectionX, compressionModel);
+                writer.WritePackedIntDelta(AttackAttackDirectionY, baseline.AttackAttackDirectionY, compressionModel);
+            }
         }
     }
 
@@ -332,47 +363,39 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         this.tick = tick;
         changeMask0 = reader.ReadPackedUIntDelta(baseline.changeMask0, compressionModel);
         bool isPredicted = reader.ReadPackedUInt(compressionModel)!=0;
-        if ((changeMask0 & (1 << 0)) != 0)
-            AttackAttackType = reader.ReadPackedIntDelta(baseline.AttackAttackType, compressionModel);
-        else
-            AttackAttackType = baseline.AttackAttackType;
-        if ((changeMask0 & (1 << 1)) != 0)
-            AttackSeed = reader.ReadPackedIntDelta(baseline.AttackSeed, compressionModel);
-        else
-            AttackSeed = baseline.AttackSeed;
-        if ((changeMask0 & (1 << 2)) != 0)
+        if ((changeMask0 & (1 << 3)) != 0)
             DamageDamageType = reader.ReadPackedIntDelta(baseline.DamageDamageType, compressionModel);
         else
             DamageDamageType = baseline.DamageDamageType;
-        if ((changeMask0 & (1 << 4)) != 0)
+        if ((changeMask0 & (1 << 5)) != 0)
             PlayerDatahealth = reader.ReadPackedIntDelta(baseline.PlayerDatahealth, compressionModel);
         else
             PlayerDatahealth = baseline.PlayerDatahealth;
-        if ((changeMask0 & (1 << 5)) != 0)
+        if ((changeMask0 & (1 << 6)) != 0)
             PlayerDataprimarySkillId = reader.ReadPackedIntDelta(baseline.PlayerDataprimarySkillId, compressionModel);
         else
             PlayerDataprimarySkillId = baseline.PlayerDataprimarySkillId;
-        if ((changeMask0 & (1 << 6)) != 0)
+        if ((changeMask0 & (1 << 7)) != 0)
             PlayerDatamaxHealth = reader.ReadPackedIntDelta(baseline.PlayerDatamaxHealth, compressionModel);
         else
             PlayerDatamaxHealth = baseline.PlayerDatamaxHealth;
-        if ((changeMask0 & (1 << 7)) != 0)
+        if ((changeMask0 & (1 << 8)) != 0)
             PlayerDatapower = reader.ReadPackedIntDelta(baseline.PlayerDatapower, compressionModel);
         else
             PlayerDatapower = baseline.PlayerDatapower;
-        if ((changeMask0 & (1 << 8)) != 0)
+        if ((changeMask0 & (1 << 9)) != 0)
             PlayerDatamagic = reader.ReadPackedIntDelta(baseline.PlayerDatamagic, compressionModel);
         else
             PlayerDatamagic = baseline.PlayerDatamagic;
-        if ((changeMask0 & (1 << 9)) != 0)
+        if ((changeMask0 & (1 << 10)) != 0)
             PlayerDatadamageRadius = reader.ReadPackedIntDelta(baseline.PlayerDatadamageRadius, compressionModel);
         else
             PlayerDatadamageRadius = baseline.PlayerDatadamageRadius;
-        if ((changeMask0 & (1 << 10)) != 0)
+        if ((changeMask0 & (1 << 11)) != 0)
             PrefabCreatorNameId = reader.ReadPackedUIntDelta(baseline.PrefabCreatorNameId, compressionModel);
         else
             PrefabCreatorNameId = baseline.PrefabCreatorNameId;
-        if ((changeMask0 & (1 << 11)) != 0)
+        if ((changeMask0 & (1 << 12)) != 0)
         {
             RotationValueX = reader.ReadPackedIntDelta(baseline.RotationValueX, compressionModel);
             RotationValueY = reader.ReadPackedIntDelta(baseline.RotationValueY, compressionModel);
@@ -386,7 +409,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
             RotationValueZ = baseline.RotationValueZ;
             RotationValueW = baseline.RotationValueW;
         }
-        if ((changeMask0 & (1 << 12)) != 0)
+        if ((changeMask0 & (1 << 13)) != 0)
         {
             TranslationValueX = reader.ReadPackedIntDelta(baseline.TranslationValueX, compressionModel);
             TranslationValueY = reader.ReadPackedIntDelta(baseline.TranslationValueY, compressionModel);
@@ -400,10 +423,31 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         }
         if (isPredicted)
         {
-            if ((changeMask0 & (1 << 3)) != 0)
+            if ((changeMask0 & (1 << 4)) != 0)
                 MovableCharacterComponentPlayerId = reader.ReadPackedIntDelta(baseline.MovableCharacterComponentPlayerId, compressionModel);
             else
                 MovableCharacterComponentPlayerId = baseline.MovableCharacterComponentPlayerId;
+        }
+        if (!isPredicted)
+        {
+            if ((changeMask0 & (1 << 0)) != 0)
+                AttackAttackType = reader.ReadPackedIntDelta(baseline.AttackAttackType, compressionModel);
+            else
+                AttackAttackType = baseline.AttackAttackType;
+            if ((changeMask0 & (1 << 1)) != 0)
+                AttackSeed = reader.ReadPackedIntDelta(baseline.AttackSeed, compressionModel);
+            else
+                AttackSeed = baseline.AttackSeed;
+            if ((changeMask0 & (1 << 2)) != 0)
+            {
+                AttackAttackDirectionX = reader.ReadPackedIntDelta(baseline.AttackAttackDirectionX, compressionModel);
+                AttackAttackDirectionY = reader.ReadPackedIntDelta(baseline.AttackAttackDirectionY, compressionModel);
+            }
+            else
+            {
+                AttackAttackDirectionX = baseline.AttackAttackDirectionX;
+                AttackAttackDirectionY = baseline.AttackAttackDirectionY;
+            }
         }
     }
     public void Interpolate(ref CharacterSnapshotData target, float factor)

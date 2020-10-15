@@ -27,7 +27,10 @@ public struct PlayerInput : ICommandData<PlayerInput>
     
     public short horizontal;
     public short vertical;
-
+    
+    public short attackDirectionX;
+    public short attackDirectionY;
+    
     public short attackType;
     public int jump;
 
@@ -37,6 +40,8 @@ public struct PlayerInput : ICommandData<PlayerInput>
         horizontal = reader.ReadShort();
         vertical = reader.ReadShort();
         attackType = reader.ReadShort();
+        attackDirectionX = reader.ReadShort();
+        attackDirectionY = reader.ReadShort();
     }
 
     public void Serialize(ref DataStreamWriter writer)
@@ -44,6 +49,8 @@ public struct PlayerInput : ICommandData<PlayerInput>
         writer.WriteShort(horizontal);
         writer.WriteShort(vertical);
         writer.WriteShort(attackType);
+        writer.WriteShort(attackDirectionX);
+        writer.WriteShort(attackDirectionY);
     }
 
     public void Deserialize(uint tick, ref DataStreamReader reader, PlayerInput baseline, NetworkCompressionModel compressionModel)
@@ -70,11 +77,12 @@ public class PlayerInputReceiveCommandSystem : CommandReceiveSystem<PlayerInput>
 [UpdateAfter(typeof(GhostSimulationSystemGroup))]
 public class SamplePlayerInput : ComponentSystem
 {
-    private readonly InputMaster _inputMaster = new InputMaster();
+    //private readonly InputMaster _inputMaster = new InputMaster();
+    private static InputMaster _inputMaster => BaseBootStrapper.Container.Resolve<InputMaster>();
     //private Session _appConfig => BaseBootStrapper.Container.Resolve<Session>();
     protected override void OnCreate()
     {
-        _inputMaster.Enable();
+        //_inputMaster.Enable();
         
         RequireSingletonForUpdate<NetworkIdComponent>();
         RequireSingletonForUpdate<EnableDOTSGhostReceiveSystemComponent>();
@@ -114,11 +122,18 @@ public class SamplePlayerInput : ComponentSystem
         // if (!haveDubCmd)
         // {
              input.attackType = action;
+             input.attackDirectionX = (short)math.round(UIController.AttackDirection.x * 10);
+             input.attackDirectionY = (short)math.round(UIController.AttackDirection.y * 10);
+             
+             if(input.attackType > 0)
+             {
+                 Debug.Log($"AttackDirection => {UIController.AttackDirection.x,6:F3} : {UIController.AttackDirection.y,6:F3}");
+             }
         // }
         //    return default;
 
         // Debug.Log($"MainAction => {action} ");
-        //Debug.Log($"Movement => {movement.x,6:F3} : {movement.y,6:F3}");
+        // Debug.Log($"AttackDirection => {UIController.AttackDirection.x,6:F3} : {UIController.AttackDirection.y,6:F3}");
         // Debug.Log($"Input => {input.horizontal} : {input.vertical}");
         // if (Input.GetKey(KeyCode.A))
         //     input.horizontal -= 1;
