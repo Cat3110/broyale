@@ -70,13 +70,13 @@ namespace Bootstrappers
                 
                 uiController.MainUI.Hide();
                 uiController.LoadingUI.Show();
-                
-                
+
                 //TODO: need to find way for make it better
-                Observable.Timer(TimeSpan.FromSeconds(4))
+                Observable.Timer(TimeSpan.FromSeconds(8))
                     .Subscribe(
                         (x) => { }, 
                         () => {  
+                            Container.Resolve<InputMaster>().Enable();
                             uiController.LoadingUI.Hide();
                             uiController.GameUI.Show(); })
                     .AddTo(this);
@@ -108,7 +108,7 @@ namespace Bootstrappers
             SRDebug.Init();
             
             controls = new InputMaster();
-            controls.Enable();
+            controls.Disable();
             
             Container.Register(controls);
             Container.Register(config);

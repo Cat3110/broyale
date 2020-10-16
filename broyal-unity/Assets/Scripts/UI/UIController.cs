@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Bootstrappers;
 using Data;
-using Data.Util;
 using RemoteConfig;
 using TMPro;
 using UniRx;
-using UniRx.Async.Triggers;
-using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
-using UnityEngine.UI.ProceduralImage;
 using Object = UnityEngine.Object;
 
 public class UIController : MonoBehaviour, IUIOwner

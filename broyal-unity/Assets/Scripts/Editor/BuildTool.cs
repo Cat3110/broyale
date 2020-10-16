@@ -51,8 +51,9 @@ public class ScriptBatch
     [MenuItem("Build/Client/Android(64)(il2cpp)")]
     public static void BuildAndroidClient()
     {
-        AddressableAssetSettings.CleanPlayerContent();
-        AddressableAssetSettings.BuildPlayerContent();
+        //AddressableAssetSettings.CleanPlayerContent();
+        //AddressableAssetSettings.BuildPlayerContent();
+        BuildAddressablesProcessor.PreExport();
         
         var path = "../bin/client/android/";
         var name = "broyal-client.apk";

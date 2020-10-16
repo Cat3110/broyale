@@ -70,7 +70,10 @@ MonoBehaviour:
     predictedClient: 1
     server: 1
     sendDataTo: 0
-    fields: []
+    fields:
+    - name: TimeToStart
+      quantization: 100
+      interpolate: 0
     manualFieldList: 0
     entityIndex: 0
   - name: Unity.Transforms.LocalToWorld

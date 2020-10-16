@@ -100,7 +100,7 @@ public class MoveSystem : ComponentSystem
             if (input.attackType == 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
                 Debug.Log(
-                    $"{(_isServer ? "Server" : "Client")}({tick})({input.tick}):Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
+                    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 InitAttackByType(pdata.primarySkillId, trans.Value, ref attack, input.attackType * (int) (Time.ElapsedTime));
                 
                 //EntityManager.SetComponentData(e, attack);
