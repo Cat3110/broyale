@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: b7d249cc13911ca4ead5f3162ba23195
 ModelImporter:
-  serializedVersion: 20101
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: -7103807191308784958
@@ -28,7 +28,14 @@ ModelImporter:
       has scale animation that will be discarded.\n\t'Hand.L' has scale animation
       that will be discarded.\n\t'Arm.R' has scale animation that will be discarded.\n\t'ForeArm.R'
       has scale animation that will be discarded.\n"
-    animationRetargetingWarnings: 
+    animationRetargetingWarnings: "\nRetargeting quality report for clip 'ATTACK_CROSSBOW':\n\tLeftFoot
+      average position error 8.7 mm and maximum position error 8.7 mm at time 0:11
+      (73.3%) Frame 11\n\tRightFoot average position error 6.2 mm and maximum position
+      error 6.2 mm at time 0: 0 (0.0%) Frame 0\n\tLeftLowerArm average position error
+      0.6 mm and maximum position error 1.2 mm at time 0: 4 (26.7%) Frame 4\n\tLeftHand
+      average position error 11.2 mm and maximum position error 13.4 mm at time 0:
+      4 (26.7%) Frame 4\n\tRightHand average position error 26.0 mm and maximum position
+      error 26.8 mm at time 0: 1 (6.7%) Frame 1\n"
     animationDoRetargetingWarnings: 1
     importAnimatedCustomProperties: 0
     importConstraints: 0
@@ -39,7 +46,36 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: ATTACK_CROSSBOW
+      takeName: ATTACK_CROSSBOW
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -58,7 +94,6 @@ ModelImporter:
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
-    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
@@ -68,9 +103,6 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
-    secondaryUVMarginMethod: 1
-    secondaryUVMinLightmapResolution: 40
-    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:

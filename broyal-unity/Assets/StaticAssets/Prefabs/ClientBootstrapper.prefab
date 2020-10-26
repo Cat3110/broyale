@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2989148695253982614}
   - component: {fileID: 3288588311094332147}
+  - component: {fileID: 365539493}
   m_Layer: 0
   m_Name: ClientBootstrapper
   m_TagString: Untagged
@@ -44,15 +45,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 0ff7a5887cae34a49945a074dfd71c6c, type: 2}
+  collidersFile: {fileID: 4900000, guid: f294fc6f950b3874a8d5ea1330575f10, type: 3}
   cameraSettings:
     Bounds:
       serializedVersion: 2
       x: 0
-      y: 3
+      y: 4
       width: 0
       height: 0
   uiController: {fileID: 0}
-  useLocalServer: 1
+  useLocalServer: 0
   maxFps: 30
   fxData:
     FireBall: {fileID: 2266498162254450016, guid: 466261e2c514d144fa9685892cf64e5b,
@@ -60,7 +62,20 @@ MonoBehaviour:
     MagicRay: {fileID: 4101692921743219505, guid: 3411a09982b1f474d84822f728a47448,
       type: 3}
     DamageZone: {fileID: 0}
+    AttackDirection: {fileID: 0}
     FxSpeed: 10
     FxTime: 1
     FxOffset: 1
     FxScale: 2.5
+--- !u!114 &365539493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4351843384757484827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d2f90c27219b6a48ba770c592c2fec6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
