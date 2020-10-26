@@ -66,7 +66,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""f3cce505-e27e-49ce-a383-4b942bde5b1c"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -123,7 +123,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""id"": ""11fbaf2b-7042-46f9-a80c-e4ceb749d8ad"",
                     ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
-                    ""processors"": ""StickDeadzone(min=0.125,max=0.925)"",
+                    ""processors"": ""NormalizeVector2"",
                     ""groups"": """",
                     ""action"": ""Movement"",
                     ""isComposite"": true,

@@ -12,7 +12,7 @@ public class CameraSettings
 public class UpdateCameraSystem : SystemBase
 {
     private Vector3 targetPosition;
-    private float smoothPosition = 0.35f;
+    private float smoothPosition = 0.05f;
     private Vector3 velocity = Vector3.zero;
 
     //private EntityQuery currentPlayerQuery;
@@ -42,6 +42,8 @@ public class UpdateCameraSystem : SystemBase
     private void MoveCamera(Translation localToWorld)
     {
         var camera = Camera.main;
+        if(camera == null ) throw new Exception("Dont have Main Camera");
+        
         var cameraBounds = _cameraSettings.Bounds;
 
         var targetX = 0.0f;
@@ -58,9 +60,11 @@ public class UpdateCameraSystem : SystemBase
         else if (localToWorld.Value.z < cameraBounds.yMin)
             targetZ = (localToWorld.Value.z - cameraBounds.yMin);
 
-        targetPosition = new Vector3(targetX, camera.transform.position.y, targetZ);
-        camera.transform.position = Vector3.SmoothDamp(camera.transform.position, targetPosition, ref velocity, smoothPosition);
-        
+        var position = camera.transform.position;
+        targetPosition = new Vector3(targetX, position.y, targetZ);
+        position = Vector3.SmoothDamp(position, targetPosition, ref velocity, smoothPosition);
+        camera.transform.position = position;
+
         //camera.transform.position = Vector3.Lerp(camera.transform.position, targetPosition,
         //    UnityEngine.Time.deltaTime * smoothPosition);
     }

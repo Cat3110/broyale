@@ -112,9 +112,6 @@ public class SamplePlayerInput : ComponentSystem
         var movement = _inputMaster.Player.Movement.ReadValue<Vector2>();
         var action = (short)_inputMaster.Player.MainAction.ReadValue<float>();
 
-        //input.horizontal = math.abs(movement.x) > 0.1 ? (movement.x > 0 ? 1 : -1) : 0;
-        //input.vertical = math.abs(movement.y) > 0.1 ? (movement.y > 0 ? 1 : -1) : 0;
-
         input.horizontal = (short)math.round(movement.x * 10);
         input.vertical = (short)math.round(movement.y * 10);
         
@@ -132,22 +129,6 @@ public class SamplePlayerInput : ComponentSystem
         // }
         //    return default;
 
-        // Debug.Log($"MainAction => {action} ");
-        // Debug.Log($"AttackDirection => {UIController.AttackDirection.x,6:F3} : {UIController.AttackDirection.y,6:F3}");
-        // Debug.Log($"Input => {input.horizontal} : {input.vertical}");
-        // if (Input.GetKey(KeyCode.A))
-        //     input.horizontal -= 1;
-        // if (Input.GetKey(KeyCode.D))
-        //     input.horizontal += 1;
-        // if (Input.GetKey(KeyCode.S))
-        //     input.vertical -= 1;
-        // if (Input.GetKey(KeyCode.W))
-        //     input.vertical += 1;
-        //
-        // if (Input.GetKey(KeyCode.Space))
-        //     input.attackType = 1;
-        
-      
         inputBuffer.AddCommandData(input);
     }
 }
