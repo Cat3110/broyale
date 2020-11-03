@@ -1,9 +1,15 @@
 ﻿
-using UnityEngine;
+using Scripts.Core.StateMachine;
 
 namespace Scripts.Scenes.Lobby
 {
-    public class LobbyController : MonoBehaviour
+    public enum LobbyState
+    {
+        Init,
+        Main
+    }
+
+    public class LobbyController : BaseStateMachine
     {
 
     }
