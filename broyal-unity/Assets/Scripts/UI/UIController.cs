@@ -389,11 +389,11 @@ public class LobbyUI : SimpleUIController
         startGameButton.onClick.AddListener( () => onStartGame?.Invoke() );
         newGameButton.onClick.AddListener( () => onCreateRoom?.Invoke() );
 
-        UpdateConnectionStatus(status);
+        //UpdateConnectionStatus(status);
         SetInLobby();
     }
 
-    public void SetInRoom(string roomName, bool isOwner)
+    /*public void SetInRoom(string roomName, bool isOwner)
     {
         Title.text = roomName;
             
@@ -402,7 +402,7 @@ public class LobbyUI : SimpleUIController
         
         roomPanel.Hide();
         usersPanel.Show();
-    }
+    }*/
     
     public void SetTimer(int time)
     {
@@ -439,7 +439,7 @@ public class LobbyUI : SimpleUIController
         }
     }
     
-    public void UpdateUsers(IEnumerable<string> users)
+    /*public void UpdateUsers(IEnumerable<string> users)
     {
         usersPanel.Clean();
         
@@ -447,9 +447,9 @@ public class LobbyUI : SimpleUIController
         {
             usersPanel.Add(user);
         }
-    }
+    }*/
 
-    public void UpdateConnectionStatus(ConnectionStatus connecting)
+    /*public void UpdateConnectionStatus(ConnectionStatus connecting)
     {
         status = connecting;
         statusText.text = connecting.ToString();
@@ -458,7 +458,7 @@ public class LobbyUI : SimpleUIController
            connecting == ConnectionStatus.Connecting )
             statusIcon.color = Color.red;
         else statusIcon.color = Color.green;
-    }
+    }*/
 }
 
 [Serializable]

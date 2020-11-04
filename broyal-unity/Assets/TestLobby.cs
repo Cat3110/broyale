@@ -30,7 +30,7 @@ public class TestLobby : MonoBehaviour
         while( !_socket.isOpen ) 
             yield return new WaitForSeconds(0.5f);
         
-        _uiController.Lobby.UpdateConnectionStatus( LobbyUI.ConnectionStatus.Connecting );
+        //_uiController.Lobby.UpdateConnectionStatus( LobbyUI.ConnectionStatus.Connecting );
         
         _socket.On(LobbyEvents.SERVER_UPDATE, OnServerUpdate);
         _socket.On(LobbyEvents.GAME_UPDATE, OnGameUpdate);
@@ -40,7 +40,7 @@ public class TestLobby : MonoBehaviour
             user = userResponse.list?.First()["user"];
             _socket.Emit(LobbyEvents.USER_CONNECTED, user);
             
-            _uiController.Lobby.UpdateConnectionStatus( LobbyUI.ConnectionStatus.Connected );
+            //_uiController.Lobby.UpdateConnectionStatus( LobbyUI.ConnectionStatus.Connected );
             
             _socket.Emit(LobbyEvents.UPDATE_LIST, (gameList) =>
             {
@@ -61,7 +61,7 @@ public class TestLobby : MonoBehaviour
             var game = obj.data;
             Debug.Log($"{LobbyEvents.GAME_UPDATE} {game}");
             
-            _uiController.Lobby.UpdateConnectionStatus(LobbyUI.ConnectionStatus.WaitForGameStart);
+            //_uiController.Lobby.UpdateConnectionStatus(LobbyUI.ConnectionStatus.WaitForGameStart);
             _uiController.Lobby.SetTimer(gameData.serverInfo.time);
 
             //GlobalSettings.ServerAddress = gameData.serverInfo.address;
@@ -125,7 +125,7 @@ public class TestLobby : MonoBehaviour
 
     private void onCreateRoom()
     {
-        var gameName = $"{user}{DateTime.Now}";
+        /*var gameName = $"{user}{DateTime.Now}";
         var json = new JSONObject();
         json.SetField("gameName", gameName);
         json.SetField("user", user);
@@ -140,7 +140,7 @@ public class TestLobby : MonoBehaviour
             _uiController.Lobby.UpdateUsers( users.Select( u => u["name"].str) );
             _uiController.Lobby.SetInRoom(currentGameName, true);
             Debug.Log($"CREATE_GAME {response}");
-        });
+        });*/
     }
 
     private void onSelectRoom(string gameId)
@@ -170,8 +170,8 @@ public class TestLobby : MonoBehaviour
                 
                 currentGameName = game.name;
                 currentGameId = game.id;
-                _uiController.Lobby.UpdateUsers( game.users.Select( u => u.name) );
-                _uiController.Lobby.SetInRoom(currentGameName, true);
+                //_uiController.Lobby.UpdateUsers( game.users.Select( u => u.name) );
+                //_uiController.Lobby.SetInRoom(currentGameName, true);
             }
             Debug.Log($"ACTIVE_GAME {response}");
         });
