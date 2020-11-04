@@ -25,6 +25,7 @@ namespace Scripts.Scenes.Lobby.States
         private SocketIOComponent _socket;
 
         private JSONObject user; // temporary here
+
         private string currentGameName = null;
         private string currentGameId = null;
 
