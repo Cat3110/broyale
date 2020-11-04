@@ -2,11 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using TMPro;
+using FullSerializer;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace Scripts.Scenes.Lobby.States
 {
@@ -24,7 +28,7 @@ namespace Scripts.Scenes.Lobby.States
         private ConnectionStatus status;
         private SocketIOComponent _socket;
 
-        private JSONObject user; // temporary here
+        public GameData[] _games;
 
         private string currentGameName = null;
         private string currentGameId = null;
@@ -34,13 +38,22 @@ namespace Scripts.Scenes.Lobby.States
             base.OnStartState( stateMachine, args );
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
-            UpdateConnectionStatus( ConnectionStatus.Disconnected );
+            UpdateConnectionStatus( ConnectionStatus.Connected );
+
+            _socket.On( LobbyEvents.SERVER_UPDATE, OnServerUpdate );
+            _socket.On( LobbyEvents.GAME_UPDATE, OnGameUpdate );
+            
+            _socket.Emit(LobbyEvents.UPDATE_LIST, (gameList) =>
+            {
+                //UpdateGameList(gameList["games"].list);
+            });
 
             connectingTimer.text = "";
         }
 
         public void OnPressedCreateRoom()
         {
+            var user = ( stateMachine as LobbyController ).user;
             var gameName = $"{user}{DateTime.Now}";
             var json = new JSONObject();
             json.SetField("gameName", gameName);
@@ -74,6 +87,101 @@ namespace Scripts.Scenes.Lobby.States
         {
 
         }
+    
+        private void OnServerUpdate( SocketIOEvent obj )
+        {
+            var gamesData = ParseGamesList(obj.data.ToString());
+            if( gamesData != null ) UpdateGameList(gamesData);
+
+            var games = obj.data?["games"].list;
+            Debug.Log($"SERVER_UPDATE {games?.Count} {games}");
+        }
+
+        private void OnGameUpdate(SocketIOEvent obj)
+        {
+            var gameData = ParseGame(obj.data.ToString());
+            if( gameData != null && gameData.id == currentGameId )
+            {
+                var game = obj.data;
+                Debug.Log($"{LobbyEvents.GAME_UPDATE} {game}");
+            
+                //_uiController.Lobby.UpdateConnectionStatus(LobbyUI.ConnectionStatus.WaitForGameStart);
+                SetTimer( gameData.serverInfo.time );
+
+                //GlobalSettings.ServerAddress = gameData.serverInfo.address;
+                GlobalSettings.ServerPort = (ushort)gameData.serverInfo.port;
+            
+                StartCoroutine(FinalCountdown(gameData.serverInfo.time));
+            }
+        }
+
+        private IEnumerator FinalCountdown(float time)
+        {
+            while (time > 0)
+            {
+                yield return new WaitForSeconds(1);
+                time -= 1;
+                SetTimer((int)time);
+            }
+
+            SceneManager.LoadScene( 1 );
+        }
+
+        public void SetTimer( int time )
+        {
+            connectingTimer.text = time > 0 ? time.ToString() : "";
+            
+            startGameButton.interactable = false;
+        }
+
+        private GameData ParseGame(string str)
+        {
+            if (str.StartsWith("["))
+            {
+                str = str.TrimStart(new char[] {'['});
+                str = str.TrimEnd(new char[] {']'});
+            }
+            fsSerializer fsSerializer = new fsSerializer();
+            GameData gameData = null;
+        
+            fsResult result = fsJsonParser.Parse(str, out fsData fsData);
+            if (result.Succeeded)
+            {
+                result = fsSerializer.TryDeserialize(fsData, ref gameData);
+                if (!result.Succeeded) Debug.LogError($"ParseGame TryDeserialize fail {result.FormattedMessages}");
+            }else Debug.LogError($"ParseGame Parse fail {result.FormattedMessages}");
+
+            return gameData;
+        }
+
+        private void UpdateGameList(GamesData gamesData)
+        {
+            Debug.Log($"UpdateGameList {gamesData.games.Length}");
+        
+            _games = gamesData.games;
+        
+            UpdateRooms( _games );
+        }
+
+        private GamesData ParseGamesList(string str)
+        {
+            if (str.StartsWith("["))
+            {
+                str = str.TrimStart(new char[] {'['});
+                str = str.TrimEnd(new char[] {']'});
+            }
+            fsSerializer fsSerializer = new fsSerializer();
+            GamesData gamesData = null;
+        
+            fsResult result = fsJsonParser.Parse(str, out fsData fsData);
+            if (result.Succeeded)
+            {
+                result = fsSerializer.TryDeserialize(fsData, ref gamesData);
+                if (!result.Succeeded) Debug.LogError($"ParseGamesList TryDeserialize fail {result.FormattedMessages}");
+            }else Debug.LogError($"ParseGamesList Parse fail {result.FormattedMessages}");
+
+            return gamesData;
+        }
 
         public void UpdateUsers( IEnumerable<string> users )
         {
@@ -82,6 +190,16 @@ namespace Scripts.Scenes.Lobby.States
             foreach (var user in users)
             {
                 usersPanel.Add(user);
+            }
+        }
+
+        public void UpdateRooms(GameData[] games)
+        {
+            roomPanel.Clean();
+        
+            foreach (var game in games.Where(g => !g.gameStarted))
+            {
+                roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
             }
         }
 

@@ -404,12 +404,12 @@ public class LobbyUI : SimpleUIController
         usersPanel.Show();
     }*/
     
-    public void SetTimer(int time)
+    /*public void SetTimer(int time)
     {
         Timer.text = time > 0 ? time.ToString() : "";
             
         startGameButton.interactable = false;
-    }
+    }*/
     
     public void SetInLobby()
     {
@@ -429,7 +429,7 @@ public class LobbyUI : SimpleUIController
     }
 
     //public event Action<string> OnGameStarted;
-    public void UpdateRooms(GameData[] games)
+    /*public void UpdateRooms(GameData[] games)
     {
         roomPanel.Clean();
         
@@ -437,7 +437,7 @@ public class LobbyUI : SimpleUIController
         {
             roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
         }
-    }
+    }*/
     
     /*public void UpdateUsers(IEnumerable<string> users)
     {

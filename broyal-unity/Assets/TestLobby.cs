@@ -32,8 +32,8 @@ public class TestLobby : MonoBehaviour
         
         //_uiController.Lobby.UpdateConnectionStatus( LobbyUI.ConnectionStatus.Connecting );
         
-        _socket.On(LobbyEvents.SERVER_UPDATE, OnServerUpdate);
-        _socket.On(LobbyEvents.GAME_UPDATE, OnGameUpdate);
+        //_socket.On(LobbyEvents.SERVER_UPDATE, OnServerUpdate);
+        //_socket.On(LobbyEvents.GAME_UPDATE, OnGameUpdate);
 
         var login = $"{Application.platform}-{SystemInfo.deviceName}-{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}";
         _socket.Emit(LobbyEvents.VERIFY_USER, login, (userResponse) => {
@@ -53,7 +53,7 @@ public class TestLobby : MonoBehaviour
         yield return null;
     }
 
-    private void OnGameUpdate(SocketIOEvent obj)
+    /*private void OnGameUpdate(SocketIOEvent obj)
     {
         var gameData = ParseGame(obj.data.ToString());
         if( gameData != null && gameData.id == currentGameId )
@@ -69,25 +69,25 @@ public class TestLobby : MonoBehaviour
             
             StartCoroutine(FinalCountdown(gameData.serverInfo.time));
         }
-    }
+    }*/
     
-    private void OnServerUpdate(SocketIOEvent obj)
+    /*private void OnServerUpdate(SocketIOEvent obj)
     {
         var gamesData = ParseGamesList(obj.data.ToString());
         if( gamesData != null ) UpdateGameList(gamesData);
 
         var games = obj.data?["games"].list;
         Debug.Log($"SERVER_UPDATE {games?.Count} {games}");
-    }
+    }*/
 
-    private void UpdateGameList(GamesData gamesData)
+    /*private void UpdateGameList(GamesData gamesData)
     {
         Debug.Log($"UpdateGameList {gamesData.games.Length}");
         
         _games = gamesData.games;
         
         _uiController.Lobby.UpdateRooms(_games);
-    }
+    }*/
 
     private void onStartGame()
     {
@@ -111,7 +111,7 @@ public class TestLobby : MonoBehaviour
         });
     }
 
-    private IEnumerator FinalCountdown(float time)
+    /*private IEnumerator FinalCountdown(float time)
     {
         while (time > 0)
         {
@@ -121,7 +121,7 @@ public class TestLobby : MonoBehaviour
         }
 
         SceneManager.LoadScene(1);
-    }
+    }*/
 
     private void onCreateRoom()
     {
@@ -218,7 +218,7 @@ public class TestLobby : MonoBehaviour
         return gamesData;
     }
     
-    private GameData ParseGame(string str)
+    /*private GameData ParseGame(string str)
     {
         if (str.StartsWith("["))
         {
@@ -236,7 +236,7 @@ public class TestLobby : MonoBehaviour
         }else Debug.LogError($"ParseGame Parse fail {result.FormattedMessages}");
 
         return gameData;
-    }
+    }*/
     
 
     private IEnumerator Login()

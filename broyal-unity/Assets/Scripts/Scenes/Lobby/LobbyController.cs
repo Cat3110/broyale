@@ -19,6 +19,8 @@ namespace Scripts.Scenes.Lobby
 
     public class LobbyController : BaseStateMachine
     {
+        public JSONObject user;
+        public JSONObject chat;
 
     }
 }
