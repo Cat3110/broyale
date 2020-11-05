@@ -85,7 +85,26 @@ namespace Scripts.Scenes.Lobby.States
 
         public void OnPressedStartGame()
         {
+            var user = ( stateMachine as LobbyController ).user;
 
+            string encodedString = "{\"gameId\": \"previousGame\",\"previousGame\": \"none\"}";
+        
+            var json = new JSONObject(encodedString);
+            json.SetField("user", user);
+            json["gameId"].str = currentGameId;
+
+     
+            _socket.Emit(LobbyEvents.START_GAME, json, (response) =>
+            {
+                //{"id":"030e2ab1-9fe6-49f7-b8fb-fe54b076c3bb",
+                //"name":"Game 1","gameUsers":[{"id":"28e51e1d-75fd-435f-8487-97e3e04d4996","name":"WindowsEditor-MSI","icon":"X"}]}
+                // var users = response.list.First()["gameUsers"].list;
+                // currentGameName = response.list.First()["name"].str;
+                // currentGameId = response.list.First()["id"].str;
+                // _uiController.Lobby.UpdateUsers( users.Select( u => u["name"].str) );
+                // _uiController.Lobby.SetInRoom(currentGameName, true);
+                Debug.Log($"START_GAME {response}");
+            });
         }
     
         private void OnServerUpdate( SocketIOEvent obj )
