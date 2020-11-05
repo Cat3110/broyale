@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Scripts.Common.Data;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using UnityEngine;

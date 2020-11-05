@@ -11,6 +11,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Scripts.Common.Data.Data;
+using Scripts.Common.Data;
 
 namespace Scripts.Scenes.Lobby.States
 {
