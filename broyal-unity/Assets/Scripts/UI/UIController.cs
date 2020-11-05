@@ -7,12 +7,16 @@ using Data;
 using RemoteConfig;
 using TMPro;
 using UniRx;
+using UniRx.Async.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
+using Utils;
+using CharacterInfo = RemoteConfig.CharacterInfo;
 using Object = UnityEngine.Object;
 
 public class UIController : MonoBehaviour, IUIOwner
@@ -21,7 +25,15 @@ public class UIController : MonoBehaviour, IUIOwner
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
     [SerializeField] private LobbyUI lobby;
-
+    
+    [Serializable]
+    public class SkillIdToSprite
+    {
+        public string Id;
+        public Sprite Sprite;
+    }
+    [SerializeField] private List<SkillIdToSprite> namedSprites;
+    
     public static Vector2 AttackDirection;
     
     public MainUI MainUI => main;
@@ -29,15 +41,16 @@ public class UIController : MonoBehaviour, IUIOwner
     public GameUI GameUI => game;
     public LobbyUI Lobby => lobby;
 
-    //private InputMaster _inputMaster;
-
     private Vector3 _playerPosition;
+    private GameObject _playerGo;
     
     // Start is called before the first frame update
-    void Start()
+    public void Init(IContainer container)
     {
         //_inputMaster = ClientBootstrapper.Container.Resolve<InputMaster>();
-
+        Container = container;
+            
+        MainUI.SetOwner(this);
         GameUI.SetOwner(this);
         GameUI.OnButtonClickedAndDirectionSet += MainActionOnStarted;
         //GameUI.NeedSetDirection = true;
@@ -105,14 +118,36 @@ public class UIController : MonoBehaviour, IUIOwner
     // }
 
     public void SetPlayerPosition(Vector3 position) => _playerPosition = position;
+    public Sprite GetSpriteById(string id)
+    {
+        return namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
+    }
+
+    public IContainer Container { get; private set; }
     public Vector3 GetPlayerPosition() => _playerPosition;
+    public GameObject GetPlayerGo() => _playerGo;
+
+    public void SetPlayerGo(GameObject go) => _playerGo = go;
 }
 
 public interface IUIOwner
 {
+    IContainer Container { get; }
+    
     Vector3 GetPlayerPosition();
 
     void SetPlayerPosition(Vector3 position);
+    
+    void SetPlayerGo(GameObject go);
+    GameObject GetPlayerGo();
+
+    Sprite GetSpriteById(string id);
+}
+
+public interface IHaveUIOwner
+{
+    IUIOwner Owner { get; }
+    void SetOwner(IUIOwner owner);
 }
 
 public interface IGameObjectActivator
@@ -131,12 +166,15 @@ public class MainGOActivator : IGameObjectActivator
 }
 
    
-public class SimpleUIController : IGameObjectActivator
+public class SimpleUIController : IGameObjectActivator, IHaveUIOwner
 {
     [SerializeField] protected GameObject body;
     private IGameObjectActivator _gameObjectActivator => new MainGOActivator(body);
     public virtual void Show() => _gameObjectActivator.Show();
     public virtual void Hide() => _gameObjectActivator.Hide();
+    
+    public IUIOwner Owner { get; private set; }
+    public void SetOwner(IUIOwner owner) => Owner = owner;
 }
     
 [Serializable]
@@ -154,16 +192,16 @@ public class MainUI : SimpleUIController
     
     [SerializeField] private OffScreenController offScreenController;
 
-  
+    private IContainer _container;
     
-    public void Show(IList<string> characterIds, IList<string> skillIds)
+    public void Show( CharactersConfig characters, IList<string> skillIds)
     { 
         base.Show();
         
         offScreenController.gameObject.SetActive(true);
         
         startButton.onClick.RemoveAllListeners();
-        startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, characterIds[offScreenController.SelectedIndex]) );
+        startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, characters[offScreenController.SelectedIndex]) );
         
         nextCharacterButton.onClick.RemoveAllListeners();
         nextCharacterButton.onClick.AddListener( () => offScreenController.Next() );
@@ -171,14 +209,16 @@ public class MainUI : SimpleUIController
         prevCharacterButton.onClick.RemoveAllListeners();
         prevCharacterButton.onClick.AddListener( () => offScreenController.Prev() );
 
-        foreach (var characterId in characterIds)
+        foreach (var character in characters)
         {
-            charactersPanel.Add(characterId);
+            charactersPanel.Add(character.Id);
+            offScreenController.AddCharacter(character);
         }
             
         foreach (var skillId in skillIds)
         {
-            skillsPanel.Add(skillId);
+            var sprite = Owner.GetSpriteById(skillId);
+            skillsPanel.Add(skillId, sprite);
         }
 
         skillsPanel.SetOn(0);
@@ -194,7 +234,14 @@ public class MainUI : SimpleUIController
         skillsPanel.Clean();
     }
 
-    public event Action<string, string> OnGameStarted;
+    public event Action<string, CharacterInfo> OnGameStarted;
+    
+    public void SetOwner(IUIOwner owner)
+    { 
+       base.SetOwner(owner);
+
+       offScreenController.SetOwner(owner);
+    }
 }
 
 [Serializable]
@@ -204,7 +251,6 @@ public class SkillsPanelData
         
     [SerializeField] private ToggleGroup toggleGroup;
     [SerializeField] private SkillData skillPrefab;
-
     public string CurrentSkillId { get; private set; }
     //[SerializeField] private Button exitButton;
     public void Clean()
@@ -215,11 +261,13 @@ public class SkillsPanelData
         }
     }
 
-    public void Add(string skillId)
+    public void Add(string skillId, Sprite sprite)
     {
         var newInstance = Object.Instantiate(skillPrefab, root.transform, false);
+        
         newInstance.SetName(skillId);
         newInstance.SetGroup(toggleGroup);
+        newInstance.SetIcon(sprite);
         newInstance.OnChangeState = s => CurrentSkillId = skillId;
     }
     
@@ -243,10 +291,10 @@ public class CharactersPanel
         }
     }
 
-    public void Add(string characterId)
+    public void Add(string name)
     {
         var newInstance = Object.Instantiate(characterSelectData, root.transform, false);
-        newInstance.SetName(characterId);
+        newInstance.SetName(name);
     }
 }
     
@@ -266,28 +314,66 @@ public class GameUI : SimpleUIController
     [SerializeField] private Slider healthBar;
        
     [SerializeField] private Button exitButton;
-    [SerializeField] private Button mainButton;
+    [SerializeField] private SkillButtonWithPopupStick mainButton;
     
     [SerializeField] private MobileInputController rightStickInputController;
     [SerializeField] private GameObject attackDirectionArrow;
-    
-    private IUIOwner _owner;
+
+    [SerializeField] private GemsPanel gemsPanel;
+
     private Session _session;
     public event Action<Vector2> OnButtonClickedAndDirectionSet;
     public bool NeedSetDirection { get; set; }
     
-    public override void Show()
+    public void Show(string skillId)
     {
-        mainButton.onClick.AddListener( ActiveRightJoystick );
+        mainButton.OnAcceptAction += MainButtonOnOnAcceptAction;
+        mainButton.OnDraggin += MainButtonOnOnDraggin;
+            
         _session = ClientBootstrapper.Container.Resolve<Session>();
+        
         //TODO: need make some flag in table
         NeedSetDirection = _session.SkillId > 1;
+        
+        //TODO:Need make some skill class for ui
+        mainButton.transform.Find("Icon").GetComponent<Image>().sprite = Owner.GetSpriteById(skillId);
+        
         base.Show();
+    }
+
+    private void MainButtonOnOnDraggin(Vector2 direction)
+    {
+        attackDirectionArrow.SetActive(true);
+        attackDirectionArrow.transform.SetParent(Owner.GetPlayerGo().transform,true);
+        
+        var center = Owner.GetPlayerPosition();
+        
+        direction = direction.normalized;
+                
+        // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
+        // if (x < 0.0f) {
+        //     angle = -angle;
+        //     angle = angle + 360;
+        // }
+                
+        attackDirectionArrow.transform.up = direction;
+        attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
+                
+        //attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
+        attackDirectionArrow.transform.localPosition =  new Vector3(0,1.0f, 0);
+    }
+
+    private void MainButtonOnOnAcceptAction(Vector2 obj)
+    {
+        attackDirectionArrow.SetActive(false);
+        OnButtonClickedAndDirectionSet?.Invoke(obj);
     }
 
     public override void Hide()
     {
-        mainButton.onClick.RemoveAllListeners();
+        mainButton.OnAcceptAction -= MainButtonOnOnAcceptAction;
+        mainButton.OnDraggin -= MainButtonOnOnDraggin;
+        
         base.Hide();
     }
 
@@ -321,7 +407,7 @@ public class GameUI : SimpleUIController
             .TakeUntilDisable(rightStickInputController.gameObject)
             .Subscribe(x =>
             {
-                var center = _owner.GetPlayerPosition();
+                //var center = Owner.GetPlayerPosition();
                 var direction = rightStickInputController.Coordinate().normalized;
                 
                 // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
@@ -333,7 +419,7 @@ public class GameUI : SimpleUIController
                 attackDirectionArrow.transform.up = direction;
                 attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
                 
-                attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
+                //attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
             });
         rightStickInputController.OnStopDrag += OnStopDrag;
     }
@@ -350,7 +436,11 @@ public class GameUI : SimpleUIController
     }
 
     public void SetHealth(int playerDataHealth) => healthBar.value = playerDataHealth;
-    public void SetOwner(IUIOwner uiController) =>  _owner = uiController;
+
+    public void SetGems(List<(PlayerDataExt.CrystalPlace, uint)> gems)
+    {
+        gemsPanel.UpdateData(gems);
+    }
 }
 
 [Serializable]
@@ -483,7 +573,6 @@ public class SimpleUIPanel : IGameObjectActivator
 [Serializable]
 public class RoomPanel : SimpleUIPanel
 {
-  
     [SerializeField] private ToggleGroup toggleGroup;
     public Action<string> onSelectRoom;
     public string CurrentSkillId { get; private set; }
@@ -505,5 +594,48 @@ public class UsersPanel : SimpleUIPanel
         newInstance.GetComponentInChildren<TMP_Text>().text = userName;
         newInstance.SetActive(true);
         //newInstance.SetName(characterId);
+    }
+}
+
+
+[Serializable]
+public class GemsPanel : SimpleUIPanel
+{
+    [SerializeField] protected GameObject[] redGems;
+    [SerializeField] protected GameObject[] blueGems;
+    [SerializeField] protected GameObject[] greenGems;
+
+    private int _currentCount = 0;
+    public void UpdateData(List<(PlayerDataExt.CrystalPlace, uint)> gems)
+    {
+        if (_currentCount == gems.Count) return;
+            
+        foreach (var gem in gems)
+        {
+            if (gem.Item1 == PlayerDataExt.CrystalPlace.Red)
+            {
+                for (int i = 0; i < gem.Item2; i++)
+                {
+                    redGems[i].transform.GetChild(0).gameObject.SetActive(true);
+                    _currentCount++;
+                }
+            }
+            else if (gem.Item1 == PlayerDataExt.CrystalPlace.Blue)
+            {
+                for (int i = 0; i < gem.Item2; i++)
+                {
+                    blueGems[i].transform.GetChild(0).gameObject.SetActive(true);
+                    _currentCount++;
+                }
+            }
+            else if (gem.Item1 == PlayerDataExt.CrystalPlace.Green)
+            {
+                for (int i = 0; i < gem.Item2; i++)
+                {
+                    greenGems[i].transform.GetChild(0).gameObject.SetActive(true);
+                    _currentCount++;
+                }
+            }
+        }
     }
 }
