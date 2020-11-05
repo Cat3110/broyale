@@ -2732,7 +2732,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d6788ce1a9d094f8c821e9e01e8213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightHandPivot: {fileID: 6039019401217601602}
+  character:
+    root: {fileID: 0}
+    heads: []
+    bodies: []
+    pants: []
+    rightHandPivot: {fileID: 0}
+    animator: {fileID: 0}
+  healthBar: {fileID: 0}
 --- !u!1 &8021284274849011948
 GameObject:
   m_ObjectHideFlags: 0

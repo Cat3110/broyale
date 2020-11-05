@@ -12,5 +12,9 @@ public struct PlayerData : IComponentData {
         public int magic;
         public int power;
 
+        public uint inventory;
+
         public int damageRadius;
 }
+
+

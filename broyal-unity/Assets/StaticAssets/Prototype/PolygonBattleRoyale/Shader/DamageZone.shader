@@ -62,7 +62,7 @@ Shader "SyntyStudios/DamageZone"
 
 		ENDCG
 	}
-	CustomEditor "ASEMaterialInspector"
+	//CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
 Version=15301

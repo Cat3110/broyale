@@ -93,9 +93,9 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Gradient_Height: 15.6
-    - _Gradient_Offset: 0.171
-    - _Gradient_Opacity: 0.383
-    - _Gradient_Smoothness: 1
+    - _Gradient_Offset: 0.326
+    - _Gradient_Opacity: 0.235
+    - _Gradient_Smoothness: 9.6
     - _HitEffect: 1.17
     - _Metallic: 0
     - _Mode: 0
@@ -125,9 +125,9 @@ Material:
     - _ZWrite: 1
     - _ZoneHeight: 1.06
     - _ZoneOffset: 1
-    - _Zone_Fresnel: 4.93
-    - _Zone_Power: 1.24
-    - _Zone_Rim: 0.219
+    - _Zone_Fresnel: 3.76
+    - _Zone_Power: 2.54
+    - _Zone_Rim: 0.254
     - __dirty: 0
     m_Colors:
     - _ASEOutlineColor: {r: 0, g: 0.2551723, b: 1, a: 0}

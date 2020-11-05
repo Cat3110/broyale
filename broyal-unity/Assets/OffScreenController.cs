@@ -2,49 +2,80 @@
 using System.Collections;
 using System.Collections.Generic;
 using AnimeRx;
+using Bootstrappers;
 using UniRx;
 using UnityEngine;
-using Motion = AnimeRx.Motion;
+using Utils;
+using CharacterInfo = RemoteConfig.CharacterInfo;
 
-public class OffScreenController : MonoBehaviour
+
+public class OffScreenController : MonoBehaviour, IHaveUIOwner
 {
     [SerializeField] private Camera offScreenCamera;
-    [SerializeField] private GameObject[] characters;
-    
     [SerializeField] private float showTime = 0.5f;
+    [SerializeField] private Vector3 offset = new Vector3(-3,0,0);
+    
+    private int _currentCharacterIndex;
+    private readonly List<GameObject> _characters = new List<GameObject>();
 
-    private int currentCharacterIndex;
-
-    public int SelectedIndex => currentCharacterIndex;
+    public int SelectedIndex => _currentCharacterIndex;
 
     private int NormalizeIndex(int index)
     {
-        if( index > characters.Length -1) return 0;
-        return index < 0 ? characters.Length-1 : index;
+        if( index > _characters.Count - 1) return 0;
+        return index < 0 ? _characters.Count - 1 : index;
     }
-    
 
-    private IDisposable currentAnimation = null;
-    
+    private IDisposable _currentAnimation = null;
+    private IAssetManager _assetManager;
+
     private void StartAnimation(int newIndex)
     {
-        if (currentAnimation != null)
-        {
-            currentAnimation.Dispose();
-        }
-        
+        _currentAnimation?.Dispose();
+
         var curPos = offScreenCamera.transform.position;
-        var nextPos = characters[newIndex].transform.position;
+        var nextPos = _characters[newIndex].transform.position;
         
         var animator = Easing.InOutCubic(showTime);
 
-        currentAnimation = Anime.Play(curPos, nextPos, animator)
+        _currentAnimation = Anime.Play(curPos, nextPos, animator)
             .Subscribe( 
                 p => offScreenCamera.transform.position = new Vector3(p.x, curPos.y, curPos.z),
-                onCompleted: () => currentCharacterIndex = newIndex)
+                onCompleted: () => _currentCharacterIndex = newIndex)
             .AddTo(this);
     }
 
-    public void Next() => StartAnimation( NormalizeIndex(currentCharacterIndex + 1) );
-    public void Prev() => StartAnimation( NormalizeIndex(currentCharacterIndex - 1) );
+    public void Next() => StartAnimation( NormalizeIndex(_currentCharacterIndex + 1) );
+    public void Prev() => StartAnimation( NormalizeIndex(_currentCharacterIndex - 1) );
+
+    
+    
+    public void AddCharacter(CharacterInfo character)
+    {
+        var placeholder = new GameObject("CharacterPlaceHolder" + _characters.Count );
+        placeholder.transform.SetParent(transform,false);
+        _characters.Add(placeholder);
+
+        _assetManager.LoadAssetByNameAsync(character.Id, 
+        go =>
+        {
+            var index = _characters.IndexOf(placeholder);
+            Destroy(placeholder);
+            
+            go.transform.SetParent(transform,false);
+            go.transform.localPosition = offset * index;
+            _characters[index] = go;
+
+            var data = go.GetComponent<CharactersBindData>();
+            data.SetSkinType(character.SkinType);
+            data.SetHealthBarType(CharactersBindData.HealthBarType.None);
+        });
+    }
+
+    public IUIOwner Owner { get; private set; }
+    public void SetOwner(IUIOwner owner)
+    {
+        Owner = owner;
+        _assetManager = Owner.Container.Resolve<IAssetManager>();
+    }
 }

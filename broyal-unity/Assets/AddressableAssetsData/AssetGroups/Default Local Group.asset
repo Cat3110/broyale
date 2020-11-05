@@ -53,6 +53,12 @@ MonoBehaviour:
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
+  - m_GUID: 46ff074aa3c3548488194c37d9c753d9
+    m_Address: FireBallWeapon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 6b3b42d2d8783944f909cd90e5d20331
     m_Address: Assets/Plugins/NetworkedDOTSTool/Prefabs/Character_Medusa_01.prefab
     m_ReadOnly: 0
@@ -61,6 +67,12 @@ MonoBehaviour:
     m_TargetAsset: {fileID: 0}
   - m_GUID: 7471943e29a6f504288728ddd46e1497
     m_Address: male_skin_2_rigged
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 75914a52323d7dc45965a8df01ecba0d
+    m_Address: FemaleCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
@@ -85,6 +97,12 @@ MonoBehaviour:
     m_TargetAsset: {fileID: 0}
   - m_GUID: a46fbe1c6037ca44aa44967332161b03
     m_Address: Sword
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: b54f325ec7bc5ad429bd384c9af3a24a
+    m_Address: MaleCharacter
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}

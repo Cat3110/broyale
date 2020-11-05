@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NameId: 0
+  SkinId: 0
 --- !u!114 &4797219787254102328
 MonoBehaviour:
   m_ObjectHideFlags: 0

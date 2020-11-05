@@ -28,8 +28,10 @@ MonoBehaviour:
   - ID_Crossbow
   - ID_Fireball
   - ID_Magicray
+  - ID_MALE
+  - ID_FEMALE
   AssetRefMembers:
-  - m_AssetGUID: 2e70fa9726ebe2246811ac5654f6d994
+  - m_AssetGUID: b54f325ec7bc5ad429bd384c9af3a24a
     m_SubObjectName: 
   - m_AssetGUID: 8e62cc5a2aa8d0347a74d27bfe7c1915
     m_SubObjectName: 
@@ -55,7 +57,11 @@ MonoBehaviour:
     m_SubObjectName: 
   - m_AssetGUID: 0d5ab89088e3d78448d6e537557a2a1c
     m_SubObjectName: 
-  - m_AssetGUID: 15368b2c37e432d45884d95fd99fa201
+  - m_AssetGUID: 46ff074aa3c3548488194c37d9c753d9
     m_SubObjectName: 
   - m_AssetGUID: 15368b2c37e432d45884d95fd99fa201
+    m_SubObjectName: 
+  - m_AssetGUID: b54f325ec7bc5ad429bd384c9af3a24a
+    m_SubObjectName: 
+  - m_AssetGUID: 75914a52323d7dc45965a8df01ecba0d
     m_SubObjectName: 

@@ -213,6 +213,7 @@ MonoBehaviour:
   primarySkillId: 0
   magic: 0
   power: 0
+  inventory: 0
   damageRadius: 0
 --- !u!114 &367846395590210669
 MonoBehaviour:
