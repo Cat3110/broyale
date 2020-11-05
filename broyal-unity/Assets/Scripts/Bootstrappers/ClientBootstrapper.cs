@@ -3,6 +3,7 @@ using UniRx;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEditor;
+using Utils;
 
 namespace Bootstrappers
 {
@@ -55,30 +56,28 @@ namespace Bootstrappers
             Container.Register(appConfig);
             
             uiController.LoadingUI.Hide();
-            uiController.MainUI.Show(
-                appConfig.Characters.Select( c => c.Id).ToList(),
-                appConfig.Skills.Take(4).Select( c => c.Id).ToList());
+            uiController.MainUI.Show(appConfig.Characters, appConfig.Skills.Take(4).Select( c => c.Id).ToList());
 
 
-            uiController.MainUI.OnGameStarted += (skillId,characterId) =>
+            uiController.MainUI.OnGameStarted += (skillId, character) =>
             {
                 Container.Register(new Session
                 {
                     SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId),
-                    CharacterId = (int)config.GetNameId(characterId).Id,
+                    Character = character,
                 } );
                 
                 uiController.MainUI.Hide();
                 uiController.LoadingUI.Show();
 
                 //TODO: need to find way for make it better
-                Observable.Timer(TimeSpan.FromSeconds(8))
+                Observable.Timer(TimeSpan.FromSeconds(1))
                     .Subscribe(
                         (x) => { }, 
                         () => {  
                             Container.Resolve<InputMaster>().Enable();
                             uiController.LoadingUI.Hide();
-                            uiController.GameUI.Show(); })
+                            uiController.GameUI.Show(skillId); })
                     .AddTo(this);
 
                 InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
@@ -115,8 +114,12 @@ namespace Bootstrappers
             Container.Register(cameraSettings);
             Container.Register(uiController);
             Container.Register(fxData);
-
+            Container.Register(Debug.unityLogger);
+            Container.RegisterSingleton<IAssetManager,AssetsManager>();
+            
+            uiController.Init(Container);
             uiController.LoadingUI.Show();
+            
             AppConfig.LoadByUrlAsync().ContinueWith(OnConfigLoaded);
         }
 
@@ -174,6 +177,10 @@ namespace Bootstrappers
         {
             _world = world;
             _entityManager = world.EntityManager;
+            
+            var ghostPredictionSystemGroup = world.GetOrCreateSystem<GhostPredictionSystemGroup>();
+            ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>() );
+            
 
             var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup>();
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );

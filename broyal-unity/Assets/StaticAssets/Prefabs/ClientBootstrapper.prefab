@@ -64,8 +64,8 @@ MonoBehaviour:
     DamageZone: {fileID: 0}
     AttackDirection: {fileID: 0}
     FxSpeed: 10
-    FxTime: 1
-    FxOffset: 1
+    FxTime: 0.5
+    FxOffset: 0
     FxScale: 2.5
 --- !u!114 &365539493
 MonoBehaviour:

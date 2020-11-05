@@ -86,8 +86,6 @@ namespace RemoteConfig
         }
 
         public SkillInfo GetSkillByAttackType(int attackType) => Skills[attackType - 1];
-
-      
     }
 
 
@@ -123,7 +121,7 @@ namespace RemoteConfig
     }
 
     [Serializable]
-    public class SkillInfo
+    public struct SkillInfo
     {
         public string Id { get; private set; }
         public int Damage { get; private set; }
@@ -138,9 +136,10 @@ namespace RemoteConfig
     public class CharacterInfo
     {
         public string Id;
+        
         public float Speed;
         public int Health;
-        public string SkinName;
+        public uint SkinType;
         
         public int HealthRegen;
         public int Power;
@@ -159,6 +158,6 @@ namespace RemoteConfig
     public class Session
     {
         public int SkillId { get; set; }
-        public int CharacterId { get; set; }
+        public CharacterInfo Character { get; set; }
     }
 }

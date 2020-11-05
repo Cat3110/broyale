@@ -72,7 +72,7 @@ public class AttackSystem : ComponentSystem
                     Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy} => d => {dot}");
 
                     if (attack.AttackType == 1 || attack.AttackType == 2 ||
-                        attack.AttackType == 3 && dot > 0.0f )
+                        attack.AttackType == 3 && dot > 0.0f || attack.AttackType == 4 && dot > 0.0f )
                     {
                         ApplyDamageByAttackType(pdata, attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
                             player, ref damage);
@@ -88,7 +88,6 @@ public class AttackSystem : ComponentSystem
                 
                 attack.AttackType = attack.Duration > 0 ? attack.AttackType : 0;
                 attack.ProccesedId = attack.Duration > 0 ? attack.ProccesedId : 0;
-                //attack.BackAttackType
             }
             
             EntityManager.SetComponentData(player, attack); 

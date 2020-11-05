@@ -80,18 +80,18 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
-    - _Distort: 0.752
+    - _Distort: 1
     - _DstBlend: 0
-    - _Edge: 1.32
+    - _Edge: 1.02
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Hard: 1
-    - _Height: 1.22
+    - _Hard: 3.9
+    - _Height: 1.21
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _Offset: 1.39
+    - _Offset: -2
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _ScrollX: 10
@@ -110,5 +110,5 @@ Material:
     - _ColorB: {r: 1, g: 0.17166862, b: 0.015686274, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _TintA: {r: 0.9433962, g: 0.22367898, b: 0, a: 0.9137255}
-    - _TintB: {r: 1, g: 0.31624168, b: 0.14509803, a: 0.78039217}
+    - _TintA: {r: 0.66860646, g: 0.94509804, b: 0, a: 1}
+    - _TintB: {r: 1, g: 0.9794499, b: 0.589, a: 1}

@@ -81,7 +81,9 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostPlayerData.power = snapshotData.GetPlayerDatapower(deserializerState);
                 ghostPlayerData.magic = snapshotData.GetPlayerDatamagic(deserializerState);
                 ghostPlayerData.damageRadius = snapshotData.GetPlayerDatadamageRadius(deserializerState);
+                ghostPlayerData.inventory = snapshotData.GetPlayerDatainventory(deserializerState);
                 ghostPrefabCreator.NameId = snapshotData.GetPrefabCreatorNameId(deserializerState);
+                ghostPrefabCreator.SkinId = snapshotData.GetPrefabCreatorSkinId(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
                 ghostAttackArray[entityIndex] = ghostAttack;
                 ghostDamageArray[entityIndex] = ghostDamage;
@@ -171,7 +173,9 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostPlayerData.power = snapshotData.GetPlayerDatapower(deserializerState);
                 ghostPlayerData.magic = snapshotData.GetPlayerDatamagic(deserializerState);
                 ghostPlayerData.damageRadius = snapshotData.GetPlayerDatadamageRadius(deserializerState);
+                ghostPlayerData.inventory = snapshotData.GetPlayerDatainventory(deserializerState);
                 ghostPrefabCreator.NameId = snapshotData.GetPrefabCreatorNameId(deserializerState);
+                ghostPrefabCreator.SkinId = snapshotData.GetPrefabCreatorSkinId(deserializerState);
                 ghostTranslation.Value = snapshotData.GetTranslationValue(deserializerState);
                 ghostDamageArray[entityIndex] = ghostDamage;
                 ghostMovableCharacterComponentArray[entityIndex] = ghostMovableCharacterComponent;

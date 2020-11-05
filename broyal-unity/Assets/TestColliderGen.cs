@@ -37,7 +37,7 @@ public class TestColliderGen : MonoBehaviour
         {
             var colliderData = new ColliderData
             {
-                Name = collider.name,
+                //Name = collider.name,
                 Position = collider.transform.position
             };
                 

@@ -10,6 +10,8 @@ using Unity.Transforms;
 public class PlayerSpawnClientSystem : ComponentSystem
 {
     private Session _session => BaseBootStrapper.Container.Resolve<Session>();
+    private MainConfig _mainConfig => BaseBootStrapper.Container.Resolve<MainConfig>();
+    
     protected override void OnCreate()
     {
         RequireSingletonForUpdate<EnableDOTSGhostReceiveSystemComponent>();
@@ -22,7 +24,12 @@ public class PlayerSpawnClientSystem : ComponentSystem
             {
                 PostUpdateCommands.AddComponent<NetworkStreamInGame>(ent);
                 var req = PostUpdateCommands.CreateEntity();
-                PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest { skillId = _session.SkillId, characterId = _session.CharacterId});
+                PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest
+                {
+                    skillId = _session.SkillId,
+                    characterId = _mainConfig.GetNameId(_session.Character.Id).Id,
+                    skinId = (uint)_session.Character.SkinType
+                });
                 PostUpdateCommands.AddComponent(req, new SendRpcCommandRequestComponent { TargetConnection = ent });
             });
     }
@@ -82,16 +89,16 @@ public class LootItemSystem : ComponentSystem
 {
     private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
     private MainConfig _config;
-    private EntityQuery _playesQuery;
+    private EntityQuery _playersQuery;
     private EntityQuery _itemsQuery;
 
-    private const float LootDist = 0.5f;
+    private const float LootDist = 0.6f;
 
     protected override void OnCreate()
     {
         _config = ServerBootstrapper.Container.Resolve<MainConfig>();
 
-        _playesQuery = GetEntityQuery(
+        _playersQuery = GetEntityQuery(
             ComponentType.ReadOnly<Attack>(),
             ComponentType.ReadWrite<PlayerData>(),
             ComponentType.ReadOnly<Damage>(),
@@ -107,7 +114,7 @@ public class LootItemSystem : ComponentSystem
     {
         var dt = Time.DeltaTime;
         
-        var players = _playesQuery.ToEntityArray(Allocator.TempJob);
+        var players = _playersQuery.ToEntityArray(Allocator.TempJob);
         var items = _itemsQuery.ToEntityArray(Allocator.TempJob);
 
         for (int i = 0; i < players.Length; i++)
@@ -126,12 +133,7 @@ public class LootItemSystem : ComponentSystem
                     var itemInfo = _appConfig.Items[itemComponent.Id];
                     
                     var pdata = EntityManager.GetComponentData<PlayerData>(player);
-                    pdata.maxHealth += itemInfo.Health;
-                    pdata.health += itemInfo.Health;
-                    
-                    pdata.power += itemInfo.Power;
-                    pdata.magic += itemInfo.Magic;
-                    
+                    pdata.AddItem(itemInfo);
                     EntityManager.SetComponentData(player, pdata);
                     
                     PostUpdateCommands.DestroyEntity(item);

@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: d1f25074954cff349a6d02df9bd7e7fa
+guid: d32ff427a01e9594d8748e6a3460a33d
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
-      74: -4496563158645883391
-    second: ATTACK_STUFF
+      74: -623603649343465320
+    second: Scene
   externalObjects: {}
   materials:
     materialImportMode: 1

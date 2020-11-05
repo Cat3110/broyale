@@ -38,7 +38,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""name"": ""StartAction"",
                     ""type"": ""Value"",
                     ""id"": ""60f6d7f9-9ce2-4f1d-904e-5e1033ddf415"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Quaternion"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -227,6 +227,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""AttackDirection"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""14ed112a-3940-4c36-a6e3-a5477c1ee4d6"",
+                    ""path"": ""FuckinInput"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Default"",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }

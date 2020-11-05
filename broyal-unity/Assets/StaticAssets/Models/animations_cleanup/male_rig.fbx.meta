@@ -1,11 +1,8 @@
 fileFormatVersion: 2
-guid: 3458bb7bad7170444822da6993bc87d5
+guid: 860667e61905b7a4a98dcfa1b59f050b
 ModelImporter:
   serializedVersion: 19301
-  internalIDToNameTable:
-  - first:
-      74: -4496563158645883391
-    second: ATTACK_STUFF
+  internalIDToNameTable: []
   externalObjects: {}
   materials:
     materialImportMode: 1

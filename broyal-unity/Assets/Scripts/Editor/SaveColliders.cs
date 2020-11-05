@@ -35,7 +35,7 @@ public static class SaveColliders
         {
             var colliderData = new ColliderData
             {
-                Name = collider.name,
+                //Name = collider.name,
                 Position = collider.transform.position
             };
                 

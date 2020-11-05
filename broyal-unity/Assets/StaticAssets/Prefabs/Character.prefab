@@ -119,6 +119,9 @@ MonoBehaviour:
     - name: damageRadius
       quantization: -1
       interpolate: 0
+    - name: inventory
+      quantization: 1
+      interpolate: 0
     manualFieldList: 1
     entityIndex: 0
   - name: PrefabCreator
@@ -130,7 +133,10 @@ MonoBehaviour:
     - name: NameId
       quantization: -1
       interpolate: 0
-    manualFieldList: 0
+    - name: SkinId
+      quantization: -1
+      interpolate: 0
+    manualFieldList: 1
     entityIndex: 0
   - name: Unity.Transforms.LocalToWorld
     interpolatedClient: 1
@@ -183,6 +189,7 @@ MonoBehaviour:
   primarySkillId: 0
   magic: 0
   power: 0
+  inventory: 0
   damageRadius: 0
 --- !u!114 &7185640376147542688
 MonoBehaviour:
@@ -210,6 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NameId: 0
+  SkinId: 0
 --- !u!114 &3847855419462308977
 MonoBehaviour:
   m_ObjectHideFlags: 0

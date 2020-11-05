@@ -84,6 +84,9 @@
             _world = world;
             _entityManager = world.EntityManager;
             
+            var ghostPredictionSystemGroup = world.GetOrCreateSystem<GhostPredictionSystemGroup>();
+            ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>());
+            
             var serverSimulationSystemGroup = world.GetOrCreateSystem<ServerSimulationSystemGroup >();
             serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<ItemSpawnerSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<LootItemSystem>());

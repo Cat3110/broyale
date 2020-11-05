@@ -59,7 +59,7 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     magic = character.Magic,
                     primarySkillId = req.skillId});
                 EntityManager.SetComponentData(player, 
-                    new PrefabCreator{ NameId = (uint)req.characterId });
+                    new PrefabCreator{ NameId = req.characterId, SkinId = req.skinId } );
                 EntityManager.SetComponentData(player, 
                     new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
 
