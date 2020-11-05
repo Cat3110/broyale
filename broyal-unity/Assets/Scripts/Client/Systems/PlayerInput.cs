@@ -115,6 +115,8 @@ public class SamplePlayerInput : ComponentSystem
         input.horizontal = (short)math.round(movement.x * 10);
         input.vertical = (short)math.round(movement.y * 10);
         
+//        Debug.Log($"{movement}");
+        
         // var haveDubCmd = inputBuffer.GetDataAtTick(input.tick, out var dupCmd) && dupCmd.Tick == input.tick;
         // if (!haveDubCmd)
         // {

@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 public class MobileInputController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
     IPointerDownHandler, IPointerUpHandler
 {
-
     public RectTransform Background;
     public RectTransform Knob;
     [Header("Input Values")] public float Horizontal = 0;
