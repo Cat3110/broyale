@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Bootstrappers;
 using RemoteConfig;
+using UniRx.Async.Triggers;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -28,7 +29,6 @@ public class CharacterPresenterSystem : ComponentSystem
     private const float RotationSpeed = 10.0f;
 
     private EntityQuery _group;
-    private MainConfig _config;
 
     private static readonly int Speed = Animator.StringToHash("Speed");
     private static readonly int Attack = Animator.StringToHash("Attack");
@@ -38,26 +38,24 @@ public class CharacterPresenterSystem : ComponentSystem
     private EntityQuery _otherPlayers;
     private static readonly int Health = Animator.StringToHash("Health");
     private static readonly int Death = Animator.StringToHash("Death");
-    private MaterialPropertyBlock _matBlock;
-    private static readonly int Fill = Shader.PropertyToID("_Fill");
+    
     private static readonly int Type = Animator.StringToHash("Type");
-    private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
-    private Session _session => BaseBootStrapper.Container.Resolve<Session>();
-    private FXData _fxData => BaseBootStrapper.Container.Resolve<FXData>();
-    private UIController _uiController => BaseBootStrapper.Container.Resolve<UIController>();
+
+    private MainConfig _config;
+    private FXData _fxData;
+    private UIController _uiController;
     protected override void OnCreate()
     {
         base.OnCreate();
-        
-        _matBlock = new MaterialPropertyBlock();
 
         _config = ClientBootstrapper.Container.Resolve<MainConfig>();
-
+        _fxData = ClientBootstrapper.Container.Resolve<FXData>();
+        _uiController = ClientBootstrapper.Container.Resolve<UIController>();
+        
         _group = GetEntityQuery(
             ComponentType.ReadWrite<CharacterPresenter>(),
-            ComponentType.ReadOnly<Animator>(),
             ComponentType.ReadOnly<GameObject>(),
-            ComponentType.ReadOnly<MeshRenderer>(),
+            ComponentType.ReadOnly<CharactersBindData>(),
             ComponentType.ReadOnly<Translation>(),
             ComponentType.ReadOnly<Attack>(),
             ComponentType.ReadOnly<Damage>(),
@@ -90,30 +88,34 @@ public class CharacterPresenterSystem : ComponentSystem
             var translation = EntityManager.GetComponentData<Translation>(e);
 
             var go = EntityManager.GetComponentObject<GameObject>(e);
-            var animator = EntityManager.GetComponentObject<Animator>(e);
-            var healthBarRenderer = EntityManager.GetComponentObject<MeshRenderer>(e);
+            var bindData = EntityManager.GetComponentObject<CharactersBindData>(e);
             
-            healthBarRenderer.GetPropertyBlock(_matBlock);
-            _matBlock.SetFloat(Fill, player.health / (float)player.maxHealth);
-            healthBarRenderer.SetPropertyBlock(_matBlock);
+            float3 prevPos = go.transform.position;
+            var dist = math.distance(prevPos, translation.Value);
 
+            bindData.Animator.SetFloat(Speed, dist > 0.2f ? 1.0f : 0.0f);
 
-            var prevPosition = new float3(go.transform.position);
+            go.transform.position = Vector3.Lerp(go.transform.position, translation.Value, deltaTime * 9.0f);
 
-            var dist = math.distance(prevPosition, translation.Value);
-            var direction = math.normalize(translation.Value - prevPosition);
-
-            animator.SetFloat(Speed, dist > 0.1f ? dist : 0.0f);
-
-            go.transform.position = translation.Value;
+            _uiController.SetPlayerGo(go);
+            _uiController.SetPlayerPosition(translation.Value);
+            _uiController.GameUI.SetGems(player.GetItems());
             
-            _uiController.SetPlayerPosition(go.transform.position);
+            bindData.UpdateHealthBar(player.health / (float)player.maxHealth);
             
-            if (dist > 0.1f)
+            //if (dist > 0.1f)
             {
-                go.transform.forward = direction;
+                //go.transform.forward = direction;
                 //go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
             }
+
+            // if (EntityManager.HasComponent<PlayerInput>(e))
+            // {
+            //     var input = EntityManager.GetBuffer<PlayerInput>(e);
+            //     var lastInput = input[0];
+            //     var direction = new Vector2(lastInput.horizontal,lastInput.vertical);
+            //     bindData.Animator.SetFloat(Speed, direction.sqrMagnitude > 0.01 ? 1 : 0);
+            // }
 
             var attack = EntityManager.GetComponentData<Attack>(e);
             var damage = EntityManager.GetComponentData<Damage>(e);
@@ -123,40 +125,76 @@ public class CharacterPresenterSystem : ComponentSystem
                 if (data.AttackTransId != attack.Seed)
                 {
                     Debug.LogWarning($"Client:Attack To => {attack.Target} => {attack.AttackType} => {data.AttackTransId} != {attack.Seed}");
-                    animator.SetInteger(Type, player.primarySkillId);
-                    animator.SetTrigger(AttackTrigger);
+                    bindData.Animator.SetInteger(Type, player.primarySkillId);
+                    bindData.Animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
                     EntityManager.SetComponentData(e, data);
 
-                    _fxData.Start(player.primarySkillId, go, go.transform.position, new Vector3(attack.AttackDirection.x,0, attack.AttackDirection.y));
+                    Vector3 attackDirection = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
+                    if (attackDirection.sqrMagnitude < 0.01f)
+                    {
+                        attackDirection = go.transform.forward;
+                    }
+                    
+                    _fxData.Start(player.primarySkillId, go, bindData.Weapom.transform, attackDirection);
                 }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
                 
                 var target = attack.Target;
                 if (target != Entity.Null && player.primarySkillId < 2 )
                 {
-                    var lookdirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
-                    //go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(lookdirection), RotationSpeed * Time.DeltaTime);
-
-                    go.transform.forward = math.normalize(lookdirection);
+                    var attackDirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
+                    go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(attackDirection), RotationSpeed * Time.DeltaTime);
+                    //go.transform.forward = math.normalize(lookdirection);
                 }
+                else
+                {
+                    Vector3 attackDirection = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
+                    if (attackDirection.sqrMagnitude > 0.1)
+                    {
+                        go.transform.forward = Vector3.Lerp(go.transform.forward, attackDirection, RotationSpeed * deltaTime);
+                    }
+                }
+            }
+            else
+            {
+                // if (EntityManager.HasComponent<PlayerInput>(e))
+                // {
+                //     var input = EntityManager.GetBuffer<PlayerInput>(e);
+                //     var lastInput = input[0];
+                //     var direction = new Vector2(lastInput.horizontal,lastInput.vertical);
+                //     if (direction.sqrMagnitude > 0.1f)
+                //     {
+                //         go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
+                //         //go.transform.forward = direction;
+                //     }
+                //     
+                //     Debug.Log( $"{input[0].horizontal}:{input[0].vertical} => {input[input.Length-1].horizontal}:{input[input.Length-1].vertical}");
+                // }
+                // else
+                // {
+                    if (dist > 0.01f)
+                    {
+                        var direction = math.normalize(translation.Value - prevPos);
+                        go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
+                    }
+                //}
             }
 
             if (damage.DamageType != 0 && data.DamageTransId != damage.Seed )
             {
                 Debug.LogWarning($"Client:Damage To => {e} => {damage.DamageType}");
-                animator.SetTrigger(DamageTrigger);
+                bindData.Animator.SetTrigger(DamageTrigger);
                 data.DamageTransId = damage.Seed;
                 EntityManager.SetComponentData(e, data);
             }
 
-            animator.SetBool(Death, player.health <= 0.0f);
+            bindData.Animator.SetBool(Death, player.health <= 0.0f);
         }
 
         groupEntities.Dispose();
         otherPlayer.Dispose();
     }
 }
-
 
 // if (attack.HaveTransition())
 // {

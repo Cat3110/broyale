@@ -5,9 +5,9 @@ public enum ColliderType
     Box,
     Sphere
 }
-public class ColliderData
+public struct ColliderData
 {
-    public string Name;
+    //public string Name;
     public Vector3 Position;
     //public Vector3 Center;
     public Vector3 Size;

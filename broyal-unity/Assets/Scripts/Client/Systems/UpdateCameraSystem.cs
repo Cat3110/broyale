@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -8,14 +9,20 @@ public class CameraSettings
 {
     public Rect Bounds;
 }
+
 [DisableAutoCreation]
 public class UpdateCameraSystem : SystemBase
 {
+    private const string MiniMapCameraTag = "MiniMapCamera";
+    
     private Vector3 targetPosition;
     private float smoothPosition = 0.05f;
     private Vector3 velocity = Vector3.zero;
 
     //private EntityQuery currentPlayerQuery;
+
+    private Camera _mainCamera;
+    private Camera _miniMapCamera;
 
     private CameraSettings _cameraSettings;
 
@@ -24,6 +31,20 @@ public class UpdateCameraSystem : SystemBase
         base.OnCreate();
 
         _cameraSettings = Bootstrappers.ClientBootstrapper.Container.Resolve<CameraSettings>();
+        _mainCamera = Camera.main;
+        _miniMapCamera = GameObject.FindWithTag(MiniMapCameraTag)?.GetComponent<Camera>();
+        
+        if (_mainCamera == null)
+        {
+            Debug.LogError($"UpdateCameraSystem: Dont have main camera on scene");
+            Enabled = false;
+        }
+
+        if (_miniMapCamera == null)
+        {
+            Debug.LogError($"UpdateCameraSystem: Dont have minimap camera on scene");
+            Enabled = false;
+        }
 
         //currentPlayerQuery = GetEntityQuery(typeof(MovableCharacterComponent), typeof(PlayerInput), typeof(CharacterPresenter));
         //RequireForUpdate(currentPlayerQuery);
@@ -32,33 +53,33 @@ public class UpdateCameraSystem : SystemBase
     protected override void OnUpdate()
     {
         Entities.WithAll<PlayerInput>().WithStructuralChanges()
-            .ForEach((Entity entity, in Translation translation, in MovableCharacterComponent movable,
-                in CharacterPresenter characterPresenter) =>
+            .ForEach((Entity entity, in GameObject go, in Translation translation, in MovableCharacterComponent movable, in CharacterPresenter characterPresenter) =>
             {
-                MoveCamera(translation);
+                MoveMainCamera(_mainCamera, go.transform.position, _cameraSettings.Bounds);
+                MoveMiniMapCamera(_miniMapCamera, go.transform.position);
             }).Run();
     }
 
-    private void MoveCamera(Translation localToWorld)
+    private void MoveMiniMapCamera(Camera camera, float3 position)
     {
-        var camera = Camera.main;
-        if(camera == null ) throw new Exception("Dont have Main Camera");
-        
-        var cameraBounds = _cameraSettings.Bounds;
+        var transform = camera.transform;
+        transform.position = new Vector3(position.x, transform.position.y, position.z);
+    }
 
+    private void MoveMainCamera(Camera camera, float3 newPosition, Rect bounds)
+    {
         var targetX = 0.0f;
-
-        if (localToWorld.Value.x > cameraBounds.xMax)
-            targetX = (localToWorld.Value.x - cameraBounds.xMax);
-        else if (localToWorld.Value.x < cameraBounds.xMin)
-            targetX = (localToWorld.Value.x - cameraBounds.xMin);
-
         var targetZ = 0.0f;
+        
+        if (newPosition.x > bounds.xMax)
+            targetX = (newPosition.x - bounds.xMax);
+        else if (newPosition.x < bounds.xMin)
+            targetX = (newPosition.x - bounds.xMin);
 
-        if (localToWorld.Value.z > cameraBounds.yMax)
-            targetZ = (localToWorld.Value.z - cameraBounds.yMax);
-        else if (localToWorld.Value.z < cameraBounds.yMin)
-            targetZ = (localToWorld.Value.z - cameraBounds.yMin);
+        if (newPosition.z > bounds.yMax)
+            targetZ = (newPosition.z - bounds.yMax);
+        else if (newPosition.z < bounds.yMin)
+            targetZ = (newPosition.z - bounds.yMin);
 
         var position = camera.transform.position;
         targetPosition = new Vector3(targetX, position.y, targetZ);
@@ -67,27 +88,5 @@ public class UpdateCameraSystem : SystemBase
 
         //camera.transform.position = Vector3.Lerp(camera.transform.position, targetPosition,
         //    UnityEngine.Time.deltaTime * smoothPosition);
-    }
-}
-
-[DisableAutoCreation]
-public class UpdateUISystem : SystemBase
-{
-    private UIController _uiController;
-    protected override void OnCreate()
-    {
-        base.OnCreate();
-
-        _uiController = Bootstrappers.ClientBootstrapper.Container.Resolve<UIController>();
-    }
-
-    protected override void OnUpdate()
-    {
-        Entities.WithAll<PlayerInput>().WithStructuralChanges()
-            .ForEach((Entity entity, in Translation translation, in PlayerData playerData, in MovableCharacterComponent movable,
-                in CharacterPresenter characterPresenter) =>
-            {
-                _uiController.GameUI.SetHealth(playerData.health);
-            }).Run();
     }
 }
