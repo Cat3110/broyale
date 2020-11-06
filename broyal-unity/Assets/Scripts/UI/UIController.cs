@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bootstrappers;
-using Data;
 using RemoteConfig;
 using TMPro;
 using UniRx;
-using UniRx.Async.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -24,7 +22,6 @@ public class UIController : MonoBehaviour, IUIOwner
     [SerializeField] private MainUI main;
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
-    [SerializeField] private LobbyUI lobby;
     
     [Serializable]
     public class SkillIdToSprite
@@ -39,7 +36,6 @@ public class UIController : MonoBehaviour, IUIOwner
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
-    public LobbyUI Lobby => lobby;
 
     private Vector3 _playerPosition;
     private GameObject _playerGo;
@@ -440,114 +436,6 @@ public class GameUI : SimpleUIController
     public void SetGems(List<(PlayerDataExt.CrystalPlace, uint)> gems)
     {
         gemsPanel.UpdateData(gems);
-    }
-}
-
-[Serializable]
-public class LobbyUI : SimpleUIController
-{
-    public enum ConnectionStatus
-    {
-        Disconnected,
-        Connecting,
-        Connected,
-        WaitForGameStart
-    }
-    
-    [SerializeField] private Button startGameButton;
-    [SerializeField] private Button newGameButton;
-    [SerializeField] private Button exitButton;
-
-    [SerializeField] private Image statusIcon;
-    [SerializeField] private TMP_Text statusText;
-        
-    [SerializeField] private RoomPanel roomPanel;
-    [SerializeField] private UsersPanel usersPanel;
-    
-    [SerializeField] private TMP_Text Title;
-    [SerializeField] private TMP_Text Timer;
-    
-    private Action<string> onSelectRoom;
-    private ConnectionStatus status;
-    public void Show(IEnumerable<string> rooms, ConnectionStatus status, Action<string> onSelectRoom,  Action onCreateRoom, Action onStartGame)
-    { 
-        base.Show();
-
-        Timer.text = "";
-        roomPanel.onSelectRoom = onSelectRoom;
-        
-        startGameButton.onClick.AddListener( () => onStartGame?.Invoke() );
-        newGameButton.onClick.AddListener( () => onCreateRoom?.Invoke() );
-
-        UpdateConnectionStatus(status);
-        SetInLobby();
-    }
-
-    public void SetInRoom(string roomName, bool isOwner)
-    {
-        Title.text = roomName;
-            
-        startGameButton.interactable = isOwner && status != ConnectionStatus.WaitForGameStart;
-        newGameButton.interactable = false;
-        
-        roomPanel.Hide();
-        usersPanel.Show();
-    }
-    
-    public void SetTimer(int time)
-    {
-        Timer.text = time > 0 ? time.ToString() : "";
-            
-        startGameButton.interactable = false;
-    }
-    
-    public void SetInLobby()
-    {
-        startGameButton.interactable = false;
-        newGameButton.interactable = true;
-        
-        roomPanel.Show();
-        usersPanel.Hide();
-    }
-
-    public override void Hide()
-    {
-        base.Hide();
-        
-        roomPanel.Clean();
-        usersPanel.Clean();
-    }
-
-    //public event Action<string> OnGameStarted;
-    public void UpdateRooms(GameData[] games)
-    {
-        roomPanel.Clean();
-        
-        foreach (var game in games.Where(g => !g.gameStarted))
-        {
-            roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
-        }
-    }
-    
-    public void UpdateUsers(IEnumerable<string> users)
-    {
-        usersPanel.Clean();
-        
-        foreach (var user in users)
-        {
-            usersPanel.Add(user);
-        }
-    }
-
-    public void UpdateConnectionStatus(ConnectionStatus connecting)
-    {
-        status = connecting;
-        statusText.text = connecting.ToString();
-        
-        if(connecting == ConnectionStatus.Disconnected || 
-           connecting == ConnectionStatus.Connecting )
-            statusIcon.color = Color.red;
-        else statusIcon.color = Color.green;
     }
 }
 
