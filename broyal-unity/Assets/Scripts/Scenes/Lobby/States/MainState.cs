@@ -49,10 +49,15 @@ namespace Scripts.Scenes.Lobby.States
                 //UpdateGameList(gameList["games"].list);
             });
 
-            connectingTimer.text = "";
+            //connectingTimer.text = "";
         }
 
-        public void OnPressedCreateRoom()
+        public void OnPressedPlay()
+        {
+            OnPressedCreateRoom();
+        }
+
+        private void OnPressedCreateRoom()
         {
             var user = ( stateMachine as LobbyController ).user;
             var gameName = $"{user}{DateTime.Now}";
@@ -70,10 +75,12 @@ namespace Scripts.Scenes.Lobby.States
                 UpdateUsers( users.Select( u => u["name"].str ) );
                 SetInRoom( currentGameName, true );
                 Debug.Log($"CREATE_GAME {response}");
+
+                OnPressedStartGame();
             });
         }
 
-        public void SetInRoom( string roomName, bool isOwner )
+        private void SetInRoom( string roomName, bool isOwner )
         {
             Title.text = roomName;
             
@@ -84,7 +91,7 @@ namespace Scripts.Scenes.Lobby.States
             usersPanel.Show();
         }
 
-        public void OnPressedStartGame()
+        private void OnPressedStartGame()
         {
             var user = ( stateMachine as LobbyController ).user;
 
@@ -147,7 +154,7 @@ namespace Scripts.Scenes.Lobby.States
             SceneManager.LoadScene( 1 );
         }
 
-        public void SetTimer( int time )
+        private void SetTimer( int time )
         {
             connectingTimer.text = time > 0 ? time.ToString() : "";
             
@@ -203,7 +210,7 @@ namespace Scripts.Scenes.Lobby.States
             return gamesData;
         }
 
-        public void UpdateUsers( IEnumerable<string> users )
+        private void UpdateUsers( IEnumerable<string> users )
         {
             usersPanel.Clean();
         
@@ -213,7 +220,7 @@ namespace Scripts.Scenes.Lobby.States
             }
         }
 
-        public void UpdateRooms(GameData[] games)
+        private void UpdateRooms(GameData[] games)
         {
             roomPanel.Clean();
         
