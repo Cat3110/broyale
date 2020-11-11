@@ -1,13 +1,11 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using TMPro;
 using FullSerializer;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using Scripts.Common.Data.Data;
@@ -17,14 +15,7 @@ namespace Scripts.Scenes.Lobby.States
 {
     public class MainState : BaseStateMachineState
     {
-        [SerializeField] private TMP_Text Title;
         [SerializeField] private TMP_Text connectingTimer;
-        [SerializeField] private TMP_Text statusText;
-        [SerializeField] private Image statusIcon;
-        [SerializeField] private Button startGameButton;
-        [SerializeField] private Button newGameButton;
-        [SerializeField] private UsersPanel usersPanel;
-        [SerializeField] private RoomPanel roomPanel;
 
         private ConnectionStatus status;
         private SocketIOComponent _socket;
@@ -39,7 +30,6 @@ namespace Scripts.Scenes.Lobby.States
             base.OnStartState( stateMachine, args );
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
-            UpdateConnectionStatus( ConnectionStatus.Connected );
 
             _socket.On( LobbyEvents.SERVER_UPDATE, OnServerUpdate );
             _socket.On( LobbyEvents.GAME_UPDATE, OnGameUpdate );
@@ -57,6 +47,11 @@ namespace Scripts.Scenes.Lobby.States
             OnPressedCreateRoom();
         }
 
+        public void OnPressedGoToProfile()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Profile );
+        }
+
         private void OnPressedCreateRoom()
         {
             var user = ( stateMachine as LobbyController ).user;
@@ -72,23 +67,12 @@ namespace Scripts.Scenes.Lobby.States
                 var users = response.list.First()["gameUsers"].list;
                 currentGameName = response.list.First()["name"].str;
                 currentGameId = response.list.First()["id"].str;
-                UpdateUsers( users.Select( u => u["name"].str ) );
-                SetInRoom( currentGameName, true );
+                //UpdateUsers( users.Select( u => u["name"].str ) );
+                //SetInRoom( currentGameName, true );
                 Debug.Log($"CREATE_GAME {response}");
 
                 OnPressedStartGame();
             });
-        }
-
-        private void SetInRoom( string roomName, bool isOwner )
-        {
-            Title.text = roomName;
-            
-            startGameButton.interactable = isOwner && status != ConnectionStatus.WaitForGameStart;
-            newGameButton.interactable = false;
-        
-            roomPanel.Hide();
-            usersPanel.Show();
         }
 
         private void OnPressedStartGame()
@@ -158,7 +142,7 @@ namespace Scripts.Scenes.Lobby.States
         {
             connectingTimer.text = time > 0 ? time.ToString() : "";
             
-            startGameButton.interactable = false;
+            //startGameButton.interactable = false;
         }
 
         private GameData ParseGame(string str)
@@ -187,7 +171,7 @@ namespace Scripts.Scenes.Lobby.States
         
             _games = gamesData.games;
         
-            UpdateRooms( _games );
+            // UpdateRooms( _games );
         }
 
         private GamesData ParseGamesList(string str)
@@ -208,42 +192,6 @@ namespace Scripts.Scenes.Lobby.States
             }else Debug.LogError($"ParseGamesList Parse fail {result.FormattedMessages}");
 
             return gamesData;
-        }
-
-        private void UpdateUsers( IEnumerable<string> users )
-        {
-            usersPanel.Clean();
-        
-            foreach (var user in users)
-            {
-                usersPanel.Add(user);
-            }
-        }
-
-        private void UpdateRooms(GameData[] games)
-        {
-            roomPanel.Clean();
-        
-            foreach (var game in games.Where(g => !g.gameStarted))
-            {
-                roomPanel.Add(game.id, $"{game.name} ({game.users.Length})");
-            }
-        }
-
-        private void UpdateConnectionStatus( ConnectionStatus status )
-        {
-            this.status = status;
-            statusText.text = status.ToString();
-
-            if ( status == ConnectionStatus.Disconnected ||
-               status == ConnectionStatus.Connecting )
-            {
-                statusIcon.color = Color.red;
-            }
-            else
-            {
-                statusIcon.color = Color.green;
-            }
         }
     }
 }

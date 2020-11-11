@@ -14,7 +14,8 @@ namespace Scripts.Scenes.Lobby
     public enum LobbyState
     {
         Init,
-        Main
+        Main,
+        Profile
     }
 
     public class LobbyController : BaseStateMachine
