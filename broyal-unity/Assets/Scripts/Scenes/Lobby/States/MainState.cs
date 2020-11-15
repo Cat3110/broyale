@@ -17,6 +17,8 @@ namespace Scripts.Scenes.Lobby.States
     {
         [SerializeField] private TMP_Text connectingTimer;
 
+        [SerializeField] private GameObject stateLocker;
+
         private ConnectionStatus status;
         private SocketIOComponent _socket;
 
@@ -28,6 +30,8 @@ namespace Scripts.Scenes.Lobby.States
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
             base.OnStartState( stateMachine, args );
+
+            stateLocker.SetActive( false );
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
@@ -54,6 +58,8 @@ namespace Scripts.Scenes.Lobby.States
 
         private void OnPressedCreateRoom()
         {
+            stateLocker.SetActive( true );
+
             var user = ( stateMachine as LobbyController ).user;
             var gameName = $"{user}{DateTime.Now}";
             var json = new JSONObject();
@@ -115,7 +121,7 @@ namespace Scripts.Scenes.Lobby.States
             {
                 var game = obj.data;
                 Debug.Log($"{LobbyEvents.GAME_UPDATE} {game}");
-            
+
                 //_uiController.Lobby.UpdateConnectionStatus(LobbyUI.ConnectionStatus.WaitForGameStart);
                 SetTimer( gameData.serverInfo.time );
 
