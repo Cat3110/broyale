@@ -32,8 +32,10 @@ namespace Scripts.Scenes.Lobby.States
         {
             base.OnEndState();
 
+            // setup user person
             CurrentSkinData skinData = userData.GetSkin();
-            GameObject skinPerson = contentFactory.GetLobbyPlayerPerson( skinData.SkinId );
+            GameObject skinPerson = contentFactory.GetPlayerPerson( skinData.SkinId );
+            contentFactory.SetupPlayerPersonFor( skinData );
         }
 
         private IEnumerator _InitNetworkReady()

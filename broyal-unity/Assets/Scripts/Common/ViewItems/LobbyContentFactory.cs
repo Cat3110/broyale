@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Scripts.Common.Data;
 using UnityEngine;
 
 namespace Scripts.Common.ViewItems
@@ -12,7 +13,22 @@ namespace Scripts.Common.ViewItems
         private string lobbyPlayerSkin = "";
         private GameObject lobbyPlayerPerson = null;
 
-        public GameObject GetLobbyPlayerPerson( string skinId )
+        public bool SetupPlayerPersonFor( CurrentSkinData skinData )
+        {
+            GameObject personObj = GetPlayerPerson( skinData.SkinId );
+            if ( personObj == null ) return false;
+
+            CharactersBindData charBindData = personObj.GetComponent<CharactersBindData>();
+            if ( charBindData == null ) return false;
+
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Head, skinData.HeadIndex );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex );
+
+            return true;
+        }
+
+        public GameObject GetPlayerPerson( string skinId )
         {
             if ( skinId != lobbyPlayerSkin )
             {

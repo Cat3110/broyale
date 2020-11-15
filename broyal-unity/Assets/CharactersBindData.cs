@@ -9,6 +9,13 @@ public class CharactersBindData : MonoBehaviour
       Friendly,
       Enemy
    }
+
+    public enum SkinPart
+    {
+        Head,
+        Body,
+        Pants
+    }
    
    [Serializable]
    public class BindData
@@ -40,6 +47,17 @@ public class CharactersBindData : MonoBehaviour
             pants[i].SetActive( i == skinType);
          }
       }
+
+        public void SetSkinPart( SkinPart skinPart, uint skinType )
+        {
+            GameObject[] partObjs = skinPart == SkinPart.Body ? bodies : ( skinPart == SkinPart.Head ? heads : pants );
+
+            for ( int i = 0; i < partObjs.Length; i++ )
+            {
+                partObjs[ i ].SetActive( i == skinType );
+            }
+        }
+
    }
    
    [SerializeField] private BindData character;
@@ -58,6 +76,11 @@ public class CharactersBindData : MonoBehaviour
 
    public void AttachWeapon(GameObject weapon) => character.AttachWeapon(weapon);
    public void SetSkinType(uint skinType) => character.SetSkinType(skinType);
+
+    public void SetSkinPart( SkinPart skinPart, uint skinType )
+    {
+        character.SetSkinPart( skinPart, skinType );
+    }
 
    public void SetHealthBarType(HealthBarType healthBarType)
    {

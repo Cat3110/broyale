@@ -7,8 +7,9 @@ namespace Scripts.Common.Data
     public class CurrentSkinData
     {
         public string SkinId;
-        public int HeadIndex;
-        public int BodyIndex;
-        public int PantsIndex;
+
+        public uint HeadIndex;
+        public uint BodyIndex;
+        public uint PantsIndex;
     }
 }
