@@ -11,5 +11,15 @@ namespace Scripts.Common.Data
         public uint HeadIndex;
         public uint BodyIndex;
         public uint PantsIndex;
+
+        public CurrentSkinData() { }
+        public CurrentSkinData( UserSkinData skinData )
+        {
+            this.SkinId = skinData.SkinId;
+
+            this.HeadIndex = 0;
+            this.BodyIndex = 0;
+            this.PantsIndex = 0;
+        }
     }
 }
