@@ -6,6 +6,7 @@ using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
+using static CharactersBindData;
 
 namespace Scripts.Scenes.Lobby.States
 {
@@ -16,13 +17,12 @@ namespace Scripts.Scenes.Lobby.States
         [Inject] private ILobbyContentFactory contentFactory;
 
         [SerializeField] private Button[] sexButtons;
-        [SerializeField] private Color[] colors;
-        [SerializeField] private Image[] images;
 
         private int currentSkinIndex;
         private int newSkinIndex;
         private CurrentSkinData newSkinData;
-        private int[] colorIndexes = { 0, 0, 0 };
+        private UserSkinData currentSkin;
+        private uint[] skinPartIndexes = { 0, 0, 0 };
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
@@ -44,8 +44,14 @@ namespace Scripts.Scenes.Lobby.States
         {
             UserSkinData[] skins = gameData.Skins;
             CurrentSkinData curSkin = userData.GetSkin();
+            newSkinData = new CurrentSkinData( curSkin );
             currentSkinIndex = Array.FindIndex<UserSkinData>( skins, f => f.SkinId == curSkin.SkinId );
             newSkinIndex = currentSkinIndex;
+            currentSkin = skins[ currentSkinIndex ];
+
+            skinPartIndexes[ 0 ] = curSkin.HeadIndex;
+            skinPartIndexes[ 1 ] = curSkin.BodyIndex;
+            skinPartIndexes[ 2 ] = curSkin.PantsIndex;
         }
 
         public void OnPressedMaleFemale( int index )
@@ -62,10 +68,24 @@ namespace Scripts.Scenes.Lobby.States
 
         public void OnPressedPrev( int index )
         {
-            colorIndexes[ index ]--;
-            if ( colorIndexes[ index ] < 0 )
+            if ( skinPartIndexes[ index ] > 0 )
             {
-                colorIndexes[ index ] = colors.Length - 1;
+                skinPartIndexes[ index ]--;
+            }
+            else
+            {
+                if ( index == ( int ) SkinPart.Body )
+                {
+                    skinPartIndexes[ index ] = ( uint ) ( currentSkin.Bodies.Length - 1 );
+                }
+                else if ( index == ( int ) SkinPart.Head )
+                {
+                    skinPartIndexes[ index ] = ( uint ) ( currentSkin.Heads.Length - 1 );
+                }
+                else if ( index == ( int ) SkinPart.Pants )
+                {
+                    skinPartIndexes[ index ] = ( uint ) ( currentSkin.Pants.Length - 1 );
+                }
             }
 
             UpdateView();
@@ -73,10 +93,15 @@ namespace Scripts.Scenes.Lobby.States
 
         public void OnPressedNext( int index )
         {
-            colorIndexes[ index ]++;
-            if ( colorIndexes[ index ] == colors.Length )
+            string[] skinPart = index == ( int ) SkinPart.Head ? currentSkin.Heads : ( index == ( int ) SkinPart.Body ? currentSkin.Bodies : currentSkin.Pants );
+
+            if ( skinPartIndexes[ index ] + 1 >= skinPart.Length )
             {
-                colorIndexes[ index ] = 0;
+                skinPartIndexes[ index ] = 0;
+            }
+            else
+            {
+                skinPartIndexes[ index ]++;
             }
 
             UpdateView();
@@ -89,10 +114,12 @@ namespace Scripts.Scenes.Lobby.States
                 sexButtons[ i ].interactable = i != newSkinIndex;
             }
 
-            for ( int i = 0; i < colors.Length; i++ )
-            {
-                images[ i ].color = colors[ colorIndexes[ i ] ];
-            }
+            newSkinData.HeadIndex = skinPartIndexes[ 0 ];
+            newSkinData.BodyIndex = skinPartIndexes[ 1 ];
+            newSkinData.PantsIndex = skinPartIndexes[ 2 ];
+            contentFactory.SetupPlayerPersonFor( newSkinData );
+
+            userData.SetSkin( newSkinData );
         }
 
         public void OnPressedGoToMain()

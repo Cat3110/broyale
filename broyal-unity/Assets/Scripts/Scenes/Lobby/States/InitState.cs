@@ -23,6 +23,8 @@ namespace Scripts.Scenes.Lobby.States
             base.OnStartState( stateMachine, args );
             this.Inject();
 
+            userData.Load();
+
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
             StartCoroutine( _InitNetworkReady() );
