@@ -30,10 +30,10 @@ namespace Scripts.Common.Data
     {
         public class GamesData
         {
-            public GameData[] games { get; set; }
+            public OldGameData[] games { get; set; }
         }
 
-        public class GameData
+        public class OldGameData
         {
             public string id { get; set; }
             public string name { get; set; }
@@ -54,7 +54,7 @@ namespace Scripts.Common.Data
             public int port { get; set; }
         }
 
-        public class UserData
+        public class OldUserData
         {
             public string id { get; set; }
             public string name { get; set; }

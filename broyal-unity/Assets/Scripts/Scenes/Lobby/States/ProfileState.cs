@@ -1,13 +1,14 @@
 ﻿
 using Scripts.Core.StateMachine;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 namespace Scripts.Scenes.Lobby.States
 {
     public class ProfileState : BaseStateMachineState
     {
+        [SerializeField] private Transform personRoot;
+
         [SerializeField] private Color[] colors;
         [SerializeField] private Image[] images;
 

@@ -16,13 +16,14 @@ namespace Scripts.Scenes.Lobby.States
     public class MainState : BaseStateMachineState
     {
         [SerializeField] private TMP_Text connectingTimer;
-
         [SerializeField] private GameObject stateLocker;
+
+        [SerializeField] private Transform personRoot;
 
         private ConnectionStatus status;
         private SocketIOComponent _socket;
 
-        public GameData[] _games;
+        public OldGameData[] _games;
 
         private string currentGameName = null;
         private string currentGameId = null;
@@ -151,7 +152,7 @@ namespace Scripts.Scenes.Lobby.States
             //startGameButton.interactable = false;
         }
 
-        private GameData ParseGame(string str)
+        private OldGameData ParseGame(string str)
         {
             if (str.StartsWith("["))
             {
@@ -159,7 +160,7 @@ namespace Scripts.Scenes.Lobby.States
                 str = str.TrimEnd(new char[] {']'});
             }
             fsSerializer fsSerializer = new fsSerializer();
-            GameData gameData = null;
+            OldGameData gameData = null;
         
             fsResult result = fsJsonParser.Parse(str, out fsData fsData);
             if (result.Succeeded)

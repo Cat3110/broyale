@@ -2,7 +2,9 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Adic;
 using Scripts.Common.Data;
+using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using UnityEngine;
@@ -11,11 +13,15 @@ namespace Scripts.Scenes.Lobby.States
 {
     public class InitState : BaseStateMachineState
     {
+        [Inject] private IUserData userData;
+        [Inject] private ILobbyContentFactory contentFactory;
+
         private SocketIOComponent _socket;
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
             base.OnStartState( stateMachine, args );
+            this.Inject();
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
@@ -25,6 +31,9 @@ namespace Scripts.Scenes.Lobby.States
         public override void OnEndState()
         {
             base.OnEndState();
+
+            CurrentSkinData skinData = userData.GetSkin();
+            GameObject skinPerson = contentFactory.GetLobbyPlayerPerson( skinData.SkinId );
         }
 
         private IEnumerator _InitNetworkReady()
