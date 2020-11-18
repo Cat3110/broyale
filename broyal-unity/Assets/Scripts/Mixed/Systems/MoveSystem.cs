@@ -8,6 +8,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
+
 //
 // [BurstCompile]
 // [UpdateInGroup(typeof(GhostPredictionSystemGroup))]
@@ -241,7 +243,7 @@ public class MoveSystem : SystemBase
     protected override void OnUpdate()
     {
         var group = World.GetExistingSystem<GhostPredictionSystemGroup>();
-        var tick = group.PredictingTick;
+        var predictingTick = group.PredictingTick;
         var deltaTime = Time.DeltaTime;
 
         var speed = _appConfig.Characters[0].Speed;
@@ -249,23 +251,28 @@ public class MoveSystem : SystemBase
 
         var colliders = _colliders;
         var skillsMap = _skillMap;
-        
-        Entities.WithBurst().WithReadOnly(colliders).ForEach((Entity e, DynamicBuffer<PlayerInput> inputBuffer, ref Attack attack, ref Damage damage,
+
+        Entities.WithoutBurst().WithReadOnly(colliders).ForEach((Entity e, DynamicBuffer<PlayerInput> inputBuffer,
+            ref Attack attack, ref Damage damage,
             ref Translation trans, ref PlayerData pdata, ref PredictedGhostComponent prediction) =>
         {
-            if (!GhostPredictionSystemGroup.ShouldPredict(tick, prediction))
+            if (!GhostPredictionSystemGroup.ShouldPredict(predictingTick, prediction))
                 return;
+            
+            if (!(inputBuffer.GetDataAtTick(predictingTick, out PlayerInput input) && input.Tick == predictingTick)) {
+                // LogServer(isServer, $"Did NOT run server-side prediction because only available input had tick {input.Tick} while the predicting tick is {predictingTick}");
+                return;
+            } else {
+                // LogServer(isServer, $"Did run server-side prediction because available input had tick {input.Tick} matching the predicting tick {predictingTick}");
+            }
 
             if (pdata.health <= 0) return;
 
-            inputBuffer.GetDataAtTick(tick, out PlayerInput input);
+            //inputBuffer.GetDataAtTick(tick, out PlayerInput input);
 
-            float h = input.horizontal / 10.0f ;// > 0 ? 1.0f : (input.horizontal < 0) ? -1.0f : 0.0f;
-            float v = input.vertical / 10.0f;//  > 0 ? 1.0f : (input.vertical < 0) ? -1.0f : 0.0f;
-
-            var direction = new float2(input.horizontal / 10.0f, input.vertical / 10.0f); 
+            var direction = new float2(input.horizontal / 10.0f, input.vertical / 10.0f);
             var lastPos = trans.Value;
-            
+
             // if( math.length(direction) > 0.0f )
             //     if(_isServer)
             //     {
@@ -276,15 +283,28 @@ public class MoveSystem : SystemBase
             //         Debug.Log($"Client <color=blue>{lastPos} => {trans.Value} </color>");
             //         //Debug.DrawLine(lastPos, trans.Value, Color.blue);
             //     }
-            
+
             if (input.attackType == 0 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
                 if (math.abs(input.horizontal) > 0)
                     trans.Value.x += input.horizontal / 10.0f * deltaTime * speed;
 
-                if (math.abs(input.vertical) > 0) 
+                if (math.abs(input.vertical) > 0)
                     trans.Value.z += input.vertical / 10.0f * deltaTime * speed;
                 
+                // if( math.length(direction) > 0)
+                //     if(_isServer)
+                //     {
+                //         Debug.Log($"Server <color=red> => {predictingTick} {deltaTime} {speed} {input.horizontal}:{input.vertical} {trans.Value}</color>");
+                //         //Debug.Log($"Server <color=red>{lastPos} => {trans.Value} </color>");
+                //     }
+                //     else
+                //     {
+                //         Debug.Log($"Client <color=blue> => {predictingTick} {deltaTime} {speed} {input.horizontal}:{input.vertical} {trans.Value}</color>");
+                //         //Debug.Log($"Client <color=blue>{lastPos} => {trans.Value} </color>");
+                //         //Debug.DrawLine(lastPos, trans.Value, Color.blue);
+                //     }
+
                 //if(_isServer)
                 // {
                 //     //Debug.DrawLine(lastPos, trans.Value, Color.red);
@@ -294,9 +314,9 @@ public class MoveSystem : SystemBase
                 //     //Debug.DrawLine(lastPos, trans.Value, Color.blue);
                 // }
             }
-           
+
             var collided = false;
-           
+
             //if (_isServer)
             {
                 for (int i = 0; i < colliders.Length; i++)
@@ -316,7 +336,7 @@ public class MoveSystem : SystemBase
 
             //physicsVelocity.Linear = new float3(h * deltaTime * _appConfig.Characters[0].Speed * 50.0f,
             //    0, v * deltaTime * _appConfig.Characters[0].Speed * 50.0f);
-            
+
             /*if (input.horizontal > 0)
                 trans.Value.x += input.horizontal/10.0f * deltaTime;
             if (input.horizontal < 0)
@@ -329,22 +349,21 @@ public class MoveSystem : SystemBase
             // {
             //     attack.PredTrans = new float3(input.horizontal, 0, input.vertical);
             // }
-            
+
             if (math.abs(input.attackDirectionX) > 0 || math.abs(input.attackDirectionY) > 0)
             {
                 attack.AttackDirection = new float2(input.attackDirectionX / 10.0f, input.attackDirectionY / 10.0f);
             }
-            
 
             if (input.attackType == 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
                 //Debug.Log(
                 //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
-                GetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
+                SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
                 //EntityManager.SetComponentData(e, attack);
             }
-        }).ScheduleParallel();
+        }).Run(); //.ScheduleParallel();
     }
     
     public static bool Intersect(float3 posA, float3 sizeA, float3 posB, float3 sizeB)
@@ -384,7 +403,7 @@ public class MoveSystem : SystemBase
         return (math.abs(posA.x - posB.x) < d && math.abs(posA.z - posB.z) < d);
     }
 
-    private static void GetAttackByType(NativeArray<float> skillMaps, int skillId, ref Attack attack, int seed)
+    private static void SetAttackByType(NativeArray<float> skillMaps, int skillId, ref Attack attack, int seed)
     {
         //Debug.Log($"{(_isServer ? "Server" : "Client")}:Attack Start  => {skill.Id}");
 

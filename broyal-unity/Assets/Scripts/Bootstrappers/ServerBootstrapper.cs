@@ -91,6 +91,10 @@
             serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<ItemSpawnerSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<LootItemSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<ZoneDamageSystem>());
+            
+            #if UNITY_EDITOR
+            serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<None.DebugTranslateSystem>() );
+            #endif
         }
         
         [CUDLR.Command("reload сonfig", "Reload config file from gdoc")]

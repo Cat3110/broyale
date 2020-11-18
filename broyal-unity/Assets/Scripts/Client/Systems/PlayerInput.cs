@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.Transforms;
 using UnityEngine;
 
 #if true
@@ -73,13 +74,12 @@ public class PlayerInputReceiveCommandSystem : CommandReceiveSystem<PlayerInput>
 
 [UpdateInGroup(typeof(ClientSimulationSystemGroup))]
 [UpdateBefore(typeof(PlayerInputSendCommandSystem))]
-// Try to sample input as late as possible
-[UpdateAfter(typeof(GhostSimulationSystemGroup))]
+[UpdateAfter(typeof(GhostSimulationSystemGroup))]// Try to sample input as late as possible
 public class SamplePlayerInput : ComponentSystem
 {
     //private readonly InputMaster _inputMaster = new InputMaster();
     private static InputMaster _inputMaster => BaseBootStrapper.Container.Resolve<InputMaster>();
-    //private Session _appConfig => BaseBootStrapper.Container.Resolve<Session>();
+    private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
     protected override void OnCreate()
     {
         //_inputMaster.Enable();
@@ -91,19 +91,22 @@ public class SamplePlayerInput : ComponentSystem
     protected override void OnUpdate()
     {
         var localInput = GetSingleton<CommandTargetComponent>().targetEntity;
+        var deltaTime = Time.DeltaTime;
+        var speed = _appConfig.Characters[0].Speed;
+        
         if (localInput == Entity.Null)
         {
             var localPlayerId = GetSingleton<NetworkIdComponent>().Value;
             Entities.WithNone<PlayerInput>().ForEach((Entity ent, ref MovableCharacterComponent character) =>
             {
-                if (character.PlayerId == localPlayerId)
-                {
-                    PostUpdateCommands.AddBuffer<PlayerInput>(ent);
-                    PostUpdateCommands.SetComponent(GetSingletonEntity<CommandTargetComponent>(), new CommandTargetComponent {targetEntity = ent});
-                }
+                if (character.PlayerId != localPlayerId) return;
+                
+                PostUpdateCommands.AddBuffer<PlayerInput>(ent);
+                PostUpdateCommands.SetComponent(GetSingletonEntity<CommandTargetComponent>(), new CommandTargetComponent {targetEntity = ent});
             });
             return;
         }
+        
         var inputBuffer = EntityManager.GetBuffer<PlayerInput>(localInput);
         var input = default(PlayerInput);
         
@@ -115,7 +118,12 @@ public class SamplePlayerInput : ComponentSystem
         input.horizontal = (short)math.round(movement.x * 10);
         input.vertical = (short)math.round(movement.y * 10);
         
-//        Debug.Log($"{movement}");
+        var trans = EntityManager.GetComponentData<Translation>(localInput);
+        if (math.abs(input.horizontal) > 0)
+            trans.Value.x += (input.horizontal / 10.0f * deltaTime * speed) * 0.5f;
+
+        if (math.abs(input.vertical) > 0)
+            trans.Value.z += (input.vertical / 10.0f * deltaTime * speed) * 0.5f;
         
         // var haveDubCmd = inputBuffer.GetDataAtTick(input.tick, out var dupCmd) && dupCmd.Tick == input.tick;
         // if (!haveDubCmd)

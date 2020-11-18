@@ -63,7 +63,7 @@ MonoBehaviour:
     heads:
     - {fileID: 8039629801610679482}
     - {fileID: 7585769166210912233}
-    - {fileID: 6982724653320173066}
+    - {fileID: 5563590603336511318}
     bodies:
     - {fileID: 6120208316004077293}
     - {fileID: 2490893552392564778}
@@ -290,6 +290,12 @@ GameObject:
 --- !u!1 &808643159307344466 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3172526868000596829, guid: 727b731679d2ec44f90069277dbbe71c,
+    type: 3}
+  m_PrefabInstance: {fileID: 6395123789182617329}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5563590603336511318 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -7640969087774643801, guid: 727b731679d2ec44f90069277dbbe71c,
     type: 3}
   m_PrefabInstance: {fileID: 6395123789182617329}
   m_PrefabAsset: {fileID: 0}

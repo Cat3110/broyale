@@ -5,6 +5,7 @@ using UniRx.Async.Triggers;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -93,9 +94,10 @@ public class CharacterPresenterSystem : ComponentSystem
             float3 prevPos = go.transform.position;
             var dist = math.distance(prevPos, translation.Value);
 
-            bindData.Animator.SetFloat(Speed, dist > 0.2f ? 1.0f : 0.0f);
+            //bindData.Animator.SetFloat(Speed, dist > 0.2f ? 1.0f : 0.0f);
 
             go.transform.position = Vector3.Lerp(go.transform.position, translation.Value, deltaTime * 9.0f);
+            //go.transform.position = translation.Value;
 
             _uiController.SetPlayerGo(go);
             _uiController.SetPlayerPosition(translation.Value);
@@ -109,13 +111,19 @@ public class CharacterPresenterSystem : ComponentSystem
                 //go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
             }
 
-            // if (EntityManager.HasComponent<PlayerInput>(e))
-            // {
-            //     var input = EntityManager.GetBuffer<PlayerInput>(e);
-            //     var lastInput = input[0];
-            //     var direction = new Vector2(lastInput.horizontal,lastInput.vertical);
-            //     bindData.Animator.SetFloat(Speed, direction.sqrMagnitude > 0.01 ? 1 : 0);
-            // }
+            if (EntityManager.HasComponent<PlayerInput>(e))
+            {
+                var tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
+                
+                var input = EntityManager.GetBuffer<PlayerInput>(e);
+                if (input.GetDataAtTick(tick - 1, out var pinput))
+                {
+                    var direction = new Vector2(pinput.horizontal,pinput.vertical);
+                    var prevSpeed = bindData.Animator.GetFloat(Speed);
+                    var newSpeed = direction.sqrMagnitude > 0.01 ? 1 : 0;
+                    bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * 2.0f) );
+                }
+            }
 
             var attack = EntityManager.GetComponentData<Attack>(e);
             var damage = EntityManager.GetComponentData<Damage>(e);
@@ -195,27 +203,3 @@ public class CharacterPresenterSystem : ComponentSystem
         otherPlayer.Dispose();
     }
 }
-
-// if (attack.HaveTransition())
-// {
-// if (math.abs(data.TransId - attack.Seed) > 0.01f)
-// {
-//     //Debug.Log($"Client:Attack => {e} => {attack.Type} => {attack.TransHash}");
-//     animator.SetTrigger(AttackTrigger);
-//     data.TransId = attack.Seed;
-//     EntityManager.SetComponentData(e, data);
-// }
-//
-// if (math.abs(1.0f - attack.Type.x) < 0.01f)
-// {
-//     var distance = 10.0f;
-//     var entity = otherPlayer.FirstOrDefault(x =>
-//         math.distancesq(translation.Value, EntityManager.GetComponentData<Translation>(x).Value) < distance * 2);
-//
-//     if (entity != Entity.Null)
-//     {
-//         var lookdirection = EntityManager.GetComponentData<Translation>(entity).Value - translation.Value;
-//         go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(lookdirection), RotationSpeed * Time.DeltaTime);
-//     }
-// }
-// }
