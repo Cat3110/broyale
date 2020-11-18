@@ -1,11 +1,12 @@
+#if UNITY_EDITOR
+
 using Unity.Entities;
-using Unity.Transforms;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
-namespace None
+namespace Mixed.Systems
 {
-    [DisableAutoCreation]
     [UpdateInGroup(typeof(ClientAndServerSimulationSystemGroup), OrderLast = true)]
     public class DebugTranslateSystem : SystemBase
     {
@@ -31,3 +32,4 @@ namespace None
         }
     }
 }
+#endif 

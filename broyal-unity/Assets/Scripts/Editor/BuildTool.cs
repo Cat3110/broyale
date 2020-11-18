@@ -136,6 +136,31 @@ public class ScriptBatch
         }
     }
     
+    [MenuItem("Build/Server/Linux(64)(il2cpp)")]
+    public static void BuildLinuxServerIL2CPP()
+    {
+        var path = "../bin/server-linux";
+        var name = "broyal-server.x86_64";
+        var target = BuildTarget.StandaloneLinux64;
+        var option = BuildOptions.EnableHeadlessMode;
+
+        var scenes = new[] {"Assets/StaticAssets/Scenes/Server.unity"};
+        var scriptingImplementation = ScriptingImplementation.IL2CPP;
+
+        BuildReport report = BuildGame(scenes, path, name, target, option, "1", scriptingImplementation);
+        BuildSummary summary = report.summary;
+
+        if (summary.result == BuildResult.Succeeded)
+        {
+            Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
+        }
+
+        if (summary.result == BuildResult.Failed)
+        {
+            Debug.Log("Build failed");
+        }
+    }
+    
     static BuildReport BuildGame(string[] scenes, string buildPath, string exeName, BuildTarget target,
         BuildOptions opts, string buildId, ScriptingImplementation scriptingImplementation, bool includeEditorMetadata = false)
     {

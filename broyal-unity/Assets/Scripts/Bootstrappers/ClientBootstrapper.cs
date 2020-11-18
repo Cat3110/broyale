@@ -187,10 +187,6 @@ namespace Bootstrappers
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabCreatorSystem>() );
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<UpdateCameraSystem>());
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<CharacterPresenterSystem>() );
-            
-            #if UNITY_EDITOR
-            lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<None.DebugTranslateSystem>() );
-            #endif
 
             world.GetOrCreateSystem<CopySkinnedEntityDataToRenderEntity>().Enabled = false;
             world.GetOrCreateSystem<RenderMeshSystemV2>().Enabled = false;
