@@ -139,7 +139,7 @@ public class ScriptBatch
     [MenuItem("Build/Server/Linux(64)(il2cpp)")]
     public static void BuildLinuxServerIL2CPP()
     {
-        var path = "../bin/server-linux";
+        var path = "../bin/server-linux-il2cpp";
         var name = "broyal-server.x86_64";
         var target = BuildTarget.StandaloneLinux64;
         var option = BuildOptions.EnableHeadlessMode;
