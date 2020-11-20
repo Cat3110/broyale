@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using Adic;
 using Scripts.Common.Data;
+using Scripts.Common.Tools.UI;
 using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using SocketIO;
@@ -15,6 +16,8 @@ namespace Scripts.Scenes.Lobby.States
     {
         [Inject] private IUserData userData;
         [Inject] private ILobbyContentFactory contentFactory;
+
+        [SerializeField] private CharacterRotator[] charRotators;
 
         private SocketIOComponent _socket;
 
@@ -38,6 +41,11 @@ namespace Scripts.Scenes.Lobby.States
             CurrentSkinData skinData = userData.GetSkin();
             GameObject skinPerson = contentFactory.GetPlayerPerson( skinData.SkinId );
             contentFactory.SetupPlayerPersonFor( skinData );
+
+            foreach ( var cr in charRotators )
+            {
+                cr.SetCharacter( skinPerson.transform );
+            }
         }
 
         private IEnumerator _InitNetworkReady()

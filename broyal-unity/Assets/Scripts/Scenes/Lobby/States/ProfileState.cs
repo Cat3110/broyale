@@ -2,10 +2,12 @@
 using System;
 using Adic;
 using Scripts.Common.Data;
+using Scripts.Common.Tools.UI;
 using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
+
 using static CharactersBindData;
 
 namespace Scripts.Scenes.Lobby.States
@@ -17,6 +19,7 @@ namespace Scripts.Scenes.Lobby.States
         [Inject] private ILobbyContentFactory contentFactory;
 
         [SerializeField] private Button[] sexButtons;
+        [SerializeField] private CharacterRotator[] charRotators;
 
         private int currentSkinIndex;
         private int newSkinIndex;
@@ -62,6 +65,12 @@ namespace Scripts.Scenes.Lobby.States
             var newSkin = gameData.Skins[ newSkinIndex ];
             newSkinData = new CurrentSkinData( newSkin );
             contentFactory.SetupPlayerPersonFor( newSkinData );
+            GameObject newPerson = contentFactory.GetPlayerPerson( newSkinData.SkinId );
+
+            foreach ( var cr in charRotators )
+            {
+                cr.SetCharacter( newPerson.transform );
+            }
 
             UpdateView();
         }
