@@ -1,5 +1,4 @@
 ﻿
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -25,36 +24,6 @@ namespace Scripts.Common.Tools.UI
                 startAngle = trCharacter.rotation.eulerAngles.y;
             }
         }
-
-        /*public void OnPointerEnter( PointerEventData eventData )
-        {
-            if ( pressedOnMe )
-            {
-                float posXDelta = eventData.position.x - startPos.x;
-
-                float rotValue = startAngle - posXDelta * 0.1f;
-                if ( trCharacter != null )
-                {
-                    Quaternion qRot = Quaternion.identity;
-                    qRot.eulerAngles = new Vector3( 0, rotValue, 0 );
-                    trCharacter.rotation = qRot;
-                }
-            }
-        }*/
-
-        /*public void OnPointerExit( PointerEventData eventData )
-        {
-            pressedOnMe = false;
-        }*/
-
-        /*public void OnBeginDrag( PointerEventData eventData )
-        {
-            startPos = eventData.position;
-            if ( trCharacter != null )
-            {
-                startAngle = trCharacter.rotation.eulerAngles.y;
-            }
-        }*/
 
         public void OnDrag( PointerEventData eventData )
         {
