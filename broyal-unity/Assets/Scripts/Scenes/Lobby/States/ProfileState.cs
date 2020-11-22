@@ -19,7 +19,12 @@ namespace Scripts.Scenes.Lobby.States
         [Inject] private ILobbyContentFactory contentFactory;
 
         [SerializeField] private Button[] sexButtons;
+        [SerializeField] private Image[] sexButtonBacks;
         [SerializeField] private CharacterRotator[] charRotators;
+
+        [SerializeField] private GameObject paletteBlock;
+        [SerializeField] private Image[] imagePartColors;
+        [SerializeField] private Image[] imageColors;
 
         private int currentSkinIndex;
         private int newSkinIndex;
@@ -27,10 +32,14 @@ namespace Scripts.Scenes.Lobby.States
         private UserSkinData currentSkin;
         private uint[] skinPartIndexes = { 0, 0, 0 };
 
+        private int selectColorForBodyPart = -1;
+
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
             base.OnStartState( stateMachine, args );
             this.Inject();
+
+            paletteBlock.SetActive( false );
 
             SetupCurrentPerson();
             UpdateView();
@@ -41,6 +50,21 @@ namespace Scripts.Scenes.Lobby.States
             base.OnEndState();
 
             userData.SetSkin( newSkinData );
+        }
+
+        public void OnPressedOpenPaletteFor( int bodyPartIndex )
+        {
+            selectColorForBodyPart = bodyPartIndex;
+
+            paletteBlock.SetActive( true );
+        }
+
+        public void OnPressedPaletteColor( int colorIndex )
+        {
+            paletteBlock.SetActive( false );
+
+            imagePartColors[ selectColorForBodyPart ].color = imageColors[ colorIndex ].color;
+            selectColorForBodyPart = -1;
         }
 
         private void SetupCurrentPerson()
@@ -121,6 +145,7 @@ namespace Scripts.Scenes.Lobby.States
             for ( int i = 0; i < sexButtons.Length; i++ )
             {
                 sexButtons[ i ].interactable = i != newSkinIndex;
+                sexButtonBacks[ i ].gameObject.SetActive( i == newSkinIndex );
             }
 
             newSkinData.HeadIndex = skinPartIndexes[ 0 ];
