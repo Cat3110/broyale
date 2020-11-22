@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Common.Tools.UI;
 using UnityEngine;
 
 public class CharactersBindData : MonoBehaviour
@@ -16,7 +17,7 @@ public class CharactersBindData : MonoBehaviour
         Body,
         Pants
     }
-   
+
    [Serializable]
    public class BindData
    {
@@ -56,14 +57,13 @@ public class CharactersBindData : MonoBehaviour
             SkinnedMeshRenderer meshRenderer = skinTypeObj.GetComponent<SkinnedMeshRenderer>();
             if ( meshRenderer == null ) return;
 
-            if ( skinPart == SkinPart.Head )
+            string shaderColorName = "Color_01";
+            CharacterPartChangedColor changedColorComp = skinTypeObj.GetComponent<CharacterPartChangedColor>();
+            if ( changedColorComp != null )
             {
-                meshRenderer.material.SetColor( "Color_01", color );
+                shaderColorName = changedColorComp.ColorNameInShader;
             }
-            else if ( skinPart == SkinPart.Body )
-            {
-                meshRenderer.material.SetColor( "Color_02", color );
-            }
+            meshRenderer.material.SetColor( shaderColorName, color );
         }
 
         public void SetSkinPart( SkinPart skinPart, uint skinType )

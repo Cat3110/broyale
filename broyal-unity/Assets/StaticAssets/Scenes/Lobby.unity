@@ -54612,6 +54612,9 @@ MonoBehaviour:
     HeadIndex: 0
     BodyIndex: 0
     PantsIndex: 0
+    HeadColor: {r: 0, g: 0, b: 0, a: 0}
+    BodyColor: {r: 0, g: 0, b: 0, a: 0}
+    PantsColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1403931820 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ae2f804c4d538eb4784a431923ef0b17,

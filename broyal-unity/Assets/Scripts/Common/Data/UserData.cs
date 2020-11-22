@@ -33,6 +33,13 @@ namespace Scripts.Common.Data
                 string localUserProfile = PlayerPrefs.GetString( USER_PROFILE );
                 myCurrentSkin = new CurrentSkinData( localUserProfile );
             }
+            else
+            {
+                //myCurrentSkin = new CurrentSkinData();
+                ColorUtility.TryParseHtmlString( "#53800b", out myCurrentSkin.HeadColor );
+                ColorUtility.TryParseHtmlString( "#916ae5", out myCurrentSkin.BodyColor );
+                ColorUtility.TryParseHtmlString( "#ce9260", out myCurrentSkin.PantsColor );
+            }
         }
     }
 }

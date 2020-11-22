@@ -95,6 +95,15 @@ namespace Scripts.Scenes.Lobby.States
             skinPartIndexes[ 0 ] = curSkin.HeadIndex;
             skinPartIndexes[ 1 ] = curSkin.BodyIndex;
             skinPartIndexes[ 2 ] = curSkin.PantsIndex;
+
+            //newSkinData.HeadColor = imagePartColors[ 0 ].color;
+            //newSkinData.BodyColor = imagePartColors[ 1 ].color;
+            //newSkinData.PantsColor = imagePartColors[ 2 ].color;
+
+            imagePartColors[ 0 ].color = newSkinData.HeadColor;
+            imagePartColors[ 1 ].color = newSkinData.BodyColor;
+            imagePartColors[ 2 ].color = newSkinData.PantsColor;
+
         }
 
         public void OnPressedMaleFemale( int index )
@@ -103,7 +112,13 @@ namespace Scripts.Scenes.Lobby.States
 
             newSkinIndex = index;
             var newSkin = gameData.Skins[ newSkinIndex ];
+
+            var tmpSkinData = newSkinData;
             newSkinData = new CurrentSkinData( newSkin );
+            newSkinData.HeadColor = tmpSkinData.HeadColor;
+            newSkinData.BodyColor = tmpSkinData.BodyColor;
+            newSkinData.PantsColor = tmpSkinData.PantsColor;
+
             contentFactory.SetupPlayerPersonFor( newSkinData );
             GameObject newPerson = contentFactory.GetPlayerPerson( newSkinData.SkinId );
 

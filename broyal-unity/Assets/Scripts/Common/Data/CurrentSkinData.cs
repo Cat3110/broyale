@@ -28,14 +28,26 @@ namespace Scripts.Common.Data
             HeadIndex = uint.Parse( splt[ 1 ] );
             BodyIndex = uint.Parse( splt[ 2 ] );
             PantsIndex = uint.Parse( splt[ 3 ] );
+
+            if ( splt.Length > 6 )
+            {
+                ColorUtility.TryParseHtmlString( "#" + splt[ 4 ], out HeadColor );
+                ColorUtility.TryParseHtmlString( "#" + splt[ 5 ], out BodyColor );
+                ColorUtility.TryParseHtmlString( "#" + splt[ 6 ], out PantsColor );
+            }
         }
 
         public CurrentSkinData( CurrentSkinData skinData )
         {
             this.SkinId = skinData.SkinId;
+
             this.HeadIndex = skinData.HeadIndex;
             this.BodyIndex = skinData.BodyIndex;
             this.PantsIndex = skinData.PantsIndex;
+
+            this.HeadColor = skinData.HeadColor;
+            this.BodyColor = skinData.BodyColor;
+            this.PantsColor = skinData.PantsColor;
         }
 
         public CurrentSkinData( UserSkinData skinData )
@@ -49,7 +61,11 @@ namespace Scripts.Common.Data
 
         public override string ToString()
         {
-            string ret = string.Format( "{0}|{1}|{2}|{3}", SkinId, HeadIndex, BodyIndex, PantsIndex );
+            string ret = string.Format( "{0}|{1}|{2}|{3}|{4}|{5}|{6}", SkinId, HeadIndex, BodyIndex, PantsIndex,
+                ColorUtility.ToHtmlStringRGB( HeadColor ),
+                ColorUtility.ToHtmlStringRGB( BodyColor ),
+                ColorUtility.ToHtmlStringRGB( PantsColor )
+            );
             return ret;
         }
     }
