@@ -5,6 +5,7 @@ using Scripts.Common.Data;
 using Scripts.Common.Tools.UI;
 using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
+using Unity.Physics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -63,8 +64,23 @@ namespace Scripts.Scenes.Lobby.States
         {
             paletteBlock.SetActive( false );
 
+            if ( selectColorForBodyPart == ( int ) SkinPart.Head )
+            {
+                newSkinData.HeadColor = imageColors[ colorIndex ].color;
+            }
+            else if ( selectColorForBodyPart == ( int ) SkinPart.Body )
+            {
+                newSkinData.BodyColor = imageColors[ colorIndex ].color;
+            }
+            else if ( selectColorForBodyPart == ( int ) SkinPart.Pants )
+            {
+                newSkinData.PantsColor = imageColors[ colorIndex ].color;
+            }
+
             imagePartColors[ selectColorForBodyPart ].color = imageColors[ colorIndex ].color;
             selectColorForBodyPart = -1;
+
+            UpdateView();
         }
 
         private void SetupCurrentPerson()

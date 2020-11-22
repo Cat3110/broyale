@@ -21,9 +21,9 @@ namespace Scripts.Common.ViewItems
             CharactersBindData charBindData = personObj.GetComponent<CharactersBindData>();
             if ( charBindData == null ) return false;
 
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Head, skinData.HeadIndex );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex, skinData.BodyColor );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex, skinData.PantsColor );
 
             return true;
         }

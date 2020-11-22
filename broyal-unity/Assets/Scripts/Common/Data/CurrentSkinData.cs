@@ -1,5 +1,6 @@
 ﻿
 using System;
+using UnityEngine;
 
 namespace Scripts.Common.Data
 {
@@ -11,6 +12,10 @@ namespace Scripts.Common.Data
         public uint HeadIndex;
         public uint BodyIndex;
         public uint PantsIndex;
+
+        public Color HeadColor;
+        public Color BodyColor;
+        public Color PantsColor;
 
         public CurrentSkinData() { }
 
