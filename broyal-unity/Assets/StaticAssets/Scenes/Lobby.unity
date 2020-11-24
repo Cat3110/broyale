@@ -36542,9 +36542,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -156.1, y: 18.64}
-  m_SizeDelta: {x: 149.72162, y: 33.275993}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -81.23917, y: 18.64}
+  m_SizeDelta: {x: 200, y: 33.275993}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &976086920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36564,7 +36564,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PANTS
+  m_text: COSTUME 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 788f2f67565c7459f89b81ba4830ee59, type: 2}
   m_sharedMaterial: {fileID: -6816037644080792708, guid: 788f2f67565c7459f89b81ba4830ee59,
@@ -36634,10 +36634,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 976086920}
-    characterCount: 5
+    characterCount: 9
     spriteCount: 0
-    spaceCount: 0
-    wordCount: 1
+    spaceCount: 1
+    wordCount: 2
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -54613,8 +54613,8 @@ MonoBehaviour:
     BodyIndex: 0
     PantsIndex: 0
     HeadColor: {r: 0, g: 0, b: 0, a: 0}
-    BodyColor: {r: 0, g: 0, b: 0, a: 0}
-    PantsColor: {r: 0, g: 0, b: 0, a: 0}
+    Costume1Color: {r: 0, g: 0, b: 0, a: 0}
+    Costume2Color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!4 &1403931820 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ae2f804c4d538eb4784a431923ef0b17,
@@ -57255,7 +57255,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 625, y: -43.30254}
+  m_AnchoredPosition: {x: 625, y: -43.302246}
   m_SizeDelta: {x: 1250, y: 86.60508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1462761900
@@ -85676,9 +85676,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -156.1, y: 18.64}
-  m_SizeDelta: {x: 149.72162, y: 33.275993}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -81.23917, y: 18.64}
+  m_SizeDelta: {x: 200, y: 33.275993}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &2125822500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85698,7 +85698,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BODY
+  m_text: COSTUME 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 788f2f67565c7459f89b81ba4830ee59, type: 2}
   m_sharedMaterial: {fileID: -6816037644080792708, guid: 788f2f67565c7459f89b81ba4830ee59,
@@ -85768,10 +85768,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2125822500}
-    characterCount: 4
+    characterCount: 9
     spriteCount: 0
-    spaceCount: 0
-    wordCount: 1
+    spaceCount: 1
+    wordCount: 2
     linkCount: 0
     lineCount: 1
     pageCount: 1

@@ -1,57 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &1508389441631942710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633710859668628781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_01
---- !u!114 &5558229676469114830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 839263466548325105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_01
---- !u!114 &1289145477824317113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114578524494547215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_02
---- !u!114 &5132496960853329858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4233581003546114020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_02
 --- !u!1 &4899942644581615805
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,19 +79,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3759385511191160218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6499817407612304191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_02
 --- !u!1 &7963753861703953159
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,58 +154,6 @@ MonoBehaviour:
     rightHandPivot: {fileID: 7339865048020168201}
     animator: {fileID: 4975912022656717920}
   healthBar: {fileID: 4899942644581615805}
---- !u!114 &3097375493025973942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8180399981617761707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_02
---- !u!114 &5259214640023696467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8438136100751488450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_01
---- !u!114 &5692293202614837546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8966110872895712453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_03
---- !u!114 &1203577274392088206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8986168808281787825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34289ab86907e4287b848a3ae625a0af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ColorNameInShader: Color_03
 --- !u!1001 &1470258388721740273
 PrefabInstance:
   m_ObjectHideFlags: 0

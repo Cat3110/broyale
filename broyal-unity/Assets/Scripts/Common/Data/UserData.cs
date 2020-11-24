@@ -37,8 +37,8 @@ namespace Scripts.Common.Data
             {
                 //myCurrentSkin = new CurrentSkinData();
                 ColorUtility.TryParseHtmlString( "#53800b", out myCurrentSkin.HeadColor );
-                ColorUtility.TryParseHtmlString( "#916ae5", out myCurrentSkin.BodyColor );
-                ColorUtility.TryParseHtmlString( "#ce9260", out myCurrentSkin.PantsColor );
+                ColorUtility.TryParseHtmlString( "#916ae5", out myCurrentSkin.Costume1Color );
+                ColorUtility.TryParseHtmlString( "#ce9260", out myCurrentSkin.Costume2Color );
             }
         }
     }

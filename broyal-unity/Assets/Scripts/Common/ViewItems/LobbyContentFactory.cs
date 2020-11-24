@@ -22,8 +22,8 @@ namespace Scripts.Common.ViewItems
             if ( charBindData == null ) return false;
 
             charBindData.SetSkinPart( CharactersBindData.SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex, skinData.BodyColor );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex, skinData.PantsColor );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex, skinData.Costume1Color, skinData.Costume2Color );
+            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex, skinData.Costume1Color, skinData.Costume2Color );
 
             return true;
         }

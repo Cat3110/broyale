@@ -14,8 +14,8 @@ namespace Scripts.Common.Data
         public uint PantsIndex;
 
         public Color HeadColor;
-        public Color BodyColor;
-        public Color PantsColor;
+        public Color Costume1Color;
+        public Color Costume2Color;
 
         public CurrentSkinData() { }
 
@@ -32,8 +32,8 @@ namespace Scripts.Common.Data
             if ( splt.Length > 6 )
             {
                 ColorUtility.TryParseHtmlString( "#" + splt[ 4 ], out HeadColor );
-                ColorUtility.TryParseHtmlString( "#" + splt[ 5 ], out BodyColor );
-                ColorUtility.TryParseHtmlString( "#" + splt[ 6 ], out PantsColor );
+                ColorUtility.TryParseHtmlString( "#" + splt[ 5 ], out Costume1Color );
+                ColorUtility.TryParseHtmlString( "#" + splt[ 6 ], out Costume2Color );
             }
         }
 
@@ -46,8 +46,8 @@ namespace Scripts.Common.Data
             this.PantsIndex = skinData.PantsIndex;
 
             this.HeadColor = skinData.HeadColor;
-            this.BodyColor = skinData.BodyColor;
-            this.PantsColor = skinData.PantsColor;
+            this.Costume1Color = skinData.Costume1Color;
+            this.Costume2Color = skinData.Costume2Color;
         }
 
         public CurrentSkinData( UserSkinData skinData )
@@ -63,8 +63,8 @@ namespace Scripts.Common.Data
         {
             string ret = string.Format( "{0}|{1}|{2}|{3}|{4}|{5}|{6}", SkinId, HeadIndex, BodyIndex, PantsIndex,
                 ColorUtility.ToHtmlStringRGB( HeadColor ),
-                ColorUtility.ToHtmlStringRGB( BodyColor ),
-                ColorUtility.ToHtmlStringRGB( PantsColor )
+                ColorUtility.ToHtmlStringRGB( Costume1Color ),
+                ColorUtility.ToHtmlStringRGB( Costume2Color )
             );
             return ret;
         }

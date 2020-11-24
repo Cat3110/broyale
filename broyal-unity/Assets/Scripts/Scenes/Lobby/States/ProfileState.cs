@@ -5,7 +5,6 @@ using Scripts.Common.Data;
 using Scripts.Common.Tools.UI;
 using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
-using Unity.Physics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,11 +69,11 @@ namespace Scripts.Scenes.Lobby.States
             }
             else if ( selectColorForBodyPart == ( int ) SkinPart.Body )
             {
-                newSkinData.BodyColor = imageColors[ colorIndex ].color;
+                newSkinData.Costume1Color = imageColors[ colorIndex ].color;
             }
             else if ( selectColorForBodyPart == ( int ) SkinPart.Pants )
             {
-                newSkinData.PantsColor = imageColors[ colorIndex ].color;
+                newSkinData.Costume2Color = imageColors[ colorIndex ].color;
             }
 
             imagePartColors[ selectColorForBodyPart ].color = imageColors[ colorIndex ].color;
@@ -101,8 +100,8 @@ namespace Scripts.Scenes.Lobby.States
             //newSkinData.PantsColor = imagePartColors[ 2 ].color;
 
             imagePartColors[ 0 ].color = newSkinData.HeadColor;
-            imagePartColors[ 1 ].color = newSkinData.BodyColor;
-            imagePartColors[ 2 ].color = newSkinData.PantsColor;
+            imagePartColors[ 1 ].color = newSkinData.Costume1Color;
+            imagePartColors[ 2 ].color = newSkinData.Costume2Color;
 
         }
 
@@ -116,8 +115,8 @@ namespace Scripts.Scenes.Lobby.States
             var tmpSkinData = newSkinData;
             newSkinData = new CurrentSkinData( newSkin );
             newSkinData.HeadColor = tmpSkinData.HeadColor;
-            newSkinData.BodyColor = tmpSkinData.BodyColor;
-            newSkinData.PantsColor = tmpSkinData.PantsColor;
+            newSkinData.Costume1Color = tmpSkinData.Costume1Color;
+            newSkinData.Costume2Color = tmpSkinData.Costume2Color;
 
             contentFactory.SetupPlayerPersonFor( newSkinData );
             GameObject newPerson = contentFactory.GetPlayerPerson( newSkinData.SkinId );

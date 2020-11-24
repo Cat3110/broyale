@@ -49,7 +49,7 @@ public class CharactersBindData : MonoBehaviour
          }
       }
 
-        public void SetSkinPartColor( SkinPart skinPart, uint skinType, Color color )
+        /*public void SetSkinPartColor( SkinPart skinPart, uint skinType, Color color )
         {
             GameObject[] partObjs = skinPart == SkinPart.Body ? bodies : ( skinPart == SkinPart.Head ? heads : pants );
 
@@ -64,6 +64,28 @@ public class CharactersBindData : MonoBehaviour
                 shaderColorName = changedColorComp.ColorNameInShader;
             }
             meshRenderer.material.SetColor( shaderColorName, color );
+        }*/
+
+        public void SetSkinColor( SkinPart skinPart, uint skinType, Color? color1, Color? color2 )
+        {
+            if ( skinPart == SkinPart.Head && color1 == null ) return;
+            if ( skinPart != SkinPart.Head && color1 == null && color2 == null ) return;
+
+            GameObject[] partObjs = skinPart == SkinPart.Body ? bodies : ( skinPart == SkinPart.Head ? heads : pants );
+
+            GameObject skinTypeObj = partObjs[ skinType ];
+            SkinnedMeshRenderer meshRenderer = skinTypeObj.GetComponent<SkinnedMeshRenderer>();
+            if ( meshRenderer == null ) return;
+
+            if ( skinPart == SkinPart.Head )
+            {
+                meshRenderer.material.SetColor( "Color_01", color1.Value );
+            }
+            else
+            {
+                meshRenderer.material.SetColor( "Color_02", color1.Value );
+                meshRenderer.material.SetColor( "Color_03", color2.Value );
+            }
         }
 
         public void SetSkinPart( SkinPart skinPart, uint skinType )
@@ -95,16 +117,10 @@ public class CharactersBindData : MonoBehaviour
    public void AttachWeapon(GameObject weapon) => character.AttachWeapon(weapon);
    public void SetSkinType(uint skinType) => character.SetSkinType(skinType);
 
-    public void SetSkinPart( SkinPart skinPart, uint skinType )
+    public void SetSkinPart( SkinPart skinPart, uint skinType, Color? color1 = null, Color? color2 = null )
     {
         character.SetSkinPart( skinPart, skinType );
-    }
-
-    public void SetSkinPart( SkinPart skinPart, uint skinType, Color color )
-    {
-        character.SetSkinPart( skinPart, skinType );
-        character.SetSkinPartColor( skinPart, skinType, color );
-
+        character.SetSkinColor( skinPart, skinType, color1, color2 );
     }
 
    public void SetHealthBarType(HealthBarType healthBarType)
