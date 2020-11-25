@@ -57,6 +57,11 @@ namespace Scripts.Scenes.Lobby.States
             stateMachine.SetState( ( int ) LobbyState.Profile );
         }
 
+        public void OnPresssedGoToAbilities()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Abilities );
+        }
+
         private void OnPressedCreateRoom()
         {
             stateLocker.SetActive( true );

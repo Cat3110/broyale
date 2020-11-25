@@ -49,23 +49,6 @@ public class CharactersBindData : MonoBehaviour
          }
       }
 
-        /*public void SetSkinPartColor( SkinPart skinPart, uint skinType, Color color )
-        {
-            GameObject[] partObjs = skinPart == SkinPart.Body ? bodies : ( skinPart == SkinPart.Head ? heads : pants );
-
-            GameObject skinTypeObj = partObjs[ skinType ];
-            SkinnedMeshRenderer meshRenderer = skinTypeObj.GetComponent<SkinnedMeshRenderer>();
-            if ( meshRenderer == null ) return;
-
-            string shaderColorName = "Color_01";
-            CharacterPartChangedColor changedColorComp = skinTypeObj.GetComponent<CharacterPartChangedColor>();
-            if ( changedColorComp != null )
-            {
-                shaderColorName = changedColorComp.ColorNameInShader;
-            }
-            meshRenderer.material.SetColor( shaderColorName, color );
-        }*/
-
         public void SetSkinColor( SkinPart skinPart, uint skinType, Color? color1, Color? color2 )
         {
             if ( skinPart == SkinPart.Head && color1 == null ) return;
