@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Adic;
 using Scripts.Common.Data;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace Scripts.Common.ViewItems
 {
     public class LobbyContentFactory : MonoBehaviour, ILobbyContentFactory
     {
+        [Inject] private IUserData userData;
+
         [SerializeField] private GameObject[] personsPrefabs;
         [SerializeField] private Transform lobbyPersonRoot;
 
@@ -26,6 +29,12 @@ namespace Scripts.Common.ViewItems
             charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex, skinData.Costume1Color, skinData.Costume2Color );
 
             return true;
+        }
+
+        public GameObject GetPlayerPerson()
+        {
+            CurrentSkinData skinData = userData.GetSkin();
+            return GetPlayerPerson( skinData.SkinId );
         }
 
         public GameObject GetPlayerPerson( string skinId )
@@ -58,6 +67,11 @@ namespace Scripts.Common.ViewItems
             }
 
             lobbyPlayerSkin = "";
+        }
+
+        private void Start()
+        {
+            this.Inject();
         }
     }
 }

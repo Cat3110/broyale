@@ -6,6 +6,7 @@ namespace Scripts.Common.ViewItems
 {
     public interface ILobbyContentFactory
     {
+        GameObject GetPlayerPerson();
         GameObject GetPlayerPerson( string skinId );
         bool SetupPlayerPersonFor( CurrentSkinData skinData );
     }
