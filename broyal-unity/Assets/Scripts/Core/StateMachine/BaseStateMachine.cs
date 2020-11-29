@@ -15,6 +15,7 @@ namespace Scripts.Core.StateMachine
 		private List<IStateMachineState> states = new List<IStateMachineState>();
 		private IStateMachineState state = null;
 		private int curState = -1;
+        private int prevState = -1;
 
 		private bool nowNextStateActual = false;
 		private int nextStateTmp = -1;
@@ -22,6 +23,8 @@ namespace Scripts.Core.StateMachine
 
 		public bool OnlyComponent { get { return onlyComponent; } set { onlyComponent = true; } }
 		public int State { get { return curState; } }
+        public int PrevState { get { return prevState; } }
+
         public event Action<int,int> OnChangeState = delegate{};
 
         protected virtual void _OnChangeState( int prevState, int newState ) {}
@@ -103,7 +106,7 @@ namespace Scripts.Core.StateMachine
 			int _state = nextStateTmp;
 			object[] args = nextArgsTmp;
 
-			int prevState = curState;
+			prevState = curState;
 
 			if (state != null)
 			{

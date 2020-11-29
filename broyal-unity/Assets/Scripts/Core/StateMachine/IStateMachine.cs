@@ -7,6 +7,7 @@ namespace Scripts.Core.StateMachine
 {
 	public interface IStateMachine
 	{
+        int PrevState { get; }
 		int State { get; }
 		void SetState( int state, params object[] args );
         IStateMachineState GetState( int state );

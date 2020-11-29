@@ -16,7 +16,8 @@ namespace Scripts.Scenes.Lobby
         Init,
         Main,
         Profile,
-        Abilities
+        Abilities,
+        Settings
     }
 
     public class LobbyController : BaseStateMachine

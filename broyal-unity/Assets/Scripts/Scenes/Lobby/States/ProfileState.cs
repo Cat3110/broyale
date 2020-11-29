@@ -52,6 +52,11 @@ namespace Scripts.Scenes.Lobby.States
             userData.SetSkin( newSkinData );
         }
 
+        public void OnPressedGoToSettings()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Settings );
+        }
+
         public void OnPressedOpenPaletteFor( int bodyPartIndex )
         {
             selectColorForBodyPart = bodyPartIndex;

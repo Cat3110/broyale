@@ -22,7 +22,6 @@ namespace Scripts.Scenes.Lobby.States
 
             skinPerson = contentFactory.GetPlayerPerson();
             skinPerson.SetActive( false );
-            
         }
 
         public override void OnEndState()
@@ -30,6 +29,11 @@ namespace Scripts.Scenes.Lobby.States
             base.OnEndState();
 
             skinPerson.SetActive( true );
+        }
+
+        public void OnPressedGoToSettings()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Settings );
         }
 
         public void OnPressedBackToMainmenu()
