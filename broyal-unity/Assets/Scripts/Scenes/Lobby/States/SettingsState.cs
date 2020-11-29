@@ -17,6 +17,7 @@ namespace Scripts.Scenes.Lobby.States
         [SerializeField] private Button[] musicButtons;
         [SerializeField] private Button[] soundButtons;
         [SerializeField] private Button[] fbButtons;
+        [SerializeField] private GameObject[] commonBlocks; // main and change lang
 
         private int prevState = -1;
         private GameObject skinPerson = null;
@@ -24,6 +25,7 @@ namespace Scripts.Scenes.Lobby.States
         private int iMusicState = 0;
         private int iSoundState = 1;
         private int iFBState = 0;
+        private int iCommonState = 0;
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
@@ -68,6 +70,18 @@ namespace Scripts.Scenes.Lobby.States
             UpdateButtons();
         }
 
+        public void OnPressedGoToChangeLanguage()
+        {
+            iCommonState = 1;
+            UpdateButtons();
+        }
+
+        public void OnPressedSelectLanguage( int iSelectedLang )
+        {
+            iCommonState = 0;
+            UpdateButtons();
+        }
+
         private void UpdateButtons()
         {
             musicButtons[ 0 ].gameObject.SetActive( iMusicState == 0 );
@@ -78,6 +92,9 @@ namespace Scripts.Scenes.Lobby.States
 
             fbButtons[ 0 ].gameObject.SetActive( iFBState == 0 );
             fbButtons[ 1 ].gameObject.SetActive( iFBState == 1 );
+
+            commonBlocks[ 0 ].SetActive( iCommonState == 0 );
+            commonBlocks[ 1 ].SetActive( iCommonState == 1 );
         }
     }
 }
