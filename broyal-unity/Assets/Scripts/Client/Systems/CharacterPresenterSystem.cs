@@ -201,7 +201,7 @@ public class CharacterPresenterSystem : ComponentSystem
             {
                 //TODO: Unable to reload netcode worlds _(
                 //_uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
-                Application.Quit();
+                _uiController.GameOver.Show( () => Application.Quit() );
             }
         }
 

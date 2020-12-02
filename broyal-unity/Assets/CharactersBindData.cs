@@ -1,6 +1,5 @@
 ﻿using System;
 using Scripts.Common.Data;
-using Scripts.Common.Tools.UI;
 using UnityEngine;
 
 public class CharactersBindData : MonoBehaviour
@@ -102,11 +101,11 @@ public class CharactersBindData : MonoBehaviour
    public void SetSkinType(uint skinType) => character.SetSkinType(skinType);
 
    public void SetSkinData(CurrentSkinData skinData)
-    {
-       SetSkinPart( SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
-       SetSkinPart( SkinPart.Body, skinData.BodyIndex, skinData.Costume1Color );
-       SetSkinPart( SkinPart.Pants, skinData.PantsIndex, skinData.Costume2Color );
-    }
+   {
+      SetSkinPart( SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
+      SetSkinPart( SkinPart.Body, skinData.BodyIndex, skinData.Costume1Color, skinData.Costume2Color );
+      SetSkinPart( SkinPart.Pants, skinData.PantsIndex, skinData.Costume1Color, skinData.Costume2Color );
+   }
 
     public void SetSkinPart( SkinPart skinPart, uint skinType, Color? color1 = null, Color? color2 = null )
     {
