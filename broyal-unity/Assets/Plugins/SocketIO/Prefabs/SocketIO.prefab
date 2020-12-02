@@ -50,5 +50,5 @@ MonoBehaviour:
   ackExpirationTime: 30
   pingInterval: 25
   pingTimeout: 60
-  useDevServer: 1
+  useDevServer: 0
   isOpen: 0
