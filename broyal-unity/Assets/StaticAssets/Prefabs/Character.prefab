@@ -136,6 +136,9 @@ MonoBehaviour:
     - name: SkinId
       quantization: -1
       interpolate: 0
+    - name: SkinSetting
+      quantization: -1
+      interpolate: 0
     manualFieldList: 1
     entityIndex: 0
   - name: Unity.Transforms.LocalToWorld

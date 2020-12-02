@@ -354,9 +354,13 @@ public class MoveSystem : SystemBase
             {
                 attack.AttackDirection = new float2(input.attackDirectionX / 10.0f, input.attackDirectionY / 10.0f);
             }
+            else
+            {
+                attack.AttackDirection = direction;
+            }
 
             if (input.attackType == 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
-            {
+            { 
                 //Debug.Log(
                 //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using Adic;
 using Scripts.Common.Data;
 using UnityEngine;
@@ -23,11 +22,7 @@ namespace Scripts.Common.ViewItems
 
             CharactersBindData charBindData = personObj.GetComponent<CharactersBindData>();
             if ( charBindData == null ) return false;
-
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Body, skinData.BodyIndex, skinData.Costume1Color, skinData.Costume2Color );
-            charBindData.SetSkinPart( CharactersBindData.SkinPart.Pants, skinData.PantsIndex, skinData.Costume1Color, skinData.Costume2Color );
-
+            charBindData.SetSkinData( skinData );
             return true;
         }
 

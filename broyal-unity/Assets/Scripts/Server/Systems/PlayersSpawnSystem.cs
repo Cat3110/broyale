@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using Bootstrappers;
 using RemoteConfig;
+using Scripts.Common.Data;
+using Scripts.Common.Data.Data;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,7 +16,8 @@ public class PlayerSpawnServerSystem : ComponentSystem
 {
     private EntityQuery _query;
     private AppConfig _appConfig => ServerBootstrapper.Container.Resolve<AppConfig>();
-    
+    private MainConfig _mainConfig => BaseBootStrapper.Container.Resolve<MainConfig>();
+    private IGlobalSession _globalSession => MainContainer.Container.Resolve<IGlobalSession>();
     protected override void OnCreate()
     {
         RequireSingletonForUpdate<EnableDOTSGhostSendSystemComponent>();
@@ -30,7 +33,24 @@ public class PlayerSpawnServerSystem : ComponentSystem
         Entities.WithNone<SendRpcCommandRequestComponent>()
             .ForEach((Entity reqEnt, ref PlayerSpawnRequest req, ref ReceiveRpcCommandRequestComponent reqSrc) =>
             {
-                var character = _appConfig.Characters[0];
+                var characterInfo  = _appConfig.Characters[0];
+                
+                var userId = req.userId.ToString();
+                var mainSkillId = req.skillId;
+                var characterNameId = req.characterId;
+                var skinId = req.skinId;
+                NativeString64 skinSetting = "";
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var character = _globalSession.CharactersInGame.First(c => c.user_id == userId);
+                    var skinData = new CurrentSkinData(character);
+                    
+                    mainSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.main_skill);
+                    characterNameId = _mainConfig.GetNameId(character.sex == "male" ? "ID_MALE" : "ID_FEMALE").Id;
+                    skinSetting = new CurrentSkinData(character).ToString();
+                }
+                
                 
                 UnityEngine.Debug.Log(
                     $"Server setting connection {EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value} to in game");
@@ -53,13 +73,12 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 
                 EntityManager.SetComponentData(player, new Translation{ Value = spawnPosition.Value});
                 EntityManager.SetComponentData(player, new PlayerData{ 
-                    maxHealth = character.Health, 
-                    health = character.Health,
-                    power = character.Power,
-                    magic = character.Magic,
-                    primarySkillId = req.skillId});
-                EntityManager.SetComponentData(player, 
-                    new PrefabCreator{ NameId = req.characterId, SkinId = req.skinId } );
+                    maxHealth = characterInfo.Health, 
+                    health = characterInfo.Health,
+                    power = characterInfo.Power,
+                    magic = characterInfo.Magic,
+                    primarySkillId = mainSkillId});
+                EntityManager.SetComponentData(player, new PrefabCreator{ NameId = characterNameId, SkinId = skinId, SkinSetting = skinSetting} );
                 EntityManager.SetComponentData(player, 
                     new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
 

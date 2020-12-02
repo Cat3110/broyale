@@ -20,6 +20,7 @@
 
         T Resolve<T>();
         bool TryResolve(Type service, out object obj);
+        bool TryResolve<T>(out T service);
         object ResolveGeneric(Type genericType, Type arg);
         object Resolve(Type type);
         void Inject(object instance);
@@ -139,6 +140,14 @@
             }
             throw new Exception("Service not found: " + service);
         }
+        
+        public bool TryResolve<T>(out T service)
+        {
+            var result = TryResolve(typeof (T), out object obj);
+            service = (T)obj;
+            return result;
+        }
+
         
         public bool TryResolve(Type service, out object obj)
         {

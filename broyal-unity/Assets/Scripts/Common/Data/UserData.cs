@@ -1,4 +1,6 @@
 ﻿
+using System;
+using SocketIO.Data.Responses;
 using UnityEngine;
 
 namespace Scripts.Common.Data
@@ -21,12 +23,27 @@ namespace Scripts.Common.Data
             Save();
         }
 
+        public Character[] GetCharacters()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Character GetCurrentCharacter()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SetCurrentCharacter(int index)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Save()
         {
             PlayerPrefs.SetString( USER_PROFILE, myCurrentSkin.ToString() );
         }
 
-        public void Load()
+        public void Load(Action<bool> onComplete)
         {
             if ( PlayerPrefs.HasKey( USER_PROFILE ) )
             {
@@ -40,6 +57,8 @@ namespace Scripts.Common.Data
                 ColorUtility.TryParseHtmlString( "#916ae5", out myCurrentSkin.Costume1Color );
                 ColorUtility.TryParseHtmlString( "#ce9260", out myCurrentSkin.Costume2Color );
             }
+            
+            onComplete?.Invoke(true);
         }
     }
 }

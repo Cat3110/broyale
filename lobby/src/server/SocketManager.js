@@ -4,14 +4,15 @@ const Game = require('./Game');
 var exec = require('child_process').execFile;
 var assert = require('assert');
 
-const { VERIFY_USER, USER_CONNECTED, USER_DISCONNECTED, 
+const { VERIFY_USER, LOGIN_WITH_DEVICEID, GET_CHARACTERS, SET_CHARACTER, USER_CONNECTED, USER_DISCONNECTED, 
 		LOGOUT, COMMUNITY_CHAT, MESSAGE_RECIEVED, MESSAGE_SENT,
 		TYPING, CREATE_GAME, GAME_OVER, SERVER_UPDATE, GAME_UPDATE,
 		PLAYER_INPUT, ACTIVE_GAME, START_GAME, CLIENT_ADDED,
 		UPDATE_LIST, WINNER, LOSER,LEAVE
 	} = require('../Events')
 
-const { createUser, createMessage, createChat, createGame } = require('../Factories')
+const { createUser, createMessage, createChat, createGame } = require('../Factories');
+const { db } = require('./index.js');
 
 let connectedUsers = { }
 let counter = 0
@@ -37,6 +38,55 @@ module.exports = function(socket){
 		}
 	})
 
+	socket.on(LOGIN_WITH_DEVICEID, async (deviceId, callback)=>{
+		var user = await User.findOne({ device_id: deviceId });		
+		if(user == null){
+			const newUser = { device_id: deviceId }
+			user = await new User(newUser).save()
+			const character =  await new Character({user_id:user._id}).save()
+			callback({ status: 200, data:{ is_new:true, user:user } })
+		}else callback({ status: 200,  data:{ is_new:false, user:user} })
+
+		socket.dbUser = user
+
+		user.last_login_at = Date.now()
+		user.save()
+	})
+
+	//With verified user
+	socket.on(GET_CHARACTERS, async(character, callback)=>{
+		if("dbUser" in socket){
+			var characters = await Character.find({ user_id: socket.dbUser._id });
+			callback({ status: 200, data:{ characters: characters } })
+		}else{
+			callback({ status: 401 })
+		}
+	})
+
+	socket.on(SET_CHARACTER, async(character, callback)=>{
+		if("dbUser" in socket){
+			var dbCharacter = await Character.findOne({ user_id: socket.dbUser._id, _id: character._id });
+			dbCharacter.sex = character.sex
+			dbCharacter.skin_id = character.skin_id
+
+			dbCharacter.head_type = character.head_type
+			dbCharacter.body_type = character.body_type
+			dbCharacter.pants_type = character.pants_type
+
+			dbCharacter.head_color = character.head_color
+			dbCharacter.body_color = character.body_color
+			dbCharacter.pants_color = character.pants_color
+
+			dbCharacter.skill_set = character.skill_set
+
+			dbCharacter.save()
+
+			callback({ status: 200, data:{ character: dbCharacter } })
+		}else{
+			callback({ status: 401 })
+		}
+	})
+
 	//User Connects with username
 	socket.on(USER_CONNECTED, (user)=>{
 		connectedUsers = addUser(connectedUsers, user)
@@ -48,7 +98,6 @@ module.exports = function(socket){
 		io.emit(USER_CONNECTED, connectedUsers)
 		io.emit(SERVER_UPDATE, getUpdatedList())
 		console.log(connectedUsers);
-
 	})
 	
 	//User disconnects
@@ -60,7 +109,6 @@ module.exports = function(socket){
 			console.log("Disconnect", connectedUsers);
 		}
 	})
-
 
 	//User logsout
 	// socket.on(LOGOUT, ()=>{
@@ -117,36 +165,46 @@ module.exports = function(socket){
 		io.emit(SERVER_UPDATE, getUpdatedList())		
 	})
 
-	socket.on(START_GAME, ({gameId, user},callback)=>{
-		for (const game of games) {
-			if(game.getId()===gameId){				
-				var rport = game.getServerInfo().port
-				var isWin = process.platform === "win32"
-				var processName = isWin ? "broyal-server.exe" : "broyal-server.x86_64"
+	socket.on(START_GAME, async (gameId,callback)=>{
+		if("dbUser" in socket)
+		{
+			const user = socket.dbUser
+			for (const game of games) {
+				if(game.getId()===gameId){				
+					var rport = game.getServerInfo().port
+					var isWin = process.platform === "win32"
+					var processName = isWin ? "broyal-server.exe" : "broyal-server.x86_64"
 
-				const lateServStarter = later(15000)
-						.then(msg => 
-						{
-							execute(processName, ['--port', rport], "../server-linux")
-							.then((info) => { 
-								console.log("Server started: ", info)
-								return info
+					const lateServStarter = later(15000)
+							.then(msg => 
+							{
+								execute(processName, ['--port', rport, '--gameid', gameId], "../server-linux")
+								.then((info) => { 
+									console.log("Server started: ", info)
+									return info
+								})
+								.catch(error => {console.log(error.message)})
+
+								console.log(processName + " on port " + rport + " started")
 							})
-							.catch(error => {console.log(error.message)})
+							.catch(() => { console.log("cancelled"); })								
+				
+					game.startGame(10);
+					io.emit(GAME_UPDATE, getGameInfo(game))	
 
-							console.log(processName + " on port " + rport + " started")
-						})
-						.catch(() => { console.log("cancelled"); })
+					var dbGame = getGameInfo(game);	
+					dbGame.gid = dbGame.id
+					var newGame = await new Games(dbGame)
+					//newGame.anything = game
+					//newGame.markModified('anything');
+					newGame.save()
 
-							
-
-				game.startGame(10);
-				io.emit(GAME_UPDATE, getGameInfo(game))	
-				callback({time:10, address:"127.0.0.1", port:rport})
-				break						
+					callback({ status: 200, data:{ time:10, address:"127.0.0.1", port:rport }})
+					break						
+				}
 			}
-		}
-		io.emit(SERVER_UPDATE, getUpdatedList())		
+			io.emit(SERVER_UPDATE, getUpdatedList())
+		}else callback({ status: 401 })		
 	})
 
 	socket.on(PLAYER_INPUT, ({gameId, message, user})=>{
@@ -164,21 +222,26 @@ module.exports = function(socket){
 		}
 	})
 
-	socket.on(CREATE_GAME, ({gameName, user}, callback)=>{
-		counter++
-		let game = Game.create({counter,user})
-		game.addPlayer(user)
-		socket.emit(`${CLIENT_ADDED}-${user.id}`, {
-			id: game.getId(),
-			name: game.getName(),
-			gameStarted: game.isStarted(),
-			turn: game.getTurn(),
-			users: game.getUsersToJSON(),
-			gameState: game.getCurrentStateToJSON()
-		})
-		games.add(game)
-		io.emit(SERVER_UPDATE, getUpdatedList())
-		callback(game)
+	socket.on(CREATE_GAME, (gameName, callback)=>{
+		if("dbUser" in socket){
+			const user = socket.dbUser
+			counter++
+			let game = Game.create({counter,user})
+			game.addPlayer(user)
+			socket.emit(`${CLIENT_ADDED}-${user.id}`, {
+				id: game.getId(),
+				name: game.getName(),
+				gameStarted: game.isStarted(),
+				turn: game.getTurn(),
+				users: game.getUsersToJSON(),
+				gameState: game.getCurrentStateToJSON()
+			})
+			games.add(game)
+			io.emit(SERVER_UPDATE, getUpdatedList())
+			callback({ status: 200, data:{ game: game } })
+		}else{
+			callback({ status: 401 })
+		}		
 	})
 
 	socket.on(UPDATE_LIST, ()=>{

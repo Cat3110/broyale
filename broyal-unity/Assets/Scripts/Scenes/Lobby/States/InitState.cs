@@ -1,13 +1,15 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using Adic;
+using Bootstrappers;
 using Scripts.Common.Data;
+using Scripts.Common.Data.Data;
 using Scripts.Common.Tools.UI;
 using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using SocketIO;
+using SocketIOExt;
 using UnityEngine;
 
 namespace Scripts.Scenes.Lobby.States
@@ -25,8 +27,8 @@ namespace Scripts.Scenes.Lobby.States
         {
             base.OnStartState( stateMachine, args );
             this.Inject();
-
-            userData.Load();
+            
+            //userData.Load();
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
@@ -54,17 +56,30 @@ namespace Scripts.Scenes.Lobby.States
             {
                 yield return new WaitForSeconds( 0.5f );
             }
-        
-            var login = $"{Application.platform}-{SystemInfo.deviceName}-{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}";
-            _socket.Emit( LobbyEvents.VERIFY_USER, login, (userResponse) => {
 
-                ( stateMachine as LobbyController ).user = userResponse.list?.First()["user"]; // ERESH fix it
-                _socket.Emit( LobbyEvents.USER_CONNECTED, ( stateMachine as LobbyController ).user ); // ERESH fix it
-            
-                //Debug.Log(LobbyEvents.USER_CONNECTED + user);
-                ToNextState();
-            });
+            var deviceId = SystemInfo.deviceUniqueIdentifier;
 
+            _socket.LoginWithDeviceId(deviceId, (response) =>
+            {
+                ((LobbyController)stateMachine).userData = response;
+                
+                userData.Load((status) =>
+                {
+                    if (status)
+                    {
+                        var newSession = new GlobalSession
+                        {
+                            User = response,
+                            Character = userData.GetCurrentCharacter()
+                        };
+                        MainContainer.Container.Register<IGlobalSession>(newSession);
+                        
+                        ToNextState();
+                    }
+                    //TODO: else ErrorStat?
+                });
+                
+            }, () => Debug.LogError("LoginWithDeviceId failed"));
         }
     }
 }

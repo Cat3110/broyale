@@ -7,9 +7,11 @@ using TMPro;
 using FullSerializer;
 using UnityEngine;
 using System.Collections;
+using Bootstrappers;
 using UnityEngine.SceneManagement;
 using Scripts.Common.Data.Data;
 using Scripts.Common.Data;
+using SocketIOExt;
 
 namespace Scripts.Scenes.Lobby.States
 {
@@ -71,49 +73,29 @@ namespace Scripts.Scenes.Lobby.States
         {
             stateLocker.SetActive( true );
 
-            var user = ( stateMachine as LobbyController ).user;
+            var user = ( stateMachine as LobbyController ).userData._id;
             var gameName = $"{user}{DateTime.Now}";
-            var json = new JSONObject();
-            json.SetField("gameName", gameName);
-            json.SetField("user", user);
-     
-            _socket.Emit(LobbyEvents.CREATE_GAME, json, (response) =>
+            
+            _socket.CreateGame(gameName, (response) =>
             {
-                //{"id":"030e2ab1-9fe6-49f7-b8fb-fe54b076c3bb",
-                //"name":"Game 1","gameUsers":[{"id":"28e51e1d-75fd-435f-8487-97e3e04d4996","name":"WindowsEditor-MSI","icon":"X"}]}
-                var users = response.list.First()["gameUsers"].list;
-                currentGameName = response.list.First()["name"].str;
-                currentGameId = response.list.First()["id"].str;
-                //UpdateUsers( users.Select( u => u["name"].str ) );
-                //SetInRoom( currentGameName, true );
-                Debug.Log($"CREATE_GAME {response}");
-
+                Debug.Log($"CreateGame => {response}");
+                
+                var users = response.game.gameUsers;
+                currentGameName = response.game.name;
+                currentGameId = response.game.id;
+                
+                MainContainer.Container.Resolve<IGlobalSession>().Game = response.game;
+                
                 OnPressedStartGame();
-            });
+            }, () => Debug.LogError("CreateGame failed"));
         }
 
         private void OnPressedStartGame()
         {
-            var user = ( stateMachine as LobbyController ).user;
-
-            string encodedString = "{\"gameId\": \"previousGame\",\"previousGame\": \"none\"}";
-        
-            var json = new JSONObject(encodedString);
-            json.SetField("user", user);
-            json["gameId"].str = currentGameId;
-
-     
-            _socket.Emit(LobbyEvents.START_GAME, json, (response) =>
+            _socket.StartGame(currentGameId, (response) =>
             {
-                //{"id":"030e2ab1-9fe6-49f7-b8fb-fe54b076c3bb",
-                //"name":"Game 1","gameUsers":[{"id":"28e51e1d-75fd-435f-8487-97e3e04d4996","name":"WindowsEditor-MSI","icon":"X"}]}
-                // var users = response.list.First()["gameUsers"].list;
-                // currentGameName = response.list.First()["name"].str;
-                // currentGameId = response.list.First()["id"].str;
-                // _uiController.Lobby.UpdateUsers( users.Select( u => u["name"].str) );
-                // _uiController.Lobby.SetInRoom(currentGameName, true);
-                Debug.Log($"START_GAME {response}");
-            });
+                Debug.Log($"StartGame => {response}");
+            }, () => Debug.LogError("SetCharacter failed"));
         }
     
         private void OnServerUpdate( SocketIOEvent obj )
@@ -151,8 +133,12 @@ namespace Scripts.Scenes.Lobby.States
                 time -= 1;
                 SetTimer((int)time);
             }
-
-            SceneManager.LoadScene( 1 );
+#if UNITY_EDITOR
+            SceneManager.LoadScene("PreviewClientServer");
+            
+#else
+            SceneManager.LoadScene("Client");
+#endif
         }
 
         private void SetTimer( int time )

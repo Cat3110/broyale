@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Scripts.Common.Data.Data;
+using SocketIO.Data.Responses;
 using UniRx;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -33,55 +35,82 @@ namespace Bootstrappers
         
         private World _world;
         private EntityManager _entityManager;
+        private AppConfig _appConfig;
         
         private void OnConfigLoaded(string jsonConfig)
         {
-            var appConfig = new AppConfig();
+            _appConfig = new AppConfig();
                 
             if (!string.IsNullOrEmpty(jsonConfig))
             {
-                appConfig.Load(jsonConfig);
+                _appConfig.Load(jsonConfig);
             }
 
             if (!string.IsNullOrEmpty(GlobalSettings.ServerAddress))
             {
-                appConfig.Main.ServerAddress = GlobalSettings.ServerAddress;
+                _appConfig.Main.ServerAddress = GlobalSettings.ServerAddress;
             }
             
             if (GlobalSettings.ServerPort.HasValue)
             {
-                appConfig.Main.ServerPort = GlobalSettings.ServerPort.Value;
+                _appConfig.Main.ServerPort = GlobalSettings.ServerPort.Value;
             }
             
-            Container.Register(appConfig);
+            Container.Register(_appConfig);
             
             uiController.LoadingUI.Hide();
-            uiController.MainUI.Show(appConfig.Characters, appConfig.Skills.Take(4).Select( c => c.Id).ToList());
 
+            Container.TryResolve(out IGlobalSession globalSession);
 
-            uiController.MainUI.OnGameStarted += (skillId, character) =>
+            if (globalSession!= null && globalSession.IsValid) StartBattle(_appConfig, globalSession.User, globalSession.Character);
+            else
             {
-                Container.Register(new Session
-                {
-                    SkillId = appConfig.Skills.FindIndex( s => s.Id == skillId),
-                    Character = character,
-                } );
+                uiController.MainUI.Show(_appConfig.Characters, _appConfig.Skills.Take(4).Select(c => c.Id).ToList());
+                uiController.MainUI.OnGameStarted += StartLocalBattle;
+            }
+        }
+        
+        private void StartBattle(AppConfig appConfig, User globalUser, Character globalCharacter)
+        {
+            Container.Register(new Session {UserId = globalUser._id} );
+            
+            uiController.LoadingUI.Show();
+
+            //TODO: need to find way for make it better
+            Observable.Timer(TimeSpan.FromSeconds(1))
+                .Subscribe(
+                    (x) => { }, 
+                    () => {  
+                        Container.Resolve<InputMaster>().Enable();
+                        uiController.LoadingUI.Hide();
+                        uiController.GameUI.Show(globalCharacter.skill_set.main_skill); })
+                .AddTo(this);
+
+            InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
+        } 
+
+
+        private void StartLocalBattle(string skillId, RemoteConfig.CharacterInfo character)
+        {
+            Container.Register(new Session {
+                SkillId = _appConfig.Skills.FindIndex( s => s.Id == skillId),
+                Character = character
+            } );
                 
-                uiController.MainUI.Hide();
-                uiController.LoadingUI.Show();
+            uiController.MainUI.Hide();
+            uiController.LoadingUI.Show();
 
-                //TODO: need to find way for make it better
-                Observable.Timer(TimeSpan.FromSeconds(1))
-                    .Subscribe(
-                        (x) => { }, 
-                        () => {  
-                            Container.Resolve<InputMaster>().Enable();
-                            uiController.LoadingUI.Hide();
-                            uiController.GameUI.Show(skillId); })
-                    .AddTo(this);
+            //TODO: need to find way for make it better
+            Observable.Timer(TimeSpan.FromSeconds(1))
+                .Subscribe(
+                    (x) => { }, 
+                    () => {  
+                        Container.Resolve<InputMaster>().Enable();
+                        uiController.LoadingUI.Hide();
+                        uiController.GameUI.Show(skillId); })
+                .AddTo(this);
 
-                InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, appConfig.Main.ServerPort);
-            };
+            InitWorlds( useLocalServer ? "127.0.0.1" : _appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
         }
 
         private void InitWorlds(string address, ushort port)
@@ -89,6 +118,8 @@ namespace Bootstrappers
             foreach (var world in World.All)
             {
                 if (world.GetExistingSystem<ClientSimulationSystemGroup>() == null) continue;
+                
+                //world.EntityManager.DestroyEntity(world.EntityManager.UniversalQuery);
                 
                 var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
                 if (ConnectToServer(network, address, port))
@@ -201,7 +232,12 @@ namespace Bootstrappers
         
         private void OnDestroy()
         {
-          
+            _entityManager.CompleteAllJobs();
+            
+            World.DefaultGameObjectInjectionWorld.EntityManager
+                .DestroyEntity(World.DefaultGameObjectInjectionWorld.EntityManager.UniversalQuery);
+
+            _entityManager.DestroyEntity(_entityManager.UniversalQuery);
         }
     }
 }

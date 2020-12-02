@@ -18,6 +18,7 @@ public struct PrefabCreator : IComponentData
     public uint NameId;
     
     public uint SkinId;
+    public NativeString64 SkinSetting;
 }
 
 public struct PrefabCreatorComplite : IComponentData

@@ -1,13 +1,11 @@
-﻿using System.Linq;
-using Bootstrappers;
-using RemoteConfig;
-using UniRx.Async.Triggers;
+﻿using Bootstrappers;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public struct CharacterPresenter : IComponentData
 {
@@ -27,8 +25,9 @@ public struct StateComponent : ISystemStateComponentData
 [DisableAutoCreation]
 public class CharacterPresenterSystem : ComponentSystem
 {
-    private const float RotationSpeed = 10.0f;
-
+    private const float RotationSpeed = 20.0f;
+    private const float MoveSpeed = 16.0f;
+    
     private EntityQuery _group;
 
     private static readonly int Speed = Animator.StringToHash("Speed");
@@ -96,7 +95,7 @@ public class CharacterPresenterSystem : ComponentSystem
 
             //bindData.Animator.SetFloat(Speed, dist > 0.2f ? 1.0f : 0.0f);
 
-            go.transform.position = Vector3.Lerp(go.transform.position, translation.Value, deltaTime * 9.0f);
+            go.transform.position = Vector3.Lerp(go.transform.position, translation.Value, deltaTime * MoveSpeed);
             //go.transform.position = translation.Value;
 
             _uiController.SetPlayerGo(go);
@@ -195,8 +194,15 @@ public class CharacterPresenterSystem : ComponentSystem
                 data.DamageTransId = damage.Seed;
                 EntityManager.SetComponentData(e, data);
             }
-
+            
             bindData.Animator.SetBool(Death, player.health <= 0.0f);
+            
+            if (player.health <= 0.0f)
+            {
+                //TODO: Unable to reload netcode worlds _(
+                //_uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
+                Application.Quit();
+            }
         }
 
         groupEntities.Dispose();

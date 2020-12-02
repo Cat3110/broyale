@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using UniRx.Async;
+using Unity.Collections;
 using UnityEngine.Networking;
 
 namespace RemoteConfig
@@ -159,5 +160,6 @@ namespace RemoteConfig
     {
         public int SkillId { get; set; }
         public CharacterInfo Character { get; set; }
+        public NativeString64 UserId { get; set; }
     }
 }

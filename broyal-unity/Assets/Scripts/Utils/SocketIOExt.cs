@@ -1,0 +1,154 @@
+﻿using System;
+using System.Linq;
+using FullSerializer;
+using Scripts.Common.Data;
+using Scripts.Scenes.Lobby;
+using SocketIO;
+using SocketIO.Data.Responses;
+
+namespace SocketIOExt
+{
+    public static class EventSerialize
+    {
+        static fsSerializer serializer = new fsSerializer();
+
+        public static string ToJson<T>(this T @event, bool prettyJson = false) where T : class
+        {
+            var result = serializer.TrySerialize(@event, out fsData fsData);
+        
+            if (result.Succeeded)
+            {
+                return prettyJson ? fsJsonPrinter.PrettyJson(fsData) : fsJsonPrinter.CompressedJson(fsData);
+            }
+            else
+            {
+                throw result.AsException;
+            }
+        }
+
+        public static T ToResponse<T>(this string data) where T : BaseResponse, new()
+        {
+            var result = fsJsonParser.Parse(data, out fsData fsData);
+
+            if (result.Succeeded)
+            {
+                var response = new T();
+                result = serializer.TryDeserialize(fsData, ref response);
+
+                return result.Succeeded ? response : throw result.AsException;
+            }
+            else
+            {
+                throw result.AsException;
+            }
+        }
+
+        public static BaseResponse ToBaseResponse(this string data)
+        {
+            var result = fsJsonParser.Parse(data, out fsData fsData);
+
+            if (result.Succeeded)
+            {
+                var response = new BaseResponse();
+                result = serializer.TryDeserialize(fsData, ref response);
+
+                return result.Succeeded ? response : null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        // public static BaseEvent ToEventResponse(this string data)
+        // {
+        //     var result = fsJsonParser.Parse(data, out fsData fsData);
+        //
+        //     if (result.Succeeded)
+        //     {
+        //         var response = new BaseEvent();
+        //         result = serializer.TryDeserialize(fsData, ref response);
+        //
+        //         return result.Succeeded ? response : null;
+        //     }
+        //     else
+        //     {
+        //         return null;
+        //     }
+        // }
+        
+        public static void Emit<TR>(this SocketIOComponent socket, string ev, string data, Action<TR> callback)
+            where TR : BaseResponse, new()
+        {
+            socket.Emit(ev, data, (obj) => obj.ToResponse(callback) );
+        }
+        
+        public static void Emit<TR>(this SocketIOComponent socket, string ev, JSONObject data, Action<TR> callback)
+            where TR : BaseResponse, new()
+        {
+            socket.Emit(ev, data, (obj) => obj.ToResponse(callback) );
+        }
+        
+        public static void ToResponse<TR>(this JSONObject objectResponse, Action<TR> callback)
+            where TR : BaseResponse, new()
+        {
+            var json = objectResponse.ToString();
+            if (json.StartsWith("["))
+            {
+                json = json.TrimStart(new char[] {'['});
+                json = json.TrimEnd(new char[] {']'});
+            }
+
+            var firstResponse = json.ToResponse<TR>();
+            callback(firstResponse);
+        }
+        
+        public static void LoginWithDeviceId(this SocketIOComponent socket, string deviceId, Action<SocketIO.Data.Responses.User> onSuccess, Action onError)
+        {
+            socket.Emit<VerifyResponse>(LobbyEvents.LOGIN_WITH_DEVICEID, deviceId, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response.data.user);
+                else onError?.Invoke();
+            });
+        }
+        
+        public static void GetCharacters(this SocketIOComponent socket, string id, Action<Character[]> onSuccess, Action onError)
+        {
+            socket.Emit<CharactersResponse>(LobbyEvents.GET_CHARACTERS, id, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response.data.characters);
+                else onError?.Invoke();
+            });
+        }
+        
+        public static void SetCharacter(this SocketIOComponent socket, Character character, Action<BaseResponse> onSuccess, Action onError)
+        {
+            var json = character.ToJson();
+            var jsObject = new JSONObject(json);
+
+            socket.Emit<BaseResponse>(LobbyEvents.SET_CHARACTER, jsObject, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response);
+                else onError?.Invoke();
+            });
+        }
+        
+        public static void CreateGame(this SocketIOComponent socket, string gameName, Action<CreateGameResponse.Data> onSuccess, Action onError)
+        {
+            socket.Emit<CreateGameResponse>(LobbyEvents.CREATE_GAME, gameName, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response.data);
+                else onError?.Invoke();
+            });
+        }
+        
+        public static void StartGame(this SocketIOComponent socket, string gameId, Action<StartGameResponse.Data> onSuccess, Action onError)
+        {
+            socket.Emit<StartGameResponse>(LobbyEvents.START_GAME, gameId, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response.data);
+                else onError?.Invoke();
+            });
+        }
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 
@@ -8,6 +9,7 @@ public struct PlayerSpawnRequest : IRpcCommand
     public int skillId;
     public uint characterId;
     public uint skinId;
+    public NativeString64 userId;
     
     [BurstCompile]
     private static void InvokeExecute(ref RpcExecutor.Parameters parameters)
@@ -25,6 +27,7 @@ public struct PlayerSpawnRequest : IRpcCommand
         writer.WriteInt(skillId);
         writer.WriteInt((int)characterId);
         writer.WriteInt((int)skinId);
+        writer.WriteString(userId);
     }
 
     public void Deserialize(ref DataStreamReader reader)
@@ -32,6 +35,7 @@ public struct PlayerSpawnRequest : IRpcCommand
         skillId = reader.ReadInt();
         characterId = (uint)reader.ReadInt();
         skinId = (uint)reader.ReadInt();
+        userId = reader.ReadString();
     }
 }
 

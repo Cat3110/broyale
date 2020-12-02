@@ -1,5 +1,6 @@
 ﻿
 using System;
+using SocketIO.Data.Responses;
 using UnityEngine;
 
 namespace Scripts.Common.Data
@@ -17,7 +18,19 @@ namespace Scripts.Common.Data
         public Color Costume1Color;
         public Color Costume2Color;
 
-        public CurrentSkinData() { }
+        public CurrentSkinData(Character currentCharacter)
+        {
+            SkinId = (currentCharacter.sex == "male" ? "MaleCharacter" : "FemaleCharacter");
+            BodyIndex = (uint) currentCharacter.body_type;
+            HeadIndex = (uint) currentCharacter.head_type;
+            PantsIndex = (uint) currentCharacter.pants_type;
+            
+            ColorUtility.TryParseHtmlString( currentCharacter.head_color, out HeadColor );
+            ColorUtility.TryParseHtmlString( currentCharacter.body_color, out Costume1Color );
+            ColorUtility.TryParseHtmlString( currentCharacter.pants_color, out Costume2Color );
+        }
+        
+        
 
         public CurrentSkinData( string src )
         {
@@ -67,6 +80,19 @@ namespace Scripts.Common.Data
                 ColorUtility.ToHtmlStringRGB( Costume2Color )
             );
             return ret;
+        }
+
+        public void ToCharacterData(ref Character character)
+        {
+            character.sex = SkinId == "MaleCharacter" ? "male" : "female";
+            
+            character.body_type = (int)BodyIndex;
+            character.head_type = (int)HeadIndex;
+            character.pants_type = (int)PantsIndex;
+                
+            character.body_color = "#" + ColorUtility.ToHtmlStringRGB(Costume1Color);
+            character.head_color = "#" + ColorUtility.ToHtmlStringRGB(HeadColor);
+            character.pants_color = "#" + ColorUtility.ToHtmlStringRGB(Costume2Color);
         }
     }
 }

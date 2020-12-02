@@ -1,0 +1,4 @@
+﻿namespace SocketIO.Data.Events
+{
+
+}

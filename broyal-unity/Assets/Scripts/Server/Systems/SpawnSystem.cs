@@ -24,12 +24,23 @@ public class PlayerSpawnClientSystem : ComponentSystem
             {
                 PostUpdateCommands.AddComponent<NetworkStreamInGame>(ent);
                 var req = PostUpdateCommands.CreateEntity();
-                PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest
+                if (string.IsNullOrEmpty(_session.UserId.ToString()))
                 {
-                    skillId = _session.SkillId,
-                    characterId = _mainConfig.GetNameId(_session.Character.Id).Id,
-                    skinId = (uint)_session.Character.SkinType
-                });
+                    PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest
+                    {
+                        skillId = _session.SkillId,
+                        characterId = _mainConfig.GetNameId(_session.Character.Id).Id,
+                        skinId = _session.Character.SkinType
+                    });
+                }
+                else
+                {
+                    PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest
+                    {
+                        userId = _session.UserId
+                    });
+                }
+                
                 PostUpdateCommands.AddComponent(req, new SendRpcCommandRequestComponent { TargetConnection = ent });
             });
     }

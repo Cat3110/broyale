@@ -46,11 +46,15 @@ namespace SocketIO
         #region Public Properties
 
         public string url = "ws://127.0.0.1:4567/socket.io/?EIO=3&transport=websocket";
+        public string devUrl = "ws://127.0.0.1:3231/socket.io/?EIO=3&transport=websocket";
+        
         public bool autoConnect = false;
         public int reconnectDelay = 5;
         public float ackExpirationTime = 30f;
         public float pingInterval = 25f;
         public float pingTimeout = 60f;
+
+        public bool useDevServer;
 
         public WebSocket socket => ws;
 
@@ -99,7 +103,8 @@ namespace SocketIO
             sid = null;
             packetId = 0;
 
-            ws = new WebSocket(url);
+            
+            ws = new WebSocket(useDevServer ? devUrl : url);
             ws.OnOpen += (s, e) => OnOpen();
             ws.OnMessage += OnMessage;
             ws.OnError += OnError;
@@ -329,8 +334,7 @@ namespace SocketIO
 
         private void EmitClose()
         {
-            EmitPacket(
-                new Packet(EnginePacketType.Message, SocketPacketType.Disconnect, 0, "/", -1, new JSONObject("")));
+            EmitPacket(new Packet(EnginePacketType.Message, SocketPacketType.Disconnect, 0, "/", -1, new JSONObject("")));
             EmitPacket(new Packet(EnginePacketType.Close));
         }
 
@@ -402,8 +406,6 @@ namespace SocketIO
 
             //StartCoroutine(Login());
         }
-        
-        
 
         private void OnMessageChat(SocketIOEvent obj)
         {

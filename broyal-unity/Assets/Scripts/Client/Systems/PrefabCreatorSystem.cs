@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Bootstrappers;
 using RemoteConfig;
+using Scripts.Common.Data;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -52,6 +53,9 @@ public class PrefabCreatorSystem : ComponentSystem
 
                 if (isCharacter)
                 {
+                    var skinSetting = data.SkinSetting.ToString();
+                    var haveSkinSetting = !string.IsNullOrEmpty(skinSetting);
+                    
                     var playerData = EntityManager.GetComponentData<PlayerData>(e);
                     var bindData = go.GetComponent<CharactersBindData>();
                     //EntityManager.AddComponentObject(e,goManager.GetComponentObject<Animator>(goEntity));
@@ -59,6 +63,8 @@ public class PrefabCreatorSystem : ComponentSystem
                     
                     bindData.SetHealthBarType(CharactersBindData.HealthBarType.Friendly);
                     bindData.SetSkinType(data.SkinId);
+                    
+                    if(haveSkinSetting) bindData.SetSkinData( new CurrentSkinData(skinSetting) );
 
                     EntityManager.AddComponentData(e, new CharacterPresenter());
                     EntityManager.AddComponentObject(e, bindData);

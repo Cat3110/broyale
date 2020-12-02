@@ -1,4 +1,10 @@
-﻿namespace Bootstrappers
+﻿using System;
+using FullSerializer;
+using Scripts.Common.Data.Data;
+using SocketIO.Data.Responses;
+using UnityEngine.Networking;
+
+namespace Bootstrappers
 {
     using CUDLR;
 
@@ -35,6 +41,8 @@
             {
                 if (world.GetExistingSystem<ServerSimulationSystemGroup>() == null) continue;
                 
+                //world.EntityManager.DestroyEntity(world.EntityManager.UniversalQuery);
+                
                 var network = world.GetExistingSystem<NetworkStreamReceiveSystem>();
                 if (StartListenConnections(network, port))
                 {
@@ -47,10 +55,12 @@
         {
             base.Start();
             
-            Console.AddCommandByMethod(() => RealoadConfig() );
+            Console.AddCommandByMethod(() => ReloadConfig() );
 
             Container.Register(config);
             
+            Container.TryResolve<IGlobalSession>( out IGlobalSession globalSession);
+
             Debug.Log("Remote config loading...");
             AppConfig.LoadByUrlAsync().ContinueWith( (json) =>
             {
@@ -62,8 +72,65 @@
                     loadedConfig.Main.ServerPort = ushort.Parse(globalPort);
                 }
                 
-                InitWorlds(loadedConfig.Main.ServerPort);
+                var gameId = CommandLine.GetArg("--gameid");
+                if (globalSession?.Game != null) //TODO: Have separate logic(client\serv\editor)
+                {
+                    LoadGameData(globalSession.Game.id)
+                        .ContinueWith(data =>
+                        {
+                            Container.Resolve<IGlobalSession>().Game = data.Item1;
+                            Container.Resolve<IGlobalSession>().CharactersInGame = data.Item2;
+                            
+                            //InitWorlds(Container.Resolve<IGlobalSession>().Game);
+                            InitWorlds(loadedConfig.Main.ServerPort);
+                        });
+                }
+                else if (gameId != null)
+                {
+                    LoadGameData(gameId)
+                        .ContinueWith(data =>
+                        {
+                            Container.Resolve<IGlobalSession>().Game = data.Item1;
+                            Container.Resolve<IGlobalSession>().CharactersInGame = data.Item2;
+                            
+                            InitWorlds(loadedConfig.Main.ServerPort);
+                        });
+                }else InitWorlds(loadedConfig.Main.ServerPort);
             });
+        }
+        
+        static readonly fsSerializer Serializer = new fsSerializer();
+        public static async UniTask<(Game,Character[])> LoadGameData(string gameId)
+        {
+            var jsonGames = await GetJsonByUrl($"http://localhost:3000/game/{gameId}/full");
+            Game game = null;
+            Character[] characters = null;
+
+            var result = fsJsonParser.Parse(jsonGames, out fsData fsData)
+                .Merge(Serializer.TryDeserialize(fsData.AsDictionary["game"], ref game))
+                .Merge(Serializer.TryDeserialize(fsData.AsDictionary["characters"], ref characters));
+            
+            if (result.Succeeded) return (game, characters);
+            else throw result.AsException;
+        }
+        
+        public static async UniTask<string> GetJsonByUrl(string url)
+        { 
+            await UniTask.SwitchToMainThread();
+            
+            using (var req = UnityWebRequest.Get(url))
+            {
+                var op = await req.SendWebRequest();
+                if (string.IsNullOrEmpty(op.error))
+                {
+                    return op.downloadHandler.text;
+                }
+                else
+                {
+                    Debug.LogError("[App] GetJsonByUrl Result:" + op.error);
+                    return null;
+                }
+            }  
         }
 
         // Server world automatically listens for connections from any host
@@ -94,13 +161,18 @@
         }
         
         [CUDLR.Command("reload сonfig", "Reload config file from gdoc")]
-        public static void RealoadConfig() {
-            AppConfig.LoadByUrlAsync().ContinueWith( (json) => OnConfigLoaded(json));
+        public static void ReloadConfig() {
+            AppConfig.LoadByUrlAsync().ContinueWith(OnConfigLoaded);
         }
 
         private void OnDestroy()
         {
-          
+            _entityManager.CompleteAllJobs();
+            
+            World.DefaultGameObjectInjectionWorld.EntityManager.DestroyEntity(World.DefaultGameObjectInjectionWorld
+                .EntityManager.UniversalQuery);
+            
+            _entityManager.DestroyEntity(_entityManager.UniversalQuery);
         }
     }
 }

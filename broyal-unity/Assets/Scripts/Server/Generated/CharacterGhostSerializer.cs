@@ -73,6 +73,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         snapshot.SetPlayerDatainventory(chunkDataPlayerData[ent].inventory, serializerState);
         snapshot.SetPrefabCreatorNameId(chunkDataPrefabCreator[ent].NameId, serializerState);
         snapshot.SetPrefabCreatorSkinId(chunkDataPrefabCreator[ent].SkinId, serializerState);
+        snapshot.SetPrefabCreatorSkinSetting(chunkDataPrefabCreator[ent].SkinSetting, serializerState);
         snapshot.SetRotationValue(chunkDataRotation[ent].Value, serializerState);
         snapshot.SetTranslationValue(chunkDataTranslation[ent].Value, serializerState);
     }

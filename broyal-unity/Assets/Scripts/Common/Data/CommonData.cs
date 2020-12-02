@@ -1,4 +1,5 @@
-﻿
+﻿using SocketIO.Data.Responses;
+
 namespace Scripts.Common.Data
 {
     public static class LobbyEvents
@@ -9,7 +10,10 @@ namespace Scripts.Common.Data
         public const string MESSAGE_SENT="MESSAGE_SENT";
         public const string USER_DISCONNECTED="USER_DISCONNECTED";
         public const string TYPING="TYPING";
-        public const string VERIFY_USER="VERIFY_USER";
+        public const string VERIFY_USER = "VERIFY_USER";
+        public const string LOGIN_WITH_DEVICEID = nameof(LOGIN_WITH_DEVICEID);
+        public const string GET_CHARACTERS = nameof(GET_CHARACTERS);
+        public const string SET_CHARACTER = nameof(SET_CHARACTER);
         public const string LOGOUT="LOGOUT";
 
         public const string CREATE_GAME = nameof(CREATE_GAME);
@@ -28,9 +32,29 @@ namespace Scripts.Common.Data
 
     namespace Data
     {
+       
         public class GamesData
         {
             public OldGameData[] games { get; set; }
+
+        }
+
+        public interface IGlobalSession
+        {
+            bool IsValid { get; }
+            User User { get; }
+            Character Character { get; }
+            Game Game { get; set; }
+            Character[] CharactersInGame { get; set; }
+        }
+        public class GlobalSession : IGlobalSession
+        {
+            public bool IsValid => User != null && Character != null;
+            public User User { get; set; }
+            public Character Character { get; set; }
+            public Game Game { get; set; }
+            
+            public Character[] CharactersInGame { get; set; }
         }
 
         public class OldGameData
@@ -43,7 +67,7 @@ namespace Scripts.Common.Data
             public string turn { get; set; }
         
             public Serverinfo serverInfo { get; set; }
-            public UserData[] users { get; set; }
+            public OldUserData[] users { get; set; }
             public string gameState { get; set; }
         }
 

@@ -12,7 +12,7 @@ namespace Scripts.Scenes.Lobby
 			var container = this.AddContainer<InjectionContainer>();
 
 			// global
-			container.Bind<IUserData>().ToGameObject<UserData>( "UserData" );
+			container.Bind<IUserData>().ToGameObject<UserDataFromServer>( "UserData" );
 			container.Bind<IGameData>().ToGameObject<GameData>( "GameData" );
 
 			// local

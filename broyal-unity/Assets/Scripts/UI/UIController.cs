@@ -22,6 +22,7 @@ public class UIController : MonoBehaviour, IUIOwner
     [SerializeField] private MainUI main;
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
+    [SerializeField] private GameOverUI gameOver;
     
     [Serializable]
     public class SkillIdToSprite
@@ -36,6 +37,8 @@ public class UIController : MonoBehaviour, IUIOwner
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
+    public GameOverUI GameOver => gameOver;
+
 
     private Vector3 _playerPosition;
     private GameObject _playerGo;
@@ -299,7 +302,23 @@ public class LoadingUI : SimpleUIController
 {
     [SerializeField] private TMP_Text exitButton;
 }
-    
+[Serializable]
+public class GameOverUI : SimpleUIController
+{
+    [SerializeField] private Button exitButton;
+    public void Show(Action onExit)
+    {
+        base.Show();
+        
+        exitButton.onClick.RemoveAllListeners();
+        exitButton.onClick.AddListener( () =>
+        {
+            base.Hide();
+            onExit?.Invoke();
+        });
+    }
+}
+
 [Serializable]
 public class GameUI : SimpleUIController
 {

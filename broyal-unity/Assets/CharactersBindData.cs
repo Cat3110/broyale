@@ -1,4 +1,5 @@
 ﻿using System;
+using Scripts.Common.Data;
 using Scripts.Common.Tools.UI;
 using UnityEngine;
 
@@ -100,6 +101,13 @@ public class CharactersBindData : MonoBehaviour
    public void AttachWeapon(GameObject weapon) => character.AttachWeapon(weapon);
    public void SetSkinType(uint skinType) => character.SetSkinType(skinType);
 
+   public void SetSkinData(CurrentSkinData skinData)
+    {
+       SetSkinPart( SkinPart.Head, skinData.HeadIndex, skinData.HeadColor );
+       SetSkinPart( SkinPart.Body, skinData.BodyIndex, skinData.Costume1Color );
+       SetSkinPart( SkinPart.Pants, skinData.PantsIndex, skinData.Costume2Color );
+    }
+
     public void SetSkinPart( SkinPart skinPart, uint skinType, Color? color1 = null, Color? color2 = null )
     {
         character.SetSkinPart( skinPart, skinType );
@@ -129,7 +137,6 @@ public class CharactersBindData : MonoBehaviour
       var renderer = healthBar.GetComponent<MeshRenderer>();
             
       renderer.GetPropertyBlock(_matBlock);
-      //_matBlock.SetFloat(Fill, player.health / (float)player.maxHealth);
       _matBlock.SetFloat(Fill, value);
       renderer.SetPropertyBlock(_matBlock);
    }
