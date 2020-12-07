@@ -47,6 +47,18 @@ namespace Scripts.Scenes.Lobby.States
             skinPerson.SetActive( true );
         }
 
+        public void OnPressedShowTermsOfService()
+        {
+            iCommonState = 2;
+            UpdateButtons();
+        }
+
+        public void OnPressedCloseTermsOfService()
+        {
+            iCommonState = 0;
+            UpdateButtons();
+        }
+
         public void OnPressedGoToMain()
         {
             stateMachine.SetState( prevState );
@@ -95,6 +107,7 @@ namespace Scripts.Scenes.Lobby.States
 
             commonBlocks[ 0 ].SetActive( iCommonState == 0 );
             commonBlocks[ 1 ].SetActive( iCommonState == 1 );
+            commonBlocks[ 2 ].SetActive( iCommonState == 2 );
         }
     }
 }
