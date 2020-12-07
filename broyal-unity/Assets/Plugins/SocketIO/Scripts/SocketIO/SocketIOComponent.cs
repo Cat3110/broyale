@@ -102,14 +102,8 @@ namespace SocketIO
             ackList = new List<Ack>();
             sid = null;
             packetId = 0;
-
             
-            ws = new WebSocket(useDevServer ? devUrl : url);
-            ws.OnOpen += (s, e) => OnOpen();
-            ws.OnMessage += OnMessage;
-            ws.OnError += OnError;
-            ws.OnClose += (s, e) => OnClose();
-            wsConnected = false;
+            
 
             eventQueueLock = new object();
             eventQueue = new Queue<SocketIOEvent>();
@@ -135,6 +129,8 @@ namespace SocketIO
 
         public void Update()
         {
+            if (ws == null) return;
+            
             lock (eventQueueLock)
             {
                 while (eventQueue.Count > 0)
@@ -187,6 +183,15 @@ namespace SocketIO
 
         public void Connect()
         {
+            ws?.Close();
+
+            ws = new WebSocket(useDevServer ? devUrl : url);
+            ws.OnOpen += (s, e) => OnOpen();
+            ws.OnMessage += OnMessage;
+            ws.OnError += OnError;
+            ws.OnClose += (s, e) => OnClose();
+            wsConnected = false;
+            
             connected = true;
 
             socketThread = new Thread(RunSocketThread);

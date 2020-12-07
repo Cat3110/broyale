@@ -20,21 +20,6 @@ namespace Bootstrappers
         private World _world;
         private EntityManager _entityManager;
 
-        private static AppConfig OnConfigLoaded(string jsonConfig)
-        {
-            var appConfig = new AppConfig();
-                
-            if (!string.IsNullOrEmpty(jsonConfig))
-            {
-                appConfig.Load(jsonConfig);
-            }
-            
-            Container.Register(appConfig);
-            
-            return appConfig;
-        }
-
-
         private void InitWorlds(ushort port)
         {
             foreach (var world in World.All)
@@ -90,9 +75,12 @@ namespace Bootstrappers
                     LoadGameData(gameId)
                         .ContinueWith(data =>
                         {
-                            Container.Resolve<IGlobalSession>().Game = data.Item1;
-                            Container.Resolve<IGlobalSession>().CharactersInGame = data.Item2;
-                            
+                            var newSession = new GlobalSession
+                            {
+                                Game = data.Item1,
+                                CharactersInGame = data.Item2
+                            };
+                            MainContainer.Container.Register<IGlobalSession>(newSession);
                             InitWorlds(loadedConfig.Main.ServerPort);
                         });
                 }else InitWorlds(loadedConfig.Main.ServerPort);
@@ -167,7 +155,7 @@ namespace Bootstrappers
 
         private void OnDestroy()
         {
-            _entityManager.CompleteAllJobs();
+            //_entityManager.CompleteAllJobs();
             
             World.DefaultGameObjectInjectionWorld.EntityManager.DestroyEntity(World.DefaultGameObjectInjectionWorld
                 .EntityManager.UniversalQuery);

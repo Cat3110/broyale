@@ -1,5 +1,7 @@
 ﻿
 
+using RemoteConfig;
+
 namespace Bootstrappers
 {
     using UnityEngine;
@@ -16,6 +18,20 @@ namespace Bootstrappers
         public MainConfig config;
         public TextAsset collidersFile;
         public static IContainer Container => MainContainer.Container;
+        
+        public static AppConfig OnConfigLoaded(string jsonConfig)
+        {
+            var appConfig = new AppConfig();
+                
+            if (!string.IsNullOrEmpty(jsonConfig))
+            {
+                appConfig.Load(jsonConfig);
+            }
+            
+            Container.Register(appConfig);
+            
+            return appConfig;
+        }
 
         public virtual void Start()
         {

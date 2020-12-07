@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Adic;
 using Bootstrappers;
+using RemoteConfig;
 using Scripts.Common.Data;
 using Scripts.Common.Data.Data;
 using Scripts.Common.Tools.UI;
@@ -10,6 +11,7 @@ using Scripts.Common.ViewItems;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using SocketIOExt;
+using UniRx.Async;
 using UnityEngine;
 
 namespace Scripts.Scenes.Lobby.States
@@ -32,7 +34,14 @@ namespace Scripts.Scenes.Lobby.States
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
-            StartCoroutine( _InitNetworkReady() );
+            AppConfig.LoadByUrlAsync().ContinueWith( json =>
+            {
+                var config = BaseBootStrapper.OnConfigLoaded(json);
+                _socket.url = config.Main.LobbyAddress;
+                _socket.Connect();
+                
+                StartCoroutine( _InitNetworkReady() );
+            });
         }
 
         public override void OnEndState()

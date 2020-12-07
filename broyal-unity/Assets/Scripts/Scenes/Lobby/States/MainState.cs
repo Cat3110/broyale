@@ -133,12 +133,11 @@ namespace Scripts.Scenes.Lobby.States
                 time -= 1;
                 SetTimer((int)time);
             }
-#if UNITY_EDITOR
-            SceneManager.LoadScene("PreviewClientServer");
-            
-#else
+//#if UNITY_EDITOR
+//            SceneManager.LoadScene("PreviewClientServer");
+//#else
             SceneManager.LoadScene("Client");
-#endif
+//#endif
         }
 
         private void SetTimer( int time )

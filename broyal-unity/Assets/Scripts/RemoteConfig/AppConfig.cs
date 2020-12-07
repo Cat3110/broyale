@@ -96,6 +96,7 @@ namespace RemoteConfig
         public ushort ServerPort;
         
         public int RandomSeed;
+        public string LobbyAddress;
     }
 
     public sealed class LocalizationConfig

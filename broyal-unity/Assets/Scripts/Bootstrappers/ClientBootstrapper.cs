@@ -232,7 +232,7 @@ namespace Bootstrappers
         
         private void OnDestroy()
         {
-            _entityManager.CompleteAllJobs();
+            //_entityManager.CompleteAllJobs();
             
             World.DefaultGameObjectInjectionWorld.EntityManager
                 .DestroyEntity(World.DefaultGameObjectInjectionWorld.EntityManager.UniversalQuery);
