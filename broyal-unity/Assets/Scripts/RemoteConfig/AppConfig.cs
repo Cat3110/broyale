@@ -20,7 +20,6 @@ namespace RemoteConfig
         public LocalizationConfig Localization { get; private set; } = new LocalizationConfig();
         public CharactersConfig Characters { get; private set; } = new CharactersConfig();
         public SkillsConfig Skills { get; private set; } = new SkillsConfig();
-        
         public ItemsConfig Items { get; private set; } = new ItemsConfig();
         
         public CommonConfig Common { get; private set; } = new CommonConfig();
@@ -126,12 +125,25 @@ namespace RemoteConfig
     public struct SkillInfo
     {
         public string Id { get; private set; }
-        public int Damage { get; private set; }
-        public int Range { get; private set; }
+        public float Range { get; private set; }
+        public float Radius { get; set; }
         public float Cooldown{ get; private set; }
         
         public float PhysDMG { get; private set; }
+        public float PhysDEffect { get; set; }
         public float MagDMG { get; private set; }
+        public float MagDEffect { get; set; }
+
+        public float SpeedEffect { get; set; }
+        public float HPEffect { get; set; }
+        
+        public float ImpactTime { get; set; }
+        public float Heal { get; set; }
+        public float PhysArmor { get; set; }
+        public float MagArmor { get; set; }
+        public float Aiming { get; set; }
+        
+        public bool IsEnabled { get; set; }
     }
     
     [Serializable]

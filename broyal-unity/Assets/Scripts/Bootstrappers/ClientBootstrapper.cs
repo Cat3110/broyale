@@ -65,7 +65,7 @@ namespace Bootstrappers
             if (globalSession!= null && globalSession.IsValid) StartBattle(_appConfig, globalSession.User, globalSession.Character);
             else
             {
-                uiController.MainUI.Show(_appConfig.Characters, _appConfig.Skills.Take(4).Select(c => c.Id).ToList());
+                uiController.MainUI.Show(_appConfig.Characters, _appConfig.Skills.Where( s => s.IsEnabled).Select(c => c.Id).ToList());
                 uiController.MainUI.OnGameStarted += StartLocalBattle;
             }
         }

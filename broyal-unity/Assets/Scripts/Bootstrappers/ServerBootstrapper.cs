@@ -1,10 +1,4 @@
-﻿using System;
-using FullSerializer;
-using Scripts.Common.Data.Data;
-using SocketIO.Data.Responses;
-using UnityEngine.Networking;
-
-namespace Bootstrappers
+﻿namespace Bootstrappers
 {
     using CUDLR;
 
@@ -14,6 +8,11 @@ namespace Bootstrappers
     using Unity.Networking.Transport;
     using RemoteConfig;
     using UniRx.Async;
+    
+    using FullSerializer;
+    using Scripts.Common.Data.Data;
+    using SocketIO.Data.Responses;
+    using UnityEngine.Networking;
 
     public class ServerBootstrapper : BaseBootStrapper
     {
@@ -63,8 +62,9 @@ namespace Bootstrappers
                     LoadGameData(globalSession.Game.id)
                         .ContinueWith(data =>
                         {
-                            Container.Resolve<IGlobalSession>().Game = data.Item1;
-                            Container.Resolve<IGlobalSession>().CharactersInGame = data.Item2;
+                            var (game, characters) = data;
+                            Container.Resolve<IGlobalSession>().Game = game;
+                            Container.Resolve<IGlobalSession>().CharactersInGame = characters;
                             
                             //InitWorlds(Container.Resolve<IGlobalSession>().Game);
                             InitWorlds(loadedConfig.Main.ServerPort);

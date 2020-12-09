@@ -114,7 +114,7 @@ namespace Scripts.Scenes.Lobby.States
             var character = userData.GetCurrentCharacter();
             
             var appConfig = MainContainer.Container.Resolve<AppConfig>();
-            var availableSkills = appConfig.Skills.Take(4).ToList();
+            var availableSkills = appConfig.Skills.Where( s => s.IsEnabled).ToList();
             var index = availableSkills.FindIndex( x => x.Id == character.skill_set.main_skill);
             var nextIndex = index + 1 >= availableSkills.Count ? 0 : index + 1;
             var nextSkillId = availableSkills[nextIndex].Id;
