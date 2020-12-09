@@ -12,7 +12,7 @@ namespace Scripts.Common.Data
 
         CurrentSkinData GetSkin();
         void SetSkin( CurrentSkinData skinData );
-
+        void SetSkill( string skillId );
         Character[] GetCharacters();
         Character GetCurrentCharacter();
 

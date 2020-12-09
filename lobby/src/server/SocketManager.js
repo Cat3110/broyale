@@ -7,12 +7,14 @@ var assert = require('assert');
 const { VERIFY_USER, LOGIN_WITH_DEVICEID, GET_CHARACTERS, SET_CHARACTER, USER_CONNECTED, USER_DISCONNECTED, 
 		LOGOUT, COMMUNITY_CHAT, MESSAGE_RECIEVED, MESSAGE_SENT,
 		TYPING, CREATE_GAME, GAME_OVER, SERVER_UPDATE, GAME_UPDATE,
-		PLAYER_INPUT, ACTIVE_GAME, START_GAME, CLIENT_ADDED,
-		UPDATE_LIST, WINNER, LOSER,LEAVE
+		PLAYER_INPUT, START_GAME, JOIN_GAME, CLIENT_ADDED,
+		GET_GAMES, WINNER, LOSER, LEAVE, GAME_STARTED, GAME_START_FAILED
 	} = require('../Events')
 
 const { createUser, createMessage, createChat, createGame } = require('../Factories');
 const { db } = require('./index.js');
+
+const GameStartDelay = 15
 
 let connectedUsers = { }
 let counter = 0
@@ -96,7 +98,7 @@ module.exports = function(socket){
 		sendTypingFromUser = sendTypingToChat(user.name)
 
 		io.emit(USER_CONNECTED, connectedUsers)
-		io.emit(SERVER_UPDATE, getUpdatedList())
+		io.emit(SERVER_UPDATE, getGamesList())
 		console.log(connectedUsers);
 	})
 	
@@ -137,45 +139,74 @@ module.exports = function(socket){
 				game.addPlayer(user)
 				if(game.isStarted()){
 					let id = game.getOpponent(user.id)
-					io.emit(`${LEAVE}-${id}`, getUpdatedList())
+					io.emit(`${LEAVE}-${id}`, games)
 				}
 				games.delete(game);
 			}
 		}
 		connectedUsers = removeUser(connectedUsers, socket.user.name)
 		io.emit(USER_DISCONNECTED, connectedUsers)
-		io.emit(SERVER_UPDATE, getUpdatedList())
+		io.emit(SERVER_UPDATE, getGamesList())
 		console.log("Disconnect", connectedUsers);
 	})
 
-	socket.on(ACTIVE_GAME, ({gameId, previousGame, user},callback)=>{
-		for (const game of games) {
-			if(game.getId()===gameId){
-				game.addPlayer(user)
-				callback(getUpdatedList())
-				break				
-			} else if (game.getId()===previousGame) {
-					if(game.isStarted()){
-						let id = game.getOpponent(user.id)
-						io.emit(`${LEAVE}-${id}`, getUpdatedList())
+	socket.on(JOIN_GAME, async (gameId,callback)=>{			
+		if("dbUser" in socket){
+			const user = socket.dbUser
+			for (const game of games) {
+				if(game.getId()===gameId){
+					if( game.isGameStarted() ) {
+						callback({ status: 200 })
+						break
 					}
-				games.delete(game);				
-			}
-		}
-		io.emit(SERVER_UPDATE, getUpdatedList())		
-	})
 
+					game.addPlayer(user)
+
+					await Games.deleteOne( {gid:gameId })
+
+					var dbGame = getGameInfo(game);	
+					dbGame.gid = dbGame.id
+					var newGame = await new Games(dbGame)
+					//newGame.anything = game
+					//newGame.markModified('anything');
+					newGame.save()
+
+					// var dbGame = await Games.findOne( {gid:gameId })
+					// dbGame._doc.players.push(user)
+					// dbGame._doc.save()
+
+					callback({ status: 200, data: { game: game, eta: game.getETATime() }})
+					io.emit(SERVER_UPDATE, getGamesList())
+					break				
+				}
+			}			
+			callback({ status: 404 })
+		}else{
+			callback({ status: 401 })
+		}			
+	})
+/*
 	socket.on(START_GAME, async (gameId,callback)=>{
 		if("dbUser" in socket)
 		{
 			const user = socket.dbUser
 			for (const game of games) {
-				if(game.getId()===gameId){				
+				if(game.getId()===gameId){
+					if( !game.isUserInGame(user) ){
+						callback({ status: 401 })
+						break
+					}	
+
+					if( game.isGameStarted() ) {
+						callback({ status: 200 })
+						break
+					}
+
 					var rport = game.getServerInfo().port
 					var isWin = process.platform === "win32"
 					var processName = isWin ? "broyal-server.exe" : "broyal-server.x86_64"
 
-					const lateServStarter = later(15000)
+					const lateServStarter = later(GameStartDelay * 1000)
 							.then(msg => 
 							{
 								execute(processName, ['--port', rport, '--gameid', gameId], "../server-linux")
@@ -187,10 +218,11 @@ module.exports = function(socket){
 
 								console.log(processName + " on port " + rport + " started")
 							})
-							.catch(() => { console.log("cancelled"); })								
+							.catch(() => { 
+								console.log("cancelled"); 
+							})								
 				
-					game.startGame(10);
-					io.emit(GAME_UPDATE, getGameInfo(game))	
+					game.startGame(10);					
 
 					var dbGame = getGameInfo(game);	
 					dbGame.gid = dbGame.id
@@ -199,11 +231,12 @@ module.exports = function(socket){
 					//newGame.markModified('anything');
 					newGame.save()
 
-					callback({ status: 200, data:{ time:10, address:"127.0.0.1", port:rport }})
+					callback({ status: 200 })
+					io.emit(GAME_UPDATE, game)	
+					io.emit(SERVER_UPDATE, getGamesList())
 					break						
 				}
-			}
-			io.emit(SERVER_UPDATE, getUpdatedList())
+			}			
 		}else callback({ status: 401 })		
 	})
 
@@ -221,32 +254,71 @@ module.exports = function(socket){
 			}
 		}
 	})
+*/
+	// socket.on(CREATE_GAME, (gameName, callback)=>{
+	// 	if("dbUser" in socket){
+	// 		const user = socket.dbUser
+	// 		counter++
+	// 		let game = Game.create(counter, user, GameStartDelay)
+	// 		game.addPlayer(user)
+	// 		socket.emit(`${CLIENT_ADDED}-${user.id}`, { game: game })
+	// 		games.add(game)
+	// 		io.emit(SERVER_UPDATE, getGamesList())
+	// 		callback({ status: 200, data:{ game: game } })
+	// 	}else{
+	// 		callback({ status: 401 })
+	// 	}		
+	// })
 
-	socket.on(CREATE_GAME, (gameName, callback)=>{
+	socket.on(CREATE_GAME, async (gameName, callback)=>{
 		if("dbUser" in socket){
 			const user = socket.dbUser
 			counter++
-			let game = Game.create({counter,user})
+
+			let game = Game.create(counter, user, GameStartDelay)
 			game.addPlayer(user)
-			socket.emit(`${CLIENT_ADDED}-${user.id}`, {
-				id: game.getId(),
-				name: game.getName(),
-				gameStarted: game.isStarted(),
-				turn: game.getTurn(),
-				users: game.getUsersToJSON(),
-				gameState: game.getCurrentStateToJSON()
-			})
 			games.add(game)
-			io.emit(SERVER_UPDATE, getUpdatedList())
-			callback({ status: 200, data:{ game: game } })
+
+			var rport = game.getServerInfo().port
+			var isWin32 = process.platform === "win32"
+			var processName = isWin32 ? "broyal-server.exe" : "../server-linux/broyal-server.x86_64"
+			var path = isWin32 ? "../bin/server/" : "../server-linux"
+
+			const lateServStarter = later(GameStartDelay * 1000)
+					.then(msg => 
+					{
+						execute(processName, ['--port', rport, '--gameid', game.getId()], path )
+						.then((info) => { 	
+							console.log(processName + " on port " + rport + " started")
+							return info
+						})
+						.catch(error => {
+							io.emit(GAME_START_FAILED, game)
+							console.log(error.message)})
+
+						game.startGame()
+						io.emit(GAME_STARTED, game)
+						console.log(processName + " on port " + rport + " started")					
+					})
+					.catch((error) => { 
+						io.emit(GAME_START_FAILED, game)
+						console.log("cancelled " + error.message); 
+					})			
+
+			var dbGame = getGameInfo(game);	
+			dbGame.gid = dbGame.id
+			var newGame = await new Games(dbGame)
+			//newGame.anything = game
+			//newGame.markModified('anything');
+			newGame.save()
+			io.emit(SERVER_UPDATE, getGamesList())
+			callback({ status: 200, data:{ game: game, eta: GameStartDelay} })
 		}else{
 			callback({ status: 401 })
 		}		
 	})
 
-	socket.on(UPDATE_LIST, ()=>{
-		socket.emit(UPDATE_LIST, getUpdatedList())
-	})
+	socket.on(GET_GAMES, (game,callback) => {callback({ status: 200, data:getGamesList()})})
 }
 /*
 * Returns a function that will take a chat id and a boolean isTyping
@@ -338,31 +410,25 @@ function getGameInfo(game) {
 		id: game.getId(),
 		owner: game.getOwner(),
 		name: game.getName(),
-		gameStarted: game.isStarted(),
+		isStarted: game.isGameStarted(),
 		turn: game.getTurn(),
 		serverInfo: game.getServerInfo(),
-		users: JSON.parse(game.getUsersToJSON()),
-		gameState: game.getCurrentStateToJSON()
+		players: JSON.parse(game.getUsersToJSON())	
 	}
 }
 
 /*
 * Creates a json object that contains the state of all current
 * games
-*/
-function getUpdatedList() {
+
+function getGamesList() {
 	return {
 		games: Array.from(games).map(game => {
-				return {
-					id: game.getId(),
-					owner: game.getOwner(),
-					name: game.getName(),
-					gameStarted: game.isStarted(),
-					turn: game.getTurn(),
-					serverInfo: game.getServerInfo(),
-					users: JSON.parse(game.getUsersToJSON()),
-					gameState: game.getCurrentStateToJSON()
-				}
+				return getGameInfo(game)
 		})
 	}
+}
+*/
+function getGamesList() {
+	return { games: Array.from(games) }
 }

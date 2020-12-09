@@ -26,7 +26,7 @@ namespace SocketIOExt
             }
         }
 
-        public static T ToResponse<T>(this string data) where T : BaseResponse, new()
+        public static T Deserialize<T>(this string data) where T : class, new()
         {
             var result = fsJsonParser.Parse(data, out fsData fsData);
 
@@ -80,17 +80,17 @@ namespace SocketIOExt
         public static void Emit<TR>(this SocketIOComponent socket, string ev, string data, Action<TR> callback)
             where TR : BaseResponse, new()
         {
-            socket.Emit(ev, data, (obj) => obj.ToResponse(callback) );
+            socket.Emit(ev, data, (obj) => callback(obj.Deserialize<TR>()) );
         }
         
         public static void Emit<TR>(this SocketIOComponent socket, string ev, JSONObject data, Action<TR> callback)
             where TR : BaseResponse, new()
         {
-            socket.Emit(ev, data, (obj) => obj.ToResponse(callback) );
+            socket.Emit(ev, data, (obj) => callback(obj.Deserialize<TR>()) );
         }
         
-        public static void ToResponse<TR>(this JSONObject objectResponse, Action<TR> callback)
-            where TR : BaseResponse, new()
+        public static TR Deserialize<TR>(this JSONObject objectResponse)
+            where TR : class, new()
         {
             var json = objectResponse.ToString();
             if (json.StartsWith("["))
@@ -99,8 +99,7 @@ namespace SocketIOExt
                 json = json.TrimEnd(new char[] {']'});
             }
 
-            var firstResponse = json.ToResponse<TR>();
-            callback(firstResponse);
+            return json.Deserialize<TR>();
         }
         
         public static void LoginWithDeviceId(this SocketIOComponent socket, string deviceId, Action<SocketIO.Data.Responses.User> onSuccess, Action onError)
@@ -142,9 +141,27 @@ namespace SocketIOExt
             });
         }
         
-        public static void StartGame(this SocketIOComponent socket, string gameId, Action<StartGameResponse.Data> onSuccess, Action onError)
+        // public static void StartGame(this SocketIOComponent socket, string gameId, Action<StartGameResponse.Data> onSuccess, Action onError)
+        // {
+        //     socket.Emit<StartGameResponse>(LobbyEvents.START_GAME, gameId, (response) =>
+        //     {
+        //         if (response.IsSuccess) onSuccess?.Invoke(response.data);
+        //         else onError?.Invoke();
+        //     });
+        // }
+        
+        public static void GetGames(this SocketIOComponent socket, Action<UpdateGamesListResponse.Data> onSuccess, Action onError)
         {
-            socket.Emit<StartGameResponse>(LobbyEvents.START_GAME, gameId, (response) =>
+            socket.Emit<UpdateGamesListResponse>(LobbyEvents.GET_GAMES,"", (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response.data);
+                else onError?.Invoke();
+            });
+        }
+        
+        public static void JoinGame(this SocketIOComponent socket, string gameId, Action<JoinGameResponse.Data> onSuccess, Action onError)
+        {
+            socket.Emit<JoinGameResponse>(LobbyEvents.JOIN_GAME, gameId, (response) =>
             {
                 if (response.IsSuccess) onSuccess?.Invoke(response.data);
                 else onError?.Invoke();

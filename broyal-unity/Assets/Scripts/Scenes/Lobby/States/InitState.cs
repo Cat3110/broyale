@@ -66,7 +66,7 @@ namespace Scripts.Scenes.Lobby.States
                 yield return new WaitForSeconds( 0.5f );
             }
 
-            var deviceId = SystemInfo.deviceUniqueIdentifier;
+            var deviceId = Application.isEditor ? "Editor_" + SystemInfo.deviceUniqueIdentifier : SystemInfo.deviceUniqueIdentifier;
 
             _socket.LoginWithDeviceId(deviceId, (response) =>
             {

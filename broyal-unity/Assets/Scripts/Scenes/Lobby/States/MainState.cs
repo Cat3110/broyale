@@ -1,57 +1,126 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using Scripts.Core.StateMachine;
 using SocketIO;
 using TMPro;
-using FullSerializer;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using Adic;
 using Bootstrappers;
+using RemoteConfig;
 using UnityEngine.SceneManagement;
 using Scripts.Common.Data.Data;
 using Scripts.Common.Data;
+using SocketIO.Data.Responses;
 using SocketIOExt;
+using UnityEngine.UI;
 
 namespace Scripts.Scenes.Lobby.States
 {
     public class MainState : BaseStateMachineState
     {
+        [Inject] private IUserData userData;
+        
         [SerializeField] private TMP_Text connectingTimer;
         [SerializeField] private GameObject stateLocker;
 
         [SerializeField] private Transform personRoot;
 
-        private ConnectionStatus status;
+        //TODO:remove me 
+        [SerializeField] private List<UIController.SkillIdToSprite> namedSprites;
+        [SerializeField] private Button ButtonChangeMainSkill;//
+        
+        
         private SocketIOComponent _socket;
-
-        public OldGameData[] _games;
-
-        private string currentGameName = null;
-        private string currentGameId = null;
-
+        private Game[] _games;
+        private string _currentGameId = null;
+       
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
             base.OnStartState( stateMachine, args );
-
+            this.Inject();
+            
             stateLocker.SetActive( false );
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
             _socket.On( LobbyEvents.SERVER_UPDATE, OnServerUpdate );
             _socket.On( LobbyEvents.GAME_UPDATE, OnGameUpdate );
-            
-            _socket.Emit(LobbyEvents.UPDATE_LIST, (gameList) =>
-            {
-                //UpdateGameList(gameList["games"].list);
-            });
+            _socket.On( LobbyEvents.GAME_STARTED, OnGameStarted );
 
             //connectingTimer.text = "";
+            ButtonChangeMainSkill.GetComponent<Image>().sprite = GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill);
+            
+            ButtonChangeMainSkill.onClick.RemoveAllListeners();
+            ButtonChangeMainSkill.onClick.AddListener(OnChangeMainSkill);
+        }
+
+        private void OnGameStarted(SocketIOEvent obj)
+        {
+            var game = obj.data.Deserialize<Game>();
+            if (game == null || game.id != _currentGameId) return;
+            
+            Debug.Log($"{LobbyEvents.GAME_STARTED} {game}");
+//#if UNITY_EDITOR
+//              SceneManager.LoadScene("PreviewClientServer");
+//#else
+            SceneManager.LoadScene("Client");
+//#endif
         }
 
         public void OnPressedPlay()
         {
-            OnPressedCreateRoom();
+            stateLocker.SetActive( true );
+            
+            _socket.GetGames( (getGamesData) =>
+            {
+                var availableGame = getGamesData?.games?.FirstOrDefault(g => !g.isStarted);
+                if (availableGame != null )
+                {
+                    _socket.JoinGame(availableGame.id,response =>
+                    {
+                        PrepareForGameStart(response.game, response.eta );
+                    },() => Debug.LogError($"Join game{availableGame.id} failed"));
+                }
+                else
+                {
+                    var gameName = $"{DateTime.Now}";
+            
+                    _socket.CreateGame(gameName, (response) => 
+                    {
+                        PrepareForGameStart(response.game, response.eta );
+                    }, () => Debug.LogError("CreateGame failed"));
+                }
+                
+            }, () => Debug.LogError("GetGames failed"));
+        }
+
+        private void PrepareForGameStart(Game game, int eta)
+        {
+            _currentGameId = game.id;
+                
+            MainContainer.Container.Resolve<IGlobalSession>().Game = game;
+            //GlobalSettings.ServerAddress = gameData.serverInfo.address;
+            GlobalSettings.ServerPort = (ushort)game.serverInfo.port;
+            SetTimer( eta );
+            StartCoroutine(FinalCountdown(eta));
+        }
+
+        private Sprite GetSpriteById(string id) => namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
+
+        private void OnChangeMainSkill()
+        {
+            var character = userData.GetCurrentCharacter();
+            
+            var appConfig = MainContainer.Container.Resolve<AppConfig>();
+            var availableSkills = appConfig.Skills.Take(4).ToList();
+            var index = availableSkills.FindIndex( x => x.Id == character.skill_set.main_skill);
+            var nextIndex = index + 1 >= availableSkills.Count ? 0 : index + 1;
+            var nextSkillId = availableSkills[nextIndex].Id;
+            
+            userData.SetSkill(nextSkillId);
+            ButtonChangeMainSkill.GetComponent<Image>().sprite = GetSpriteById(nextSkillId);
         }
 
         public void OnPressedGoToProfile()
@@ -68,60 +137,22 @@ namespace Scripts.Scenes.Lobby.States
         {
             stateMachine.SetState( ( int ) LobbyState.Settings );
         }
-
-        private void OnPressedCreateRoom()
-        {
-            stateLocker.SetActive( true );
-
-            var user = ( stateMachine as LobbyController ).userData._id;
-            var gameName = $"{user}{DateTime.Now}";
-            
-            _socket.CreateGame(gameName, (response) =>
-            {
-                Debug.Log($"CreateGame => {response}");
-                
-                var users = response.game.gameUsers;
-                currentGameName = response.game.name;
-                currentGameId = response.game.id;
-                
-                MainContainer.Container.Resolve<IGlobalSession>().Game = response.game;
-                
-                OnPressedStartGame();
-            }, () => Debug.LogError("CreateGame failed"));
-        }
-
-        private void OnPressedStartGame()
-        {
-            _socket.StartGame(currentGameId, (response) =>
-            {
-                Debug.Log($"StartGame => {response}");
-            }, () => Debug.LogError("SetCharacter failed"));
-        }
-    
+  
         private void OnServerUpdate( SocketIOEvent obj )
         {
-            var gamesData = ParseGamesList(obj.data.ToString());
-            if( gamesData != null ) UpdateGameList(gamesData);
-
-            var games = obj.data?["games"].list;
-            Debug.Log($"SERVER_UPDATE {games?.Count} {games}");
+            var data = obj.data.Deserialize<UpdateGamesListEvent>();
+            if (data?.games != null)
+            {
+                UpdateGameList( data.games );
+                Debug.Log($"SERVER_UPDATE {data.games.Length} {data.games}");
+            }
         }
-
         private void OnGameUpdate(SocketIOEvent obj)
         {
-            var gameData = ParseGame(obj.data.ToString());
-            if( gameData != null && gameData.id == currentGameId )
+            var game = obj.data.Deserialize<Game>();
+            if( game != null && game.id == _currentGameId )
             {
-                var game = obj.data;
                 Debug.Log($"{LobbyEvents.GAME_UPDATE} {game}");
-
-                //_uiController.Lobby.UpdateConnectionStatus(LobbyUI.ConnectionStatus.WaitForGameStart);
-                SetTimer( gameData.serverInfo.time );
-
-                //GlobalSettings.ServerAddress = gameData.serverInfo.address;
-                GlobalSettings.ServerPort = (ushort)gameData.serverInfo.port;
-            
-                StartCoroutine(FinalCountdown(gameData.serverInfo.time));
             }
         }
 
@@ -133,67 +164,18 @@ namespace Scripts.Scenes.Lobby.States
                 time -= 1;
                 SetTimer((int)time);
             }
-//#if UNITY_EDITOR
-//            SceneManager.LoadScene("PreviewClientServer");
-//#else
-            SceneManager.LoadScene("Client");
-//#endif
         }
 
         private void SetTimer( int time )
         {
             connectingTimer.text = time > 0 ? time.ToString() : "";
-            
             //startGameButton.interactable = false;
         }
 
-        private OldGameData ParseGame(string str)
+        private void UpdateGameList(Game[] games)
         {
-            if (str.StartsWith("["))
-            {
-                str = str.TrimStart(new char[] {'['});
-                str = str.TrimEnd(new char[] {']'});
-            }
-            fsSerializer fsSerializer = new fsSerializer();
-            OldGameData gameData = null;
-        
-            fsResult result = fsJsonParser.Parse(str, out fsData fsData);
-            if (result.Succeeded)
-            {
-                result = fsSerializer.TryDeserialize(fsData, ref gameData);
-                if (!result.Succeeded) Debug.LogError($"ParseGame TryDeserialize fail {result.FormattedMessages}");
-            }else Debug.LogError($"ParseGame Parse fail {result.FormattedMessages}");
-
-            return gameData;
-        }
-
-        private void UpdateGameList(GamesData gamesData)
-        {
-            Debug.Log($"UpdateGameList {gamesData.games.Length}");
-        
-            _games = gamesData.games;
-        
-            // UpdateRooms( _games );
-        }
-
-        private GamesData ParseGamesList(string str)
-        {
-            if (str.StartsWith("["))
-            {
-                str = str.TrimStart(new char[] {'['});
-                str = str.TrimEnd(new char[] {']'});
-            }
-            fsSerializer fsSerializer = new fsSerializer();
-            GamesData gamesData = null;
-        
-            fsResult result = fsJsonParser.Parse(str, out fsData fsData);
-            if (result.Succeeded)
-            {
-                result = fsSerializer.TryDeserialize(fsData, ref gamesData);
-                if (!result.Succeeded) Debug.LogError($"ParseGamesList TryDeserialize fail {result.FormattedMessages}");
-            }else Debug.LogError($"ParseGamesList Parse fail {result.FormattedMessages}");
-
-            return gamesData;
+            Debug.Log($"UpdateGameList {games.Length}");
+            this._games = games;
         }
     }
 }

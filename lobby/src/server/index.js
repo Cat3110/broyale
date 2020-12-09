@@ -117,21 +117,20 @@ mongoose
 
 expressApp.get('/game/:id/short', async (req, res) => {
 	const game = await Games.find( {gid:req.params.id })
-
 	res.send(game)
 })
 
 expressApp.get('/game/:id/full', async (req, res) => {
 	var game = await Games.findOne( {gid:req.params.id })
 	var characters = []
-	for (let index = 0; index < game._doc.users.length;index++) {
-		var user = game._doc.users[index]
+	for (let index = 0; index < game._doc.players.length;index++) {
+		var user = game._doc.players[index]
 		var id = mongoose.Types.ObjectId(user._id);
 		const dbcharacters = await Character.find({user_id:id})	
 		characters.push(dbcharacters[0])
 	}
 	game.characters = characters
-	res.send({game: game,characters: characters})
+	res.send({game: game, characters: characters})
 })
 
 

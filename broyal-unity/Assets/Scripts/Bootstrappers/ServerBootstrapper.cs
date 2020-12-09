@@ -75,10 +75,11 @@ namespace Bootstrappers
                     LoadGameData(gameId)
                         .ContinueWith(data =>
                         {
+                            var (game, characters) = data;
                             var newSession = new GlobalSession
                             {
-                                Game = data.Item1,
-                                CharactersInGame = data.Item2
+                                Game = game,
+                                CharactersInGame = characters
                             };
                             MainContainer.Container.Register<IGlobalSession>(newSession);
                             InitWorlds(loadedConfig.Main.ServerPort);

@@ -117,11 +117,7 @@ public class UIController : MonoBehaviour, IUIOwner
     // }
 
     public void SetPlayerPosition(Vector3 position) => _playerPosition = position;
-    public Sprite GetSpriteById(string id)
-    {
-        return namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
-    }
-
+    public Sprite GetSpriteById(string id) =>namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
     public IContainer Container { get; private set; }
     public Vector3 GetPlayerPosition() => _playerPosition;
     public GameObject GetPlayerGo() => _playerGo;

@@ -27,6 +27,12 @@ namespace Scripts.Common.Data
             Save();
         }
 
+        public void SetSkill(string skillId)
+        {
+            _currentCharacter.skill_set.main_skill = skillId;
+            Save();
+        }
+
         public Character[] GetCharacters() => characters;
         public Character GetCurrentCharacter() => _currentCharacter;
         public void SetCurrentCharacter(int index) => _currentCharacter = characters[index];

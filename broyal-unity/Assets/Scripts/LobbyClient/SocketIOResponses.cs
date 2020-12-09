@@ -53,16 +53,34 @@ namespace SocketIO.Data.Responses
         public class Data
         { 
             public Game game { get; set; }
+            public int eta { get; set; }
         }
 
         public Data data { get; set; }
     }
 
+    public class UpdateGamesListEvent
+    {
+        public Game[] games;
+    }
+    
     public class Game
     {
         public string id { get; set; }
         public string name { get; set; }
-        public User[] gameUsers { get; set; }
+        
+        public string owner { get; set; }
+        
+        public bool isStarted { get; set; }
+        public bool isFinished { get; set; }
+        
+        public int waitingTime { get; set; }
+        
+        public DateTime createTime{ get; set; }
+        public DateTime startTime{ get; set; }
+        public DateTime endTime{ get; set; }
+        public ServerInfo serverInfo { get; set; }
+        public User[] players { get; set; }
     }
     
     public class StartGameResponse : BaseResponse
@@ -74,6 +92,25 @@ namespace SocketIO.Data.Responses
             public int port { get; set; }
         }
 
+        public Data data { get; set; }
+    }
+    
+    public class UpdateGamesListResponse : BaseResponse
+    {
+        public class Data
+        {
+            public Game[] games { get; set; }
+        }
+        public Data data { get; set; }
+    }
+    
+    public class JoinGameResponse : BaseResponse
+    {
+        public class Data
+        {
+            public Game game { get; set; }
+            public int eta { get; set; }
+        }
         public Data data { get; set; }
     }
     
@@ -104,5 +141,11 @@ namespace SocketIO.Data.Responses
     public class Skill_Set
     {
         public string main_skill { get; set; }
+    }
+    
+    public class ServerInfo
+    {
+        public string address { get; set; }
+        public int port { get; set; }
     }
 }

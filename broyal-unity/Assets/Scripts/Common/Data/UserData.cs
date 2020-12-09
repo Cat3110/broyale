@@ -23,6 +23,11 @@ namespace Scripts.Common.Data
             Save();
         }
 
+        public void SetSkill(string skillId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Character[] GetCharacters()
         {
             throw new System.NotImplementedException();

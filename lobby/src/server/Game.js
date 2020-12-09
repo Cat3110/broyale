@@ -1,18 +1,25 @@
 const uuidv4 = require('uuid/v4')
 
-function Game ({counter,user}) {
+function Game ( counter, user, countDownTime ) {
     const id = uuidv4();
-    let name = "Game " + counter
-    let rport = Math.floor(1000 + Math.random() * 9000)
-    let time = 10
+    const createTime = new Date(Date.now())
+    const name = "Game " + counter
+    const port = Math.floor(1000 + Math.random() * 9000)
+    const time = countDownTime
+
     let address = "127.0.0.1"
     let gameOwner = user
     let gameUsers = []
-    let winner = false;
+    let winner = false
     let gameState = getMapDefault()
-    let it = makeIterator(['X', 'O']);
-    let turn = null;
-    let gameStarted = false
+    let it = makeIterator(['X', 'O'])
+    let turn = null
+    let isStarted = false
+    let isFinished = false
+    
+    let startTime = new Date()
+    let endTime = new Date()
+
     let rowZeros = [0, 0, 0, 0, 0]
     let rowPos = [0, -1, -2, -3, -4]
     let rowNeg = [0, 1, 2, 3, 4]
@@ -36,7 +43,6 @@ function Game ({counter,user}) {
     }
 
     function getUsers() {
-
       return {
         users: Array.from(gameUsers).map(user => {
             return {
@@ -46,6 +52,7 @@ function Game ({counter,user}) {
         })
       }
     }
+
     function getMapDefault(){
     	let x = new Array(9)
     	for (var j = 0; j < x.length; j++) {
@@ -125,19 +132,23 @@ function Game ({counter,user}) {
     }
 
     function startGame() {
-      gameStarted = true
+      isStarted = true
       turn = gameUsers[0].id
-    }
-
-    function isStarted() {
-      return gameStarted
+      startTime = Date.now()
     }
 
     function toJSON () {
         return {
             id,
             name,
-            gameUsers
+            players: gameUsers,
+            isStarted,
+            isFinished,
+            createTime, 
+            startTime,
+            endTime,
+            waitingTime: time,
+            serverInfo: getServerInfo()
         };
     }
 
@@ -159,7 +170,11 @@ function Game ({counter,user}) {
     }
 
     function getServerInfo() {
-      return {time:time, address: address, port: rport}
+      return {address, port}
+    }
+
+    function isGameStarted() {
+      return isStarted
     }
 
     function checkForWinner(x,y) {
@@ -194,6 +209,10 @@ function Game ({counter,user}) {
       return false
     }
 
+    function getETATime() {
+      return Math.max(0, (createTime.getSeconds() + time)-(new Date(Date.now())).getSeconds() )
+    }
+
   function makeIterator(array) {
     var nextIndex = 0;
 
@@ -225,8 +244,9 @@ function Game ({counter,user}) {
         getUsersToJSON,
         getTurn,
         getOpponent,
-        isStarted,
         isUserInGame,
+        isGameStarted,
+        getETATime,
         toJSON
     });
 }
