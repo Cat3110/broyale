@@ -37,6 +37,7 @@ public class PrefabCreatorSystem : ComponentSystem
         foreach (var e in groupEntities)
         {
             var data = EntityManager.GetComponentData<PrefabCreator>(e);
+            Debug.Log($"LoadAssetByIdAsync {data.NameId}");
             
             _assetManager.LoadAssetByIdAsync(data.NameId, (go) =>
             {

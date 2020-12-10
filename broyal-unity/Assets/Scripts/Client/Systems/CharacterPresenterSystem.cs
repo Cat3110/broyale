@@ -27,6 +27,7 @@ public class CharacterPresenterSystem : ComponentSystem
 {
     private const float RotationSpeed = 20.0f;
     private const float MoveSpeed = 16.0f;
+    private const float RunAnimationSmoothFactor = 2.0f;
     
     private EntityQuery _group;
 
@@ -81,11 +82,12 @@ public class CharacterPresenterSystem : ComponentSystem
         foreach (var e in groupEntities)
         {
             var player = EntityManager.GetComponentData<PlayerData>(e);
-
-            _fxData.SetDeadZoneRadius(player.damageRadius);
-            
+            var isMyPlayer = EntityManager.HasComponent<PlayerInput>(e);
             var data = EntityManager.GetComponentData<CharacterPresenter>(e);
             var translation = EntityManager.GetComponentData<Translation>(e);
+            
+            var attack = EntityManager.GetComponentData<Attack>(e);
+            var damage = EntityManager.GetComponentData<Damage>(e);
 
             var go = EntityManager.GetComponentObject<GameObject>(e);
             var bindData = EntityManager.GetComponentObject<CharactersBindData>(e);
@@ -93,45 +95,49 @@ public class CharacterPresenterSystem : ComponentSystem
             float3 prevPos = go.transform.position;
             var dist = math.distance(prevPos, translation.Value);
 
-            //bindData.Animator.SetFloat(Speed, dist > 0.2f ? 1.0f : 0.0f);
-
             go.transform.position = Vector3.Lerp(go.transform.position, translation.Value, deltaTime * MoveSpeed);
             //go.transform.position = translation.Value;
 
-            _uiController.SetPlayerGo(go);
-            _uiController.SetPlayerPosition(translation.Value);
-            _uiController.GameUI.SetGems(player.GetItems());
-            
             bindData.UpdateHealthBar(player.health / (float)player.maxHealth);
-            
-            //if (dist > 0.1f)
-            {
-                //go.transform.forward = direction;
-                //go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
-            }
 
-            if (EntityManager.HasComponent<PlayerInput>(e))
+            if (isMyPlayer)
             {
-                var tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
+                _fxData.SetDeadZoneRadius(player.damageRadius);
+                _uiController.SetPlayerGo(go);
+                _uiController.SetPlayerPosition(translation.Value);
+                _uiController.GameUI.SetGems(player.GetItems());
                 
+                var tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
+
                 var input = EntityManager.GetBuffer<PlayerInput>(e);
                 if (input.GetDataAtTick(tick - 1, out var pinput))
                 {
                     var direction = new Vector2(pinput.horizontal,pinput.vertical);
                     var prevSpeed = bindData.Animator.GetFloat(Speed);
                     var newSpeed = direction.sqrMagnitude > 0.01 ? 1 : 0;
-                    bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * 2.0f) );
+                    bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * RunAnimationSmoothFactor) );
+                }
+                
+                if (player.health <= 0.0f)
+                {
+                    //TODO: Unable to reload netcode worlds _(
+                    //_uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
+                    _uiController.GameOver.Show( () => Application.Quit() );
                 }
             }
-
-            var attack = EntityManager.GetComponentData<Attack>(e);
-            var damage = EntityManager.GetComponentData<Damage>(e);
+            else
+            {
+                var prevSpeed = bindData.Animator.GetFloat(Speed);
+                var newSpeed = dist > 0.1 ? 1 : 0;
+                bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * RunAnimationSmoothFactor));
+            }
 
             if (attack.ProccesedId != 0 || attack.AttackType != 0)
             {
                 if (data.AttackTransId != attack.Seed)
                 {
-                    Debug.LogWarning($"Client:Attack To => {attack.Target} => {attack.AttackType} => {data.AttackTransId} != {attack.Seed}");
+                    Debug.Log($"Client:Attack To => {attack.Target} => {attack.AttackType} => {data.AttackTransId} != {attack.Seed}");
+                    
                     bindData.Animator.SetInteger(Type, player.primarySkillId);
                     bindData.Animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
@@ -164,27 +170,11 @@ public class CharacterPresenterSystem : ComponentSystem
             }
             else
             {
-                // if (EntityManager.HasComponent<PlayerInput>(e))
-                // {
-                //     var input = EntityManager.GetBuffer<PlayerInput>(e);
-                //     var lastInput = input[0];
-                //     var direction = new Vector2(lastInput.horizontal,lastInput.vertical);
-                //     if (direction.sqrMagnitude > 0.1f)
-                //     {
-                //         go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
-                //         //go.transform.forward = direction;
-                //     }
-                //     
-                //     Debug.Log( $"{input[0].horizontal}:{input[0].vertical} => {input[input.Length-1].horizontal}:{input[input.Length-1].vertical}");
-                // }
-                // else
-                // {
-                    if (dist > 0.01f)
-                    {
-                        var direction = math.normalize(translation.Value - prevPos);
-                        go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
-                    }
-                //}
+                if (dist > 0.01f)
+                {
+                    var direction = math.normalize(translation.Value - prevPos);
+                    go.transform.forward = Vector3.Lerp(go.transform.forward, direction, RotationSpeed * deltaTime);
+                }
             }
 
             if (damage.DamageType != 0 && data.DamageTransId != damage.Seed )
@@ -196,13 +186,6 @@ public class CharacterPresenterSystem : ComponentSystem
             }
             
             bindData.Animator.SetBool(Death, player.health <= 0.0f);
-            
-            if (player.health <= 0.0f)
-            {
-                //TODO: Unable to reload netcode worlds _(
-                //_uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
-                _uiController.GameOver.Show( () => Application.Quit() );
-            }
         }
 
         groupEntities.Dispose();

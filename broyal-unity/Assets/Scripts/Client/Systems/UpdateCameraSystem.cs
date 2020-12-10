@@ -16,7 +16,7 @@ public class UpdateCameraSystem : SystemBase
     private const string MiniMapCameraTag = "MiniMapCamera";
     
     private Vector3 targetPosition;
-    private float smoothPosition = 0.05f;
+    private float smoothPosition = 0.1f;
     private Vector3 velocity = Vector3.zero;
 
     //private EntityQuery currentPlayerQuery;

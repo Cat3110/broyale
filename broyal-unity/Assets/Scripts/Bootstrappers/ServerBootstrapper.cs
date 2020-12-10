@@ -43,7 +43,7 @@
 
             Container.Register(config);
             
-            Container.TryResolve<IGlobalSession>( out IGlobalSession globalSession);
+            Container.TryResolve( out IGlobalSession globalSession);
 
             Debug.Log("Remote config loading...");
             AppConfig.LoadByUrlAsync().ContinueWith( (json) =>

@@ -224,10 +224,12 @@ namespace Bootstrappers
             world.GetOrCreateSystem<BuildPhysicsWorld>().Enabled = false;
             //world.GetOrCreateSystem<>().Enabled = false;
             
+            #if !UNITY_EDITOR
             var localClearingSystem = World.DefaultGameObjectInjectionWorld.CreateSystem<ClearingPresenterSystem>();
             localClearingSystem.Init(world);
             var localSimulationGroup = World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<SimulationSystemGroup>();
             localSimulationGroup.AddSystemToUpdateList( localClearingSystem );
+            #endif
         }
         
         private void OnDestroy()
