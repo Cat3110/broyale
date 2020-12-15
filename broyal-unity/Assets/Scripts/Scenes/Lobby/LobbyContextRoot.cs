@@ -1,6 +1,6 @@
 ﻿using Adic;
 using Scripts.Common.Data;
-using Scripts.Common.ViewItems;
+using Scripts.Common.Factories;
 
 namespace Scripts.Scenes.Lobby
 {

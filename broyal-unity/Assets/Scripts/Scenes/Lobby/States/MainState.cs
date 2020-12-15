@@ -5,33 +5,31 @@ using SocketIO;
 using TMPro;
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using Adic;
 using Bootstrappers;
-using RemoteConfig;
 using UnityEngine.SceneManagement;
 using Scripts.Common.Data.Data;
 using Scripts.Common.Data;
 using SocketIO.Data.Responses;
 using SocketIOExt;
-using UnityEngine.UI;
+using Scripts.Common.Factories;
+using Scripts.Common;
+using Scripts.Common.UI;
 
 namespace Scripts.Scenes.Lobby.States
 {
     public class MainState : BaseStateMachineState
     {
         [Inject] private IUserData userData;
+        [Inject] private ILobbyContentFactory contentFactory;
         
         [SerializeField] private TMP_Text connectingTimer;
         [SerializeField] private GameObject stateLocker;
 
         [SerializeField] private Transform personRoot;
 
-        //TODO:remove me 
-        [SerializeField] private List<UIController.SkillIdToSprite> namedSprites;
-        [SerializeField] private Button ButtonChangeMainSkill;//
-        
-        
+        [SerializeField] private AbilitySelectedItem mainAbilityIcon;
+
         private SocketIOComponent _socket;
         private Game[] _games;
         private string _currentGameId = null;
@@ -50,10 +48,7 @@ namespace Scripts.Scenes.Lobby.States
             _socket.On( LobbyEvents.GAME_STARTED, OnGameStarted );
 
             //connectingTimer.text = "";
-            ButtonChangeMainSkill.GetComponent<Image>().sprite = GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill);
-            
-            ButtonChangeMainSkill.onClick.RemoveAllListeners();
-            ButtonChangeMainSkill.onClick.AddListener(OnChangeMainSkill);
+            mainAbilityIcon.Setup( contentFactory.GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill) );
         }
 
         private void OnGameStarted(SocketIOEvent obj)
@@ -62,11 +57,7 @@ namespace Scripts.Scenes.Lobby.States
             if (game == null || game.id != _currentGameId) return;
             
             Debug.Log($"{LobbyEvents.GAME_STARTED} {game}");
-//#if UNITY_EDITOR
-//              SceneManager.LoadScene("PreviewClientServer");
-//#else
-            SceneManager.LoadScene("Client");
-//#endif
+            SceneManager.LoadScene( Constants.SCENE_CLIENT );
         }
 
         public void OnPressedPlay()
@@ -105,22 +96,6 @@ namespace Scripts.Scenes.Lobby.States
             GlobalSettings.ServerPort = (ushort)game.serverInfo.port;
             SetTimer( eta );
             StartCoroutine(FinalCountdown(eta));
-        }
-
-        private Sprite GetSpriteById(string id) => namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
-
-        private void OnChangeMainSkill()
-        {
-            var character = userData.GetCurrentCharacter();
-            
-            var appConfig = MainContainer.Container.Resolve<AppConfig>();
-            var availableSkills = appConfig.Skills.Where( s => s.IsEnabled).ToList();
-            var index = availableSkills.FindIndex( x => x.Id == character.skill_set.main_skill);
-            var nextIndex = index + 1 >= availableSkills.Count ? 0 : index + 1;
-            var nextSkillId = availableSkills[nextIndex].Id;
-            
-            userData.SetSkill(nextSkillId);
-            ButtonChangeMainSkill.GetComponent<Image>().sprite = GetSpriteById(nextSkillId);
         }
 
         public void OnPressedGoToProfile()

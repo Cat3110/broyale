@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Bootstrappers;
 using RemoteConfig;
+using Scripts.Common.Factories;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -23,14 +23,6 @@ public class UIController : MonoBehaviour, IUIOwner
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
     [SerializeField] private GameOverUI gameOver;
-    
-    [Serializable]
-    public class SkillIdToSprite
-    {
-        public string Id;
-        public Sprite Sprite;
-    }
-    [SerializeField] private List<SkillIdToSprite> namedSprites;
     
     public static Vector2 AttackDirection;
     
@@ -117,7 +109,6 @@ public class UIController : MonoBehaviour, IUIOwner
     // }
 
     public void SetPlayerPosition(Vector3 position) => _playerPosition = position;
-    public Sprite GetSpriteById(string id) => namedSprites.FirstOrDefault(i => i.Id == id)?.Sprite;
     public IContainer Container { get; private set; }
     public Vector3 GetPlayerPosition() => _playerPosition;
     public GameObject GetPlayerGo() => _playerGo;
@@ -135,8 +126,6 @@ public interface IUIOwner
     
     void SetPlayerGo(GameObject go);
     GameObject GetPlayerGo();
-
-    Sprite GetSpriteById(string id);
 }
 
 public interface IHaveUIOwner
@@ -212,8 +201,8 @@ public class MainUI : SimpleUIController
             
         foreach (var skillId in skillIds)
         {
-            var sprite = Owner.GetSpriteById(skillId);
-            skillsPanel.Add(skillId, sprite);
+            //var sprite = contentFactory.GetSpriteById(skillId);
+            //skillsPanel.Add(skillId, sprite);
         }
 
         skillsPanel.SetOn(0);
@@ -347,7 +336,7 @@ public class GameUI : SimpleUIController
         NeedSetDirection = _session.SkillId > 1;
         
         //TODO:Need make some skill class for ui
-        mainButton.transform.Find("Icon").GetComponent<Image>().sprite = Owner.GetSpriteById(skillId);
+        //mainButton.transform.Find("Icon").GetComponent<Image>().sprite = contentFactory.GetSpriteById(skillId);
         
         base.Show();
     }

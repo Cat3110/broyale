@@ -3,7 +3,7 @@ using System;
 using Adic;
 using Scripts.Common.Data;
 using Scripts.Common.Tools.UI;
-using Scripts.Common.ViewItems;
+using Scripts.Common.Factories;
 using Scripts.Core.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
