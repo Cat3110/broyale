@@ -10,6 +10,14 @@ namespace Scripts.Scenes.Lobby.States
 {
     public class SettingsState : BaseStateMachineState
     {
+        public enum PanelState
+        {
+            Common,
+            ChangeLanguage,
+            TermsOfUse,
+            FBConnect
+        }
+
         [Inject] private IUserData userData;
         [Inject] private IGameData gameData;
         [Inject] private ILobbyContentFactory contentFactory;
@@ -25,7 +33,7 @@ namespace Scripts.Scenes.Lobby.States
         private int iMusicState = 0;
         private int iSoundState = 1;
         private int iFBState = 0;
-        private int iCommonState = 0;
+        private PanelState panelState = PanelState.Common;
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
@@ -49,13 +57,13 @@ namespace Scripts.Scenes.Lobby.States
 
         public void OnPressedShowTermsOfService()
         {
-            iCommonState = 2;
+            panelState = PanelState.TermsOfUse;
             UpdateButtons();
         }
 
         public void OnPressedCloseTermsOfService()
         {
-            iCommonState = 0;
+            panelState = PanelState.Common;
             UpdateButtons();
         }
 
@@ -76,21 +84,35 @@ namespace Scripts.Scenes.Lobby.States
             UpdateButtons();
         }
 
+        public void OnPressedCancelFBConnecting()
+        {
+            panelState = PanelState.Common;
+            UpdateButtons();
+        }
+
+        public void OnPressedFBConnectingNow()
+        {
+            iFBState = 1;
+            panelState = PanelState.Common;
+            UpdateButtons();
+        }
+
         public void OnPressedFB( int i )
         {
-            iFBState = 1 - i;
+            panelState = i == 0 ? PanelState.FBConnect : PanelState.Common;
+            //iFBState = 1 - i;
             UpdateButtons();
         }
 
         public void OnPressedGoToChangeLanguage()
         {
-            iCommonState = 1;
+            panelState = PanelState.ChangeLanguage;
             UpdateButtons();
         }
 
         public void OnPressedSelectLanguage( int iSelectedLang )
         {
-            iCommonState = 0;
+            panelState = PanelState.Common;
             UpdateButtons();
         }
 
@@ -105,9 +127,10 @@ namespace Scripts.Scenes.Lobby.States
             fbButtons[ 0 ].gameObject.SetActive( iFBState == 0 );
             fbButtons[ 1 ].gameObject.SetActive( iFBState == 1 );
 
-            commonBlocks[ 0 ].SetActive( iCommonState == 0 );
-            commonBlocks[ 1 ].SetActive( iCommonState == 1 );
-            commonBlocks[ 2 ].SetActive( iCommonState == 2 );
+            for ( int i = 0; i < commonBlocks.Length; i++ )
+            {
+                commonBlocks[ i ].SetActive( i == ( int ) panelState );
+            }
         }
     }
 }
