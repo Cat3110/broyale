@@ -1,15 +1,13 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using UniRx.Async;
-using Unity.Collections;
-using UnityEngine.Networking;
-
-namespace RemoteConfig
+﻿namespace RemoteConfig
 {
     using UnityEngine;
     using FullSerializer;
     using System.Collections.Generic;
     using System;
+    using System.IO;
+    using UniRx.Async;
+    using Unity.Collections;
+    using UnityEngine.Networking;
 
     public sealed class AppConfig
     { 

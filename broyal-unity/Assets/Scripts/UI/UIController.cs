@@ -14,6 +14,7 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
 using Utils;
+using Adic;
 using CharacterInfo = RemoteConfig.CharacterInfo;
 using Object = UnityEngine.Object;
 
@@ -177,7 +178,7 @@ public class MainUI : SimpleUIController
     [SerializeField] private OffScreenController offScreenController;
 
     private IContainer _container;
-    
+
     public void Show( CharactersConfig characters, IList<string> skillIds)
     { 
         base.Show();
@@ -202,7 +203,7 @@ public class MainUI : SimpleUIController
         foreach (var skillId in skillIds)
         {
             //var sprite = contentFactory.GetSpriteById(skillId);
-            //skillsPanel.Add(skillId, sprite);
+            skillsPanel.Add(skillId, Sprite.Create( new Texture2D(1,1), new Rect(0,0,1,1),Vector2.one*0.5f));
         }
 
         skillsPanel.SetOn(0);
