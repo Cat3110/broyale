@@ -165,13 +165,19 @@ public class ZoneDamageSystem : ComponentSystem
     private MainConfig _config;
     private EntityQuery _playesQuery;
 
-    private int Radius = 110;
-    private const float tick = 1.0f;
+    private float _areaSize = 110f;
+    private float _decreaseTick = 2.0f;
+    private float _decreaseAmount = 1.0f;
+    
     private float lastTick = 0;
 
     protected override void OnCreate()
     {
         _config = ServerBootstrapper.Container.Resolve<MainConfig>();
+
+        _areaSize = _appConfig.Main.MapAreaSize;
+        _decreaseTick = _appConfig.Main.MapAreaDecreaseTick;
+        _decreaseAmount = _appConfig.Main.MapAreaDecreaseAmount;
 
         _playesQuery = GetEntityQuery(
             ComponentType.ReadOnly<Attack>(),
@@ -187,16 +193,15 @@ public class ZoneDamageSystem : ComponentSystem
 
         if (lastTick <= 0)
         {
-            lastTick = tick;
-            Radius -= 1;
+            lastTick = _decreaseTick;
+            _areaSize -= _decreaseAmount;
             
             var players = _playesQuery.ToEntityArray(Allocator.TempJob);
-            for (int i = 0; i < players.Length; i++)
+            foreach (var player in players)
             {
-                var player = players[i];
                 var playerPos = EntityManager.GetComponentData<Translation>(player).Value;
                 
-                if (math.abs(playerPos.x) > Radius || math.abs(playerPos.y) > Radius)
+                if (math.abs(playerPos.x) > _areaSize || math.abs(playerPos.y) > _areaSize)
                 {
                     var damage = EntityManager.GetComponentData<Damage>(player);
                     
@@ -210,7 +215,8 @@ public class ZoneDamageSystem : ComponentSystem
                 }
                 
                 var playerData = EntityManager.GetComponentData<PlayerData>(player);
-                playerData.damageRadius = Radius;
+                playerData.damageRadius = (int)_areaSize;
+                
                 EntityManager.SetComponentData(player, playerData);
             }
             players.Dispose();

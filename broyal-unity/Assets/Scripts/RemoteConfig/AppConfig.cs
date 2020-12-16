@@ -96,6 +96,10 @@ namespace RemoteConfig
         
         public int RandomSeed;
         public string LobbyAddress;
+
+        public float MapAreaSize;
+        public float MapAreaDecreaseTick;
+        public float MapAreaDecreaseAmount;
     }
 
     public sealed class LocalizationConfig
