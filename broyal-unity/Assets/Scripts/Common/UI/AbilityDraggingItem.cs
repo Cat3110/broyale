@@ -26,6 +26,7 @@ namespace Scripts.Common.UI
         public const string EVENT_SHOW_ABILITY_INFO = "ShowAbilityInfo";
 
         [SerializeField] private AbilitySelectedItem itemView;
+        [SerializeField] private GameObject[] progressLines;
 
         private ICustomEventListener listener = null;
         private bool itsLongPressed = false;
@@ -39,6 +40,8 @@ namespace Scripts.Common.UI
         {
             this.skillInfo = skillInfo;
 
+            bool updgradeMode = UnityEngine.Random.Range( 0, 1000 ) > 500; // ERESH TODO FIX IT
+            SetupInside( updgradeMode );
             itemView.Setup( sprite );
         }
 
@@ -46,6 +49,12 @@ namespace Scripts.Common.UI
         {
             itsLongPressed = false;
             dragModeNow = mode;
+        }
+
+        private void SetupInside( bool upgradeMode )
+        {
+            progressLines[ 0 ].SetActive( ! upgradeMode );
+            progressLines[ 1 ].SetActive( upgradeMode );
         }
 
         private void FixedUpdate()
