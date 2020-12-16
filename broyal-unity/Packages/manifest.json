@@ -36,7 +36,7 @@
     "com.unity.rendering.hybrid": "0.5.2-preview.4",
     "com.unity.sysroot": "0.1.11-preview",
     "com.unity.sysroot.linux-x86_64": "0.1.13-preview",
-    "com.unity.test-framework": "1.1.18",
+    "com.unity.test-framework": "1.1.19",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.14",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "0.1.17-preview",
