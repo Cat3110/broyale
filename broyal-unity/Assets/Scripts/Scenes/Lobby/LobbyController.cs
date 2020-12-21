@@ -1,5 +1,4 @@
 ﻿
-using Scripts.Common.Data;
 using Scripts.Core.StateMachine;
 using SocketIO.Data.Responses;
 
@@ -19,7 +18,8 @@ namespace Scripts.Scenes.Lobby
         Main,
         Profile,
         Abilities,
-        Settings
+        Settings,
+        Rating
     }
 
     public class LobbyController : BaseStateMachine

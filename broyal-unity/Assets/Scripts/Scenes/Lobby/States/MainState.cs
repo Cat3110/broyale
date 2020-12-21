@@ -47,7 +47,6 @@ namespace Scripts.Scenes.Lobby.States
             _socket.On( LobbyEvents.GAME_UPDATE, OnGameUpdate );
             _socket.On( LobbyEvents.GAME_STARTED, OnGameStarted );
 
-            //connectingTimer.text = "";
             mainAbilityIcon.Setup( contentFactory.GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill) );
         }
 
@@ -96,6 +95,11 @@ namespace Scripts.Scenes.Lobby.States
             GlobalSettings.ServerPort = (ushort)game.serverInfo.port;
             SetTimer( eta );
             StartCoroutine(FinalCountdown(eta));
+        }
+
+        public void OnPressedGoToRating()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Rating );
         }
 
         public void OnPressedGoToProfile()
