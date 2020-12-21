@@ -222,6 +222,9 @@ namespace Bootstrappers
             world.GetOrCreateSystem<CopySkinnedEntityDataToRenderEntity>().Enabled = false;
             world.GetOrCreateSystem<RenderMeshSystemV2>().Enabled = false;
             world.GetOrCreateSystem<BuildPhysicsWorld>().Enabled = false;
+            world.GetOrCreateSystem<StepPhysicsWorld>().Enabled = false;
+            world.GetOrCreateSystem<PhysicsWorldHistory>().Enabled = false;
+            world.GetOrCreateSystem<ExportPhysicsWorld>().Enabled = false;
             //world.GetOrCreateSystem<>().Enabled = false;
             
             #if !UNITY_EDITOR
