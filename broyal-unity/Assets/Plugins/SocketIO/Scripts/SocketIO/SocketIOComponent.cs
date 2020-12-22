@@ -205,7 +205,7 @@ namespace SocketIO
         {
             EmitClose();
             connected = false;
-
+            
             socketThread?.Abort();
             pingThread?.Abort();
 
@@ -279,20 +279,27 @@ namespace SocketIO
 
         private void RunSocketThread(object obj)
         {
-            var webSocket = (WebSocket) obj;
-            while (connected)
+            try
             {
-                if (webSocket.IsConnected)
+                var webSocket = (WebSocket) obj;
+                while (connected)
                 {
-                    Thread.Sleep(reconnectDelay);
+                    if (webSocket.IsConnected)
+                    {
+                        Thread.Sleep(reconnectDelay);
+                    }
+                    else
+                    {
+                        webSocket.Connect();
+                    }
                 }
-                else
-                {
-                    webSocket.Connect();
-                }
-            }
 
-            webSocket.Close();
+                webSocket.Close();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
         }
 
         private void RunPingThread(object obj)
@@ -302,33 +309,40 @@ namespace SocketIO
             var timeoutMilis = Mathf.FloorToInt(pingTimeout * 1000);
             var intervalMilis = Mathf.FloorToInt(pingInterval * 1000);
             
-            while (connected)
+            try
             {
-                if (!wsConnected)
+                while (connected)
                 {
-                    Thread.Sleep(reconnectDelay);
-                }
-                else
-                {
-                    thPinging = true;
-                    thPong = false;
-
-                    EmitPacket(new Packet(EnginePacketType.Ping));
-                    var pingStart = DateTime.Now;
-
-                    while (webSocket.IsConnected && thPinging &&
-                           (DateTime.Now.Subtract(pingStart).TotalSeconds < timeoutMilis))
+                    if (!wsConnected)
                     {
-                        Thread.Sleep(200);
+                        Thread.Sleep(reconnectDelay);
                     }
-
-                    if (!thPong)
+                    else
                     {
-                        webSocket.Close();
-                    }
+                        thPinging = true;
+                        thPong = false;
 
-                    Thread.Sleep(intervalMilis);
+                        EmitPacket(new Packet(EnginePacketType.Ping));
+                        var pingStart = DateTime.Now;
+
+                        while (webSocket.IsConnected && thPinging &&
+                               (DateTime.Now.Subtract(pingStart).TotalSeconds < timeoutMilis))
+                        {
+                            Thread.Sleep(200);
+                        }
+
+                        if (!thPong)
+                        {
+                            webSocket.Close();
+                        }
+
+                        Thread.Sleep(intervalMilis);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
             }
         }
 

@@ -50,13 +50,24 @@ namespace Scripts.Scenes.Lobby.States
             mainAbilityIcon.Setup( contentFactory.GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill) );
         }
 
+        public override void OnEndState()
+        {
+            base.OnEndState();
+            
+            _socket.Off( LobbyEvents.SERVER_UPDATE, OnServerUpdate );
+            _socket.Off( LobbyEvents.GAME_UPDATE, OnGameUpdate );
+            _socket.Off( LobbyEvents.GAME_STARTED, OnGameStarted );
+        }
+
         private void OnGameStarted(SocketIOEvent obj)
         {
             var game = obj.data.Deserialize<Game>();
             if (game == null || game.id != _currentGameId) return;
             
             Debug.Log($"{LobbyEvents.GAME_STARTED} {game}");
-            SceneManager.LoadScene( Constants.SCENE_CLIENT );
+            
+            if( _socket.useDevServer ) SceneManager.LoadScene( Constants.SCENE_CLIENTANDSERVER );
+            else  SceneManager.LoadScene( Constants.SCENE_CLIENT );
         }
 
         public void OnPressedPlay()

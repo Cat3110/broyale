@@ -157,10 +157,6 @@
         private void OnDestroy()
         {
             //_entityManager.CompleteAllJobs();
-            
-            World.DefaultGameObjectInjectionWorld.EntityManager.DestroyEntity(World.DefaultGameObjectInjectionWorld
-                .EntityManager.UniversalQuery);
-            
             _entityManager.DestroyEntity(_entityManager.UniversalQuery);
         }
     }

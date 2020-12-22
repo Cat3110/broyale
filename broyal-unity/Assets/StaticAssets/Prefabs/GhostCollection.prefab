@@ -56,3 +56,12 @@ MonoBehaviour:
   - prefab: {fileID: 7144151036870971715, guid: 63ef000ded3294f48836ddf6a3c9ea18,
       type: 3}
     enabled: 1
+  - prefab: {fileID: 4797219787254102328, guid: ddde63d56092b3b4b8aef72b0f9d07e1,
+      type: 3}
+    enabled: 1
+  - prefab: {fileID: 4008888373869769779, guid: a92859ef2c8b45e438c3445fcaa7bc97,
+      type: 3}
+    enabled: 1
+  - prefab: {fileID: 4545723378967360756, guid: 85309ecbb1071f34b97af698303e2689,
+      type: 3}
+    enabled: 1
