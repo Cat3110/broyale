@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Bags
-    second: {fileID: 2100000, guid: 267a5b0cd30d4114cb7b48ee0fe0d968, type: 2}
+    second: {fileID: 2100000, guid: 68dafe01778ddf340a4120f2cbe5c37d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
