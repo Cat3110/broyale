@@ -147,6 +147,11 @@ namespace Scripts.Scenes.Lobby.States
             CloseAbilityViewPopup();
         }
 
+        public void OnPressedClosePopup()
+        {
+            CloseAbilityViewPopup();
+        }
+
         public void OnPressedGoToSettings()
         {
             stateMachine.SetState( ( int ) LobbyState.Settings );
