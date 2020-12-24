@@ -11,7 +11,6 @@ using Scripts.Common.UI;
 using Scripts.Core.Events;
 using Scripts.Core.StateMachine;
 using Scripts.Scenes.Lobby.UI;
-using SocketIO.Data.Responses;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -40,11 +39,14 @@ namespace Scripts.Scenes.Lobby.States
         private GameObject leftBlockCopy = null;
         private AbilityDraggingItem draggedItem = null;
         private AbilityDraggingItem draggedItemCopy = null;
+        private SkillInfo selectedSkillInfo;
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
         {
             base.OnStartState( stateMachine, args );
             this.Inject();
+
+            abilityViewPopup.SetOneListener( this );
 
             CloseAbilityViewPopup();
 
@@ -80,85 +82,56 @@ namespace Scripts.Scenes.Lobby.States
 
         public void OnEvent( Component sender, string evName, EventArgs args )
         {
-            if ( evName == AbilityDraggingItem.EVENT_DRAGGING_START )
-            {
-                SetDraggingMode( true, sender.gameObject );
-            }
-            else if ( evName == AbilityDraggingItem.EVENT_DRAGGING_END )
-            {
-                SetDraggingMode( false, sender.gameObject );
-            }
-            else if ( evName == AbilityDraggingItem.EVENT_SHOW_ABILITY_INFO )
+            if ( evName == AbilitySelectedItem.EVENT_TAP_LIGHTED_ABILITY && leftBlockCopy == null )
             {
                 AbilityEventArgs evArgs = ( AbilityEventArgs ) args;
 
+                bool canReplace = true; // TODO FIX IT
                 commonView.SetActive( false );
                 abilityViewPopup.gameObject.SetActive( true );
-                abilityViewPopup.Setup( evArgs.SkillInfo );
+                abilityViewPopup.Setup( evArgs.SkillInfo, sender.gameObject, canReplace );
+            }
+            else if ( evName == AbilitySelectedItem.EVENT_TAP_LIGHTED_ABILITY && leftBlockCopy != null )
+            {
+                ApplyAbilityTo( sender.gameObject.GetComponent<AbilitySelectedItem>() );
             }
         }
 
-        private void SetDraggingMode( bool flag, GameObject draggingObj )
-        {
-            draggingBlock.SetActive( flag );
-
-            if ( flag )
-            {
-                leftBlockCopy = Instantiate( mainAbilityLeftBlock, draggingBlock.transform );
-                leftBlockCopy.GetComponent<RectTransform>().anchorMax = Vector2.one * 0.5f;
-                leftBlockCopy.GetComponent<RectTransform>().anchorMin = Vector2.one * 0.5f;
-                leftBlockCopy.GetComponent<RectTransform>().sizeDelta = mainAbilityLeftBlock.GetComponent<RectTransform>().sizeDelta;
-                leftBlockCopy.transform.position = mainAbilityLeftBlock.transform.position;
-
-                AbilitySelectedItem[] copySelItems = leftBlockCopy.GetComponentsInChildren<AbilitySelectedItem>();
-                foreach ( var ab in copySelItems )
-                {
-                    ab.SetLighted( true );
-                }
-
-                EventSystem.current.SetSelectedGameObject( null );
-                mainAbilityScrollRect.OnEndDrag( new PointerEventData( EventSystem.current ) );
-                mainAbilityScrollRect.horizontal = false;
-
-                draggedItem = draggingObj.GetComponent<AbilityDraggingItem>();
-                draggedItem.SetDragMode( false );
-
-                GameObject copyDraggedAbility = Instantiate( draggingObj, draggingBlock.transform );
-                copyDraggedAbility.transform.position = draggingObj.transform.position;
-                draggedItemCopy = copyDraggedAbility.GetComponent<AbilityDraggingItem>();
-                draggedItemCopy.SetOneListener( this );
-                draggedItemCopy.SetDragMode( true );
-                EventSystem.current.SetSelectedGameObject( copyDraggedAbility );
-            }
-            else
-            {
-                float dist = Vector2.Distance( abilityMainIcon.transform.position, draggingObj.transform.position );
-                //Debug.Log( "Dist: " + dist );
-                if ( dist < 50f )
-                {
-                    // set new ability
-                    SkillInfo draggingSkillInfo = draggedItem.GetMySkillInfo();
-                    userData.SetSkill( draggingSkillInfo.Id );
-                    abilityMainIcon.Setup( contentFactory.GetSpriteById( draggingSkillInfo.Id ) );
-                }
-
-                AbilitySelectedItem[] copySelItems = leftBlockCopy.GetComponentsInChildren<AbilitySelectedItem>();
-                foreach ( var ab in copySelItems )
-                {
-                    ab.SetLighted( false );
-                }
-
-                GameObject.Destroy( leftBlockCopy.gameObject );
-                GameObject.Destroy( draggingObj );
-                EventSystem.current.SetSelectedGameObject( null );
-
-                mainAbilityScrollRect.horizontal = true;
-            }
-        }
-
-        public void OnPressedReplaceAbility( AbilityViewPopup popup )
+        private void LightSkillsForSelect( SkillInfo skillInfo, GameObject senderObj )
         {
             CloseAbilityViewPopup();
+
+            draggingBlock.SetActive( true );
+
+            leftBlockCopy = Instantiate( mainAbilityLeftBlock, draggingBlock.transform );
+            leftBlockCopy.GetComponent<RectTransform>().anchorMax = Vector2.one * 0.5f;
+            leftBlockCopy.GetComponent<RectTransform>().anchorMin = Vector2.one * 0.5f;
+            leftBlockCopy.GetComponent<RectTransform>().sizeDelta = mainAbilityLeftBlock.GetComponent<RectTransform>().sizeDelta;
+            leftBlockCopy.transform.position = mainAbilityLeftBlock.transform.position;
+
+            AbilitySelectedItem[] copySelItems = leftBlockCopy.GetComponentsInChildren<AbilitySelectedItem>();
+            foreach ( var ab in copySelItems )
+            {
+                ab.SetOneListener( this );
+                ab.SetLighted( true );
+            }
+
+            GameObject copyDraggedAbility = Instantiate( senderObj, draggingBlock.transform );
+            copyDraggedAbility.transform.position = senderObj.transform.position;
+            draggedItemCopy = copyDraggedAbility.GetComponent<AbilityDraggingItem>();
+            draggedItemCopy.SetOneListener( this );
+
+            selectedSkillInfo = skillInfo;
+        }
+
+        private void ApplyAbilityTo( AbilitySelectedItem selItem )
+        {
+            userData.SetSkill( selectedSkillInfo.Id );
+            selItem.Setup( contentFactory.GetSpriteById( selectedSkillInfo.Id ) );
+
+            GameObject.Destroy( leftBlockCopy ); leftBlockCopy = null;
+            GameObject.Destroy( draggedItemCopy ); draggedItemCopy = null;
+            draggingBlock.SetActive( false );
         }
 
         public void OnPressedUpgradeAbility( AbilityViewPopup popup )
