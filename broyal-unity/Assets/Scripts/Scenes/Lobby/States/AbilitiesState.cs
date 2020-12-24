@@ -12,7 +12,6 @@ using Scripts.Core.Events;
 using Scripts.Core.StateMachine;
 using Scripts.Scenes.Lobby.UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Scripts.Scenes.Lobby.States
@@ -87,7 +86,7 @@ namespace Scripts.Scenes.Lobby.States
             {
                 AbilityDraggingEventArgs evArgs = ( AbilityDraggingEventArgs ) args;
 
-                bool canReplace = true; // TODO FIX IT
+                bool canReplace = userData.GetCurrentCharacter().skill_set.main_skill != evArgs.SkillInfo.Id;
                 commonView.SetActive( false );
                 abilityViewPopup.gameObject.SetActive( true );
                 abilityViewPopup.Setup( evArgs.SkillInfo, sender.gameObject, canReplace );
