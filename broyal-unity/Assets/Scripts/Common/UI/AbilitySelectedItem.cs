@@ -14,7 +14,7 @@ namespace Scripts.Common.UI
         [SerializeField] private Image itemImg;
         [SerializeField] private GameObject[] unlightLightFrames;
 
-        private ICustomEventListener listener = null;
+        protected ICustomEventListener listener = null;
         private bool meLighted = false;
 
         public void Setup( Sprite sprite )
@@ -30,10 +30,8 @@ namespace Scripts.Common.UI
             meLighted = flag;
         }
 
-        public void OnPointerClick( PointerEventData evData )
+        public virtual void OnPointerClick( PointerEventData evData )
         {
-            if ( ! meLighted ) return;
-
             if ( listener != null )
             {
                 listener.OnEvent( this, EVENT_TAP_LIGHTED_ABILITY );

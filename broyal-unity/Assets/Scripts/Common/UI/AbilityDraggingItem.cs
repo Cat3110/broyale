@@ -2,14 +2,15 @@
 using System;
 using RemoteConfig;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Scripts.Common.UI
 {
-    public class AbilityEventArgs : EventArgs
+    public class AbilityDraggingEventArgs : EventArgs
     {
         public SkillInfo SkillInfo { get; private set; }
 
-        public AbilityEventArgs( SkillInfo skillInfo )
+        public AbilityDraggingEventArgs( SkillInfo skillInfo )
         {
             this.SkillInfo = skillInfo;
         }
@@ -37,6 +38,15 @@ namespace Scripts.Common.UI
         {
             progressLines[ 0 ].SetActive( ! upgradeMode );
             progressLines[ 1 ].SetActive( upgradeMode );
+        }
+
+        public override void OnPointerClick( PointerEventData evData )
+        {
+            if ( listener != null )
+            {
+                AbilityDraggingEventArgs args = new AbilityDraggingEventArgs( skillInfo );
+                listener.OnEvent( this, EVENT_TAP_LIGHTED_ABILITY, args );
+            }
         }
     }
 }
