@@ -1,10 +1,10 @@
 ﻿
 using Adic;
-using Boo.Lang;
 using Scripts.Common.Data;
 using Scripts.Common.Factories;
 using Scripts.Core.StateMachine;
 using Scripts.Scenes.Lobby.UI;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
