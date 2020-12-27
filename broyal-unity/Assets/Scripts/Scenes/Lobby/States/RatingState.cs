@@ -50,6 +50,11 @@ namespace Scripts.Scenes.Lobby.States
             stateMachine.SetState( ( int ) LobbyState.Main );
         }
 
+        public void OnPressedGoToSettings()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Settings );
+        }
+
         private void CreateProgress()
         {
             // generate fake data // FIT IT TODO REMOVE FROM THIS

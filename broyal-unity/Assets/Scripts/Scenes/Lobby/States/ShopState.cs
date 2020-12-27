@@ -28,6 +28,11 @@ namespace Scripts.Scenes.Lobby.States
             skinPerson.SetActive( true );
         }
 
+        public void OnPressedGoToSettings()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Settings );
+        }
+
         public void OnPressedBackToMainmenu()
         {
             stateMachine.SetState( ( int ) LobbyState.Main );
