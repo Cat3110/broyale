@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7cf9ac55e9ad188419b9d6fbc1eced99
+guid: 8b77e79ac3e17ac4396615c2bf208b5d
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
@@ -7,13 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: 140f423da5f4d424fbaa47af60793b6d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock5
-    second: {fileID: 2100000, guid: 7587e6ec3e661844c98c2cc247a6e504, type: 2}
+      name: Pots_WoodenProps
+    second: {fileID: 2100000, guid: f3355bda750e60d409f39096c7ef1da8, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
