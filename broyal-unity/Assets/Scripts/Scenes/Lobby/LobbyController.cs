@@ -19,7 +19,9 @@ namespace Scripts.Scenes.Lobby
         Profile,
         Abilities,
         Settings,
-        Rating
+        Rating,
+        Shop,
+        BattlePass
     }
 
     public class LobbyController : BaseStateMachine

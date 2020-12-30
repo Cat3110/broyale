@@ -113,6 +113,16 @@ namespace Scripts.Scenes.Lobby.States
             stateMachine.SetState( ( int ) LobbyState.Rating );
         }
 
+        public void OnPressedGoToShop()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Shop );
+        }
+
+        public void OnPressedGoToBattlePass()
+        {
+            stateMachine.SetState( ( int ) LobbyState.BattlePass );
+        }
+
         public void OnPressedGoToProfile()
         {
             stateMachine.SetState( ( int ) LobbyState.Profile );

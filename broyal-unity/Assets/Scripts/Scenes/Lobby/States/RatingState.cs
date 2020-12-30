@@ -7,6 +7,7 @@ using Scripts.Scenes.Lobby.UI;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Scripts.Scenes.Lobby.States
 {
@@ -20,6 +21,7 @@ namespace Scripts.Scenes.Lobby.States
         [SerializeField] private RectTransform progressLine;
         [SerializeField] private TextMeshProUGUI curRatingUser;
         [SerializeField] private Transform ratingScalaRoot;
+        [SerializeField] private ScrollRect ratingScrollRect;
 
         private GameObject skinPerson = null;
         private List<GameObject> clearList = new List<GameObject>();
@@ -48,10 +50,15 @@ namespace Scripts.Scenes.Lobby.States
             stateMachine.SetState( ( int ) LobbyState.Main );
         }
 
+        public void OnPressedGoToSettings()
+        {
+            stateMachine.SetState( ( int ) LobbyState.Settings );
+        }
+
         private void CreateProgress()
         {
             // generate fake data // FIT IT TODO REMOVE FROM THIS
-            int userRating = UnityEngine.Random.Range( 300, 1550 );
+            int userRating = UnityEngine.Random.Range( 0, 2000 );
             RatingStageData[] ratingStageDatas = new RatingStageData[ 10 ];
             for ( int i = 0; i < ratingStageDatas.Length; i++ )
             {
@@ -93,9 +100,10 @@ namespace Scripts.Scenes.Lobby.States
 
             curRatingUser.text = userRating.ToString();
 
-            Vector3 pos2 = ratingScalaRoot.localPosition;
-            pos2.x = - progressLine.sizeDelta.x;
-            ratingScalaRoot.localPosition = pos2;
+            ratingScalaRoot.GetComponent<RectTransform>().sizeDelta = new Vector2( lineLength, 100 );
+
+            float ratingProgressK = userRating * xK / lineLength;
+            ratingScrollRect.horizontalNormalizedPosition = ratingProgressK;
         }
 
         private void ClearPreviousProgress()
