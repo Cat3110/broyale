@@ -7,7 +7,7 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material
+      name: Ground
     second: {fileID: 2100000, guid: 98177bc5c67e9e64c845d8f7d9bb46f2, type: 2}
   - first:
       type: UnityEngine:Material
