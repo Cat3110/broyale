@@ -121,8 +121,8 @@ public class CharacterPresenterSystem : ComponentSystem
                 if (player.health <= 0.0f)
                 {
                     //TODO: Unable to reload netcode worlds _(
-                    //_uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
-                    _uiController.GameOver.Show( () => Application.Quit() );
+                    _uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
+                    //_uiController.GameOver.Show( () => Application.Quit() );
                 }
             }
             else

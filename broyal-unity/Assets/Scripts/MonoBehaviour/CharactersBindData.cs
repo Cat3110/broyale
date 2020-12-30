@@ -134,6 +134,7 @@ public class CharactersBindData : MonoBehaviour
    public void UpdateHealthBar(float value)
    {
       var renderer = healthBar.GetComponent<MeshRenderer>();
+      if (renderer == null || _matBlock == null) return;
             
       renderer.GetPropertyBlock(_matBlock);
       _matBlock.SetFloat(Fill, value);

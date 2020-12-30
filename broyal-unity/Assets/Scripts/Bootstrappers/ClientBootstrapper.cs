@@ -2,9 +2,7 @@
 using Scripts.Common.Data.Data;
 using SocketIO.Data.Responses;
 using UniRx;
-using Unity.Physics;
 using Unity.Physics.Systems;
-using UnityEditor;
 using Utils;
 
 namespace Bootstrappers
@@ -211,7 +209,6 @@ namespace Bootstrappers
             
             var ghostPredictionSystemGroup = world.GetOrCreateSystem<GhostPredictionSystemGroup>();
             ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>() );
-            
 
             var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup>();
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );
@@ -234,11 +231,36 @@ namespace Bootstrappers
             localSimulationGroup.AddSystemToUpdateList( localClearingSystem );
             #endif
         }
-        
+
         private void OnDestroy()
         {
             //_entityManager.CompleteAllJobs();
-            _entityManager.DestroyEntity(_entityManager.UniversalQuery);
+            //_entityManager.DestroyEntity(_entityManager.UniversalQuery);
+            
+            ConnectionSystem.disconnectRequested = true;
+            
+            // foreach (var world in World.All)
+            // {
+            //     var conSystem = world.GetExistingSystem<ReconnectSystem>();
+            //     if (conSystem != null)
+            //     {
+            //         if (conSystem.ClientConnectionState == ReconnectSystem.ConnectionState.Connected)
+            //         {
+            //             conSystem.ClientConnectionState = ReconnectSystem.ConnectionState.TriggerDisconnect;
+            //         }
+            //     }
+            // }
+            
+            var lateUpdateGroup = _world.GetExistingSystem<PresentationSystemGroup>();
+            lateUpdateGroup.RemoveSystemFromUpdateList(_world.GetExistingSystem<PrefabInstanciateSystem>() );
+            lateUpdateGroup.RemoveSystemFromUpdateList(_world.GetExistingSystem<PrefabCreatorSystem>() );
+            lateUpdateGroup.RemoveSystemFromUpdateList(_world.GetExistingSystem<UpdateCameraSystem>());
+            lateUpdateGroup.RemoveSystemFromUpdateList(_world.GetExistingSystem<CharacterPresenterSystem>() );
+            
+            _world.DestroySystem(_world.GetExistingSystem<PrefabInstanciateSystem>());
+            _world.DestroySystem(_world.GetExistingSystem<PrefabCreatorSystem>());
+            _world.DestroySystem(_world.GetExistingSystem<UpdateCameraSystem>());
+            _world.DestroySystem(_world.GetExistingSystem<CharacterPresenterSystem>());
         }
     }
 }

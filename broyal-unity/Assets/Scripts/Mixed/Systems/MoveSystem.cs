@@ -315,6 +315,9 @@ public class MoveSystem : SystemBase
                 // }
             }
 
+            
+            
+            
             var collided = false;
 
             //if (_isServer)
