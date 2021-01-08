@@ -46,6 +46,9 @@ public class CharacterPresenterSystem : ComponentSystem
     private MainConfig _config;
     private FXData _fxData;
     private UIController _uiController;
+
+    private bool gameOverIsShowed = false;
+
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -119,11 +122,11 @@ public class CharacterPresenterSystem : ComponentSystem
                     bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * RunAnimationSmoothFactor) );
                 }
                 
-                if (player.health <= 0.0f)
+                if (player.health <= 0.0f && ! gameOverIsShowed )
                 {
-                    //TODO: Unable to reload netcode worlds _(
+                    _uiController.GameOver.Setup( new Scripts.Scenes.Client.UI.RewardData() );
                     _uiController.GameOver.Show( () => SceneManager.LoadScene( Constants.SCENE_LOBBY ) );
-                    //_uiController.GameOver.Show( () => Application.Quit() );
+                    gameOverIsShowed = true;
                 }
             }
             else

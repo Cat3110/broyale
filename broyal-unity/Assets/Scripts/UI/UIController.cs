@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Bootstrappers;
 using RemoteConfig;
+using Scripts.Scenes.Client.UI;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -290,6 +291,17 @@ public class LoadingUI : SimpleUIController
 public class GameOverUI : SimpleUIController
 {
     [SerializeField] private Button exitButton;
+    [SerializeField] private TextMeshProUGUI placeValue;
+    [SerializeField] private TextMeshProUGUI skillRewardValue;
+    [SerializeField] private TextMeshProUGUI skillCoinsValue;
+
+    public void Setup( RewardData reward )
+    {
+        placeValue.text = "#" + reward.Place.ToString();
+        skillRewardValue.text = reward.SkillReward.ToString();
+        skillCoinsValue.text = reward.CoinsReward.ToString();
+    }
+
     public void Show(Action onExit)
     {
         base.Show();
