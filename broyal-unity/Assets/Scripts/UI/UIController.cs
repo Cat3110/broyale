@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Bootstrappers;
 using RemoteConfig;
-using Scripts.Common.Factories;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -14,7 +13,6 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
 using Utils;
-using Adic;
 using CharacterInfo = RemoteConfig.CharacterInfo;
 using Object = UnityEngine.Object;
 

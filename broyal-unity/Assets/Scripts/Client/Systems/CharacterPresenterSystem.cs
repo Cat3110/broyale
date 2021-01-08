@@ -1,4 +1,5 @@
 ﻿using Bootstrappers;
+using Scripts.Common;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -121,7 +122,7 @@ public class CharacterPresenterSystem : ComponentSystem
                 if (player.health <= 0.0f)
                 {
                     //TODO: Unable to reload netcode worlds _(
-                    _uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
+                    _uiController.GameOver.Show( () => SceneManager.LoadScene( Constants.SCENE_LOBBY ) );
                     //_uiController.GameOver.Show( () => Application.Quit() );
                 }
             }
