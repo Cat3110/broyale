@@ -8,10 +8,12 @@ namespace Scripts.Scenes.Client
 	public class GameMinimap : MonoBehaviour, IGameMinimap
 	{
         [SerializeField] private RectTransform mapImage;
+        [SerializeField] private GameObject[] crystalEntityPrefabs;
 
         private List<Transform> trackPersons = new List<Transform>(); // first is a main
         private Transform mainTr;
         private Coroutine updateCoroutine = null;
+        private Vector2 offsetKoeff = new Vector2( 2f, 2f );
 
         private IEnumerator _UpdateMainPersonPos()
         {
@@ -19,22 +21,35 @@ namespace Scripts.Scenes.Client
             {
                 yield return new WaitForSeconds( 0.1f );
 
-                Vector2 offsetKoeff = new Vector2( 2f, 2f );
                 Vector2 pos = new Vector2( - mainTr.position.x * offsetKoeff.x, - mainTr.position.z * offsetKoeff.y );
                 mapImage.anchoredPosition = pos;
             }
         }
 
-        public void RegisterPersonage( Transform tr, bool isMain )
+        public void RegisterPersonage( Transform tr, MinimapEntityType entityType, int entParam = -1 )
         {
             trackPersons.Add( tr );
 
-            if ( isMain )
+            if ( entityType == MinimapEntityType.LocalCharacter )
             {
                 mainTr = tr;
 
                 updateCoroutine = StartCoroutine( _UpdateMainPersonPos() );
             }
+            else if ( entityType == MinimapEntityType.Crystal )
+            {
+                GameObject crystalPrefab = crystalEntityPrefabs[ entParam ];
+                CreateEntityView( tr, crystalPrefab );
+            }
+        }
+
+        private void CreateEntityView( Transform tr, GameObject prefab )
+        {
+            GameObject entViewObj = Instantiate( prefab, mapImage.transform );
+            entViewObj.transform.localScale = Vector3.one;
+            entViewObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+                tr.position.x * offsetKoeff.x,
+                tr.position.z * offsetKoeff.y );
         }
 
         public void UnregisterPersonage( Transform tr )
@@ -55,5 +70,13 @@ namespace Scripts.Scenes.Client
                 }
             }
         }
-	}
+
+        private void Start()
+        {
+            Vector2 realMapSize = new Vector2( 223, 216 );
+            Vector2 imgMapSize = new Vector2( 1024f, 1024f );
+
+            offsetKoeff = new Vector2( imgMapSize.x / realMapSize.x, imgMapSize.y / realMapSize.y );
+        }
+    }
 }
