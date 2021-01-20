@@ -10,10 +10,10 @@ namespace Scripts.Scenes.Client
         [SerializeField] private RectTransform mapImage;
         [SerializeField] private GameObject[] crystalEntityPrefabs;
 
-        private List<Transform> trackPersons = new List<Transform>(); // first is a main
-        private Transform mainTr;
+        private Dictionary<Transform,GameObject> dictMapView = new Dictionary<Transform, GameObject>();
+        private Transform mainTr = null;
         private Coroutine updateCoroutine = null;
-        private Vector2 offsetKoeff = new Vector2( 2f, 2f );
+        private Vector2 offsetKoeff = Vector2.one;
 
         private IEnumerator _UpdateMainPersonPos()
         {
@@ -28,15 +28,15 @@ namespace Scripts.Scenes.Client
 
         public void RegisterPersonage( Transform tr, MinimapEntityType entityType, int entParam = -1 )
         {
-            trackPersons.Add( tr );
-
             if ( entityType == MinimapEntityType.LocalCharacter )
             {
                 mainTr = tr;
-
                 updateCoroutine = StartCoroutine( _UpdateMainPersonPos() );
             }
-            else if ( entityType == MinimapEntityType.Crystal )
+            else if ( entityType == MinimapEntityType.OtherCharacter )
+            {
+            }
+            else // if ( entityType == MinimapEntityType.Crystal )
             {
                 GameObject crystalPrefab = crystalEntityPrefabs[ entParam ];
                 CreateEntityView( tr, crystalPrefab );
@@ -50,13 +50,16 @@ namespace Scripts.Scenes.Client
             entViewObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(
                 tr.position.x * offsetKoeff.x,
                 tr.position.z * offsetKoeff.y );
+
+            dictMapView[ tr ] = entViewObj;
         }
 
         public void UnregisterPersonage( Transform tr )
         {
-            if ( trackPersons.Contains( tr ) )
+            if ( dictMapView.ContainsKey( tr ) )
             {
-                trackPersons.Remove( tr );
+                GameObject.Destroy( dictMapView[ tr ] );
+                dictMapView.Remove( tr );
             }
 
             if ( mainTr == tr )
