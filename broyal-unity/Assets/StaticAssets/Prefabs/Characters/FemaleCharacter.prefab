@@ -90,7 +90,6 @@ GameObject:
   - component: {fileID: 3065690589469258328}
   - component: {fileID: 8764049802098687676}
   - component: {fileID: 1854180491278564936}
-  - component: {fileID: 6686643132048700056}
   m_Layer: 0
   m_Name: FemaleCharacter
   m_TagString: Untagged
@@ -155,18 +154,6 @@ MonoBehaviour:
     rightHandPivot: {fileID: 7339865048020168201}
     animator: {fileID: 4975912022656717920}
   healthBar: {fileID: 4899942644581615805}
---- !u!114 &6686643132048700056
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7963753861703953159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65c188fbc65124446ac6a9e48b0fbe59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1470258388721740273
 PrefabInstance:
   m_ObjectHideFlags: 0

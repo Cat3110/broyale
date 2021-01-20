@@ -17,6 +17,11 @@ namespace Scripts.Scenes.Client
 
         private IGameMinimap minimap = null;
 
+        public void SetEntityType( MinimapEntityType type )
+        {
+            entityType = type;
+        }
+
         private void Start()
         {
             minimap = GameObject.FindObjectOfType<GameMinimap>();

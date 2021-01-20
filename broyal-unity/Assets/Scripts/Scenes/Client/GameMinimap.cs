@@ -9,13 +9,15 @@ namespace Scripts.Scenes.Client
 	{
         [SerializeField] private RectTransform mapImage;
         [SerializeField] private GameObject[] crystalEntityPrefabs;
+        [SerializeField] private GameObject otherPlayerPrefab;
 
-        private Dictionary<Transform,GameObject> dictMapView = new Dictionary<Transform, GameObject>();
+        private Dictionary<Transform,RectTransform> dictMapView = new Dictionary<Transform, RectTransform>();
         private Transform mainTr = null;
+        private List<Transform> otherPlayersTr = new List<Transform>();
         private Coroutine updateCoroutine = null;
         private Vector2 offsetKoeff = Vector2.one;
 
-        private IEnumerator _UpdateMainPersonPos()
+        private IEnumerator _UpdateCharactersPos()
         {
             while ( true )
             {
@@ -23,6 +25,15 @@ namespace Scripts.Scenes.Client
 
                 Vector2 pos = new Vector2( - mainTr.position.x * offsetKoeff.x, - mainTr.position.z * offsetKoeff.y );
                 mapImage.anchoredPosition = pos;
+
+                foreach ( var tr in otherPlayersTr )
+                {
+                    RectTransform trView = dictMapView[ tr ];
+
+                    trView.anchoredPosition = new Vector2(
+                        tr.position.x * offsetKoeff.x,
+                        tr.position.z * offsetKoeff.y );
+                }
             }
         }
 
@@ -31,10 +42,12 @@ namespace Scripts.Scenes.Client
             if ( entityType == MinimapEntityType.LocalCharacter )
             {
                 mainTr = tr;
-                updateCoroutine = StartCoroutine( _UpdateMainPersonPos() );
+                updateCoroutine = StartCoroutine( _UpdateCharactersPos() );
             }
             else if ( entityType == MinimapEntityType.OtherCharacter )
             {
+                CreateEntityView( tr, otherPlayerPrefab );
+                otherPlayersTr.Add( tr );
             }
             else // if ( entityType == MinimapEntityType.Crystal )
             {
@@ -43,15 +56,18 @@ namespace Scripts.Scenes.Client
             }
         }
 
-        private void CreateEntityView( Transform tr, GameObject prefab )
+        private GameObject CreateEntityView( Transform tr, GameObject prefab )
         {
             GameObject entViewObj = Instantiate( prefab, mapImage.transform );
+            entViewObj.SetActive( true );
             entViewObj.transform.localScale = Vector3.one;
             entViewObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(
                 tr.position.x * offsetKoeff.x,
                 tr.position.z * offsetKoeff.y );
 
-            dictMapView[ tr ] = entViewObj;
+            dictMapView[ tr ] = entViewObj.GetComponent<RectTransform>();
+
+            return entViewObj;
         }
 
         public void UnregisterPersonage( Transform tr )
@@ -60,6 +76,11 @@ namespace Scripts.Scenes.Client
             {
                 GameObject.Destroy( dictMapView[ tr ] );
                 dictMapView.Remove( tr );
+            }
+
+            if ( otherPlayersTr.Contains( tr ) )
+            {
+                otherPlayersTr.Remove( tr );
             }
 
             if ( mainTr == tr )

@@ -1,5 +1,6 @@
 ﻿using Bootstrappers;
 using Scripts.Common;
+using Scripts.Scenes.Client;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -47,6 +48,7 @@ public class CharacterPresenterSystem : ComponentSystem
     private FXData _fxData;
     private UIController _uiController;
 
+    private int initForMinimapForPlayers = 0;
     private bool gameOverIsShowed = false;
 
     protected override void OnCreate()
@@ -77,11 +79,32 @@ public class CharacterPresenterSystem : ComponentSystem
         );
     }
 
+    private void InitCharactersForMinimap( NativeArray<Entity> entities )
+    {
+        foreach ( var e in entities )
+        {
+            var isMyPlayer = EntityManager.HasComponent<PlayerInput>( e );
+            var bindData = EntityManager.GetComponentObject<CharactersBindData>( e );
+
+            if ( bindData.gameObject.GetComponent<EntityMinimapViewHelper>() == null )
+            {
+                var minimapCharHelper = bindData.gameObject.AddComponent<EntityMinimapViewHelper>();
+                minimapCharHelper.SetEntityType( isMyPlayer ? MinimapEntityType.LocalCharacter : MinimapEntityType.OtherCharacter );
+            }
+        }
+    }
+
     protected override void OnUpdate()
     {
         var deltaTime = Time.DeltaTime;
         var groupEntities = _group.ToEntityArray(Allocator.TempJob);
         var otherPlayer = _otherPlayers.ToEntityArray(Allocator.TempJob);
+
+        if ( initForMinimapForPlayers < groupEntities.Length )
+        {
+            InitCharactersForMinimap( groupEntities );
+            initForMinimapForPlayers = groupEntities.Length;
+        }
 
         foreach (var e in groupEntities)
         {

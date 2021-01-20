@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1475488136221392802}
   - component: {fileID: 811565969160507044}
   - component: {fileID: 6609559820961607164}
-  - component: {fileID: 7909718530457808376}
   m_Layer: 0
   m_Name: MaleCharacter
   m_TagString: Untagged
@@ -76,18 +75,6 @@ MonoBehaviour:
     rightHandPivot: {fileID: 2989004070420824329}
     animator: {fileID: 696543493541198688}
   healthBar: {fileID: 6017133760459617506}
---- !u!114 &7909718530457808376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2247907580900222232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65c188fbc65124446ac6a9e48b0fbe59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6017133760459617506
 GameObject:
   m_ObjectHideFlags: 0
