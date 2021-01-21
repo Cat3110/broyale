@@ -16,6 +16,8 @@ namespace Scripts.Scenes.Lobby.States
 {
     public class InitState : BaseStateMachineState
     {
+        public static bool ShowBattleResult = false; // temporary solution
+
         [Inject] private IUserData userData;
         [Inject] private ILobbyContentFactory contentFactory;
 
@@ -80,8 +82,17 @@ namespace Scripts.Scenes.Lobby.States
                             Character = userData.GetCurrentCharacter()
                         };
                         MainContainer.Container.Register<IGlobalSession>(newSession);
-                        
-                        ToNextState();
+
+                        if ( ShowBattleResult ) // TODO FIXIT
+                        {
+                            stateMachine.SetState( ( int ) LobbyState.BattleResult );
+                        }
+                        else
+                        {
+                            ToNextState();
+                        }
+
+                        ShowBattleResult = false;
                     }
                     //TODO: else ErrorStat?
                 });

@@ -1,6 +1,7 @@
 ﻿using Bootstrappers;
 using Scripts.Common;
 using Scripts.Scenes.Client;
+using Scripts.Scenes.Lobby.States;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -149,7 +150,7 @@ public class CharacterPresenterSystem : ComponentSystem
                 {
                     _uiController.GameUI.HideBottom();
                     _uiController.GameOver.Setup( new Scripts.Scenes.Client.UI.RewardData() );
-                    _uiController.GameOver.Show( () => SceneManager.LoadScene( Constants.SCENE_LOBBY ) );
+                    _uiController.GameOver.Show( () => { InitState.ShowBattleResult = true; SceneManager.LoadScene( Constants.SCENE_LOBBY ); } );
                     gameOverIsShowed = true;
                 }
             }
