@@ -332,6 +332,8 @@ public class GameUI : SimpleUIController
 
     [SerializeField] private GemsPanel gemsPanel;
 
+    [SerializeField] private GameObject[] bottomBlocks;
+
     private Session _session;
     public event Action<Vector2> OnButtonClickedAndDirectionSet;
     public bool NeedSetDirection { get; set; }
@@ -350,6 +352,14 @@ public class GameUI : SimpleUIController
         //mainButton.transform.Find("Icon").GetComponent<Image>().sprite = contentFactory.GetSpriteById(skillId);
         
         base.Show();
+    }
+
+    public void HideBottom()
+    {
+        foreach ( var b in bottomBlocks )
+        {
+            b.SetActive( false );
+        }
     }
 
     private void MainButtonOnOnDraggin(Vector2 direction)

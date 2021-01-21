@@ -147,6 +147,7 @@ public class CharacterPresenterSystem : ComponentSystem
                 
                 if (player.health <= 0.0f && ! gameOverIsShowed )
                 {
+                    _uiController.GameUI.HideBottom();
                     _uiController.GameOver.Setup( new Scripts.Scenes.Client.UI.RewardData() );
                     _uiController.GameOver.Show( () => SceneManager.LoadScene( Constants.SCENE_LOBBY ) );
                     gameOverIsShowed = true;
