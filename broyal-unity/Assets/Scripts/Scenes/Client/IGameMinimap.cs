@@ -7,5 +7,7 @@ namespace Scripts.Scenes.Client
 	{
         void RegisterPersonage( Transform tr, MinimapEntityType entityType, int entParam = -1 );
         void UnregisterPersonage( Transform tr );
+
+        void SetDeadZoneRadius( int radius );
 	}
 }

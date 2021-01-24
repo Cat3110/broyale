@@ -10,6 +10,7 @@ namespace Scripts.Scenes.Client
         [SerializeField] private RectTransform mapImage;
         [SerializeField] private GameObject[] crystalEntityPrefabs;
         [SerializeField] private GameObject otherPlayerPrefab;
+        [SerializeField] private RectTransform[] damageZoneSides;
 
         private Dictionary<Transform,RectTransform> dictMapView = new Dictionary<Transform, RectTransform>();
         private Transform mainTr = null;
@@ -17,24 +18,21 @@ namespace Scripts.Scenes.Client
         private Coroutine updateCoroutine = null;
         private Vector2 offsetKoeff = Vector2.one;
 
-        private IEnumerator _UpdateCharactersPos()
+        public void SetDeadZoneRadius( int radius )
         {
-            while ( true )
-            {
-                yield return new WaitForSeconds( 0.1f );
+            Debug.Log( "SetDeadZoneRadius - " + radius );
 
-                Vector2 pos = new Vector2( - mainTr.position.x * offsetKoeff.x, - mainTr.position.z * offsetKoeff.y );
-                mapImage.anchoredPosition = pos;
+            Vector2 leftZonePos = new Vector2( -radius * offsetKoeff.x, 0 );
+            damageZoneSides[ 0 ].anchoredPosition = leftZonePos;
 
-                foreach ( var tr in otherPlayersTr )
-                {
-                    RectTransform trView = dictMapView[ tr ];
+            Vector2 rightZonePos = new Vector2( radius * offsetKoeff.x, 0 );
+            damageZoneSides[ 1 ].anchoredPosition = rightZonePos;
 
-                    trView.anchoredPosition = new Vector2(
-                        tr.position.x * offsetKoeff.x,
-                        tr.position.z * offsetKoeff.y );
-                }
-            }
+            Vector2 downZonePos = new Vector2( 0, -radius * offsetKoeff.y );
+            damageZoneSides[ 2 ].anchoredPosition = downZonePos;
+
+            Vector2 upZonePos = new Vector2( 0, radius * offsetKoeff.y );
+            damageZoneSides[ 3 ].anchoredPosition = upZonePos;
         }
 
         public void RegisterPersonage( Transform tr, MinimapEntityType entityType, int entParam = -1 )
@@ -53,6 +51,26 @@ namespace Scripts.Scenes.Client
             {
                 GameObject crystalPrefab = crystalEntityPrefabs[ entParam ];
                 CreateEntityView( tr, crystalPrefab );
+            }
+        }
+
+        private IEnumerator _UpdateCharactersPos()
+        {
+            while ( true )
+            {
+                yield return new WaitForSeconds( 0.1f );
+
+                Vector2 pos = new Vector2( - mainTr.position.x * offsetKoeff.x, - mainTr.position.z * offsetKoeff.y );
+                mapImage.anchoredPosition = pos;
+
+                foreach ( var tr in otherPlayersTr )
+                {
+                    RectTransform trView = dictMapView[ tr ];
+
+                    trView.anchoredPosition = new Vector2(
+                        tr.position.x * offsetKoeff.x,
+                        tr.position.z * offsetKoeff.y );
+                }
             }
         }
 

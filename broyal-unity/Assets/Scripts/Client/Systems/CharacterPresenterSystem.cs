@@ -49,6 +49,7 @@ public class CharacterPresenterSystem : ComponentSystem
     private FXData _fxData;
     private UIController _uiController;
 
+    private IGameMinimap gameMinimap = null;
     private int initForMinimapForPlayers = 0;
     private bool gameOverIsShowed = false;
 
@@ -107,6 +108,11 @@ public class CharacterPresenterSystem : ComponentSystem
             initForMinimapForPlayers = groupEntities.Length;
         }
 
+        if ( gameMinimap == null )
+        {
+            gameMinimap = GameObject.FindObjectOfType<GameMinimap>();
+        }
+
         foreach (var e in groupEntities)
         {
             var player = EntityManager.GetComponentData<PlayerData>(e);
@@ -130,6 +136,8 @@ public class CharacterPresenterSystem : ComponentSystem
 
             if (isMyPlayer)
             {
+                gameMinimap?.SetDeadZoneRadius( player.damageRadius );
+
                 _fxData.SetDeadZoneRadius(player.damageRadius);
                 _uiController.SetPlayerGo(go);
                 _uiController.SetPlayerPosition(translation.Value);
