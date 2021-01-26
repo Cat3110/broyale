@@ -1,6 +1,5 @@
 ﻿
 using Scripts.Core.StateMachine;
-using SocketIO.Data.Responses;
 
 namespace Scripts.Scenes.Lobby
 {
@@ -29,6 +28,5 @@ namespace Scripts.Scenes.Lobby
     {
         public JSONObject user;
         public JSONObject chat;
-        public User userData;
     }
 }

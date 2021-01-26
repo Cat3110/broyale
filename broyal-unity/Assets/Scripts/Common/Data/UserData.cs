@@ -33,6 +33,11 @@ namespace Scripts.Common.Data
             throw new System.NotImplementedException();
         }
 
+        public User GetUserInfo()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Character GetCurrentCharacter()
         {
             throw new System.NotImplementedException();

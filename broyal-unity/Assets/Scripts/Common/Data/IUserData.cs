@@ -15,6 +15,7 @@ namespace Scripts.Common.Data
         void SetSkill( string skillId );
         Character[] GetCharacters();
         Character GetCurrentCharacter();
+        User GetUserInfo();
 
         void SetCurrentCharacter(int index);
     }
