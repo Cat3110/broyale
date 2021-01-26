@@ -14,6 +14,7 @@ namespace Scripts.Common.Data
         public const string LOGIN_WITH_DEVICEID = nameof(LOGIN_WITH_DEVICEID);
         public const string GET_CHARACTERS = nameof(GET_CHARACTERS);
         public const string SET_CHARACTER = nameof(SET_CHARACTER);
+        public const string SET_USER_INFO = nameof( SET_USER_INFO );
         public const string LOGOUT="LOGOUT";
 
         public const string CREATE_GAME = nameof(CREATE_GAME);

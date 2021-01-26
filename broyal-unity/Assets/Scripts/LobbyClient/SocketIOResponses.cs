@@ -120,6 +120,9 @@ namespace SocketIO.Data.Responses
         public DateTime updated_at { get; set; }
         public string _id { get; set; }
         public string device_id { get; set; }
+
+        public ulong soft_coins { get; set; }
+        public ulong hard_coins { get; set; }
     }
 
     public class Character

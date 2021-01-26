@@ -41,10 +41,17 @@ namespace Scripts.Common.Data
 
         public void Save()
         {
+            _socket.SetUserInfo( userInfo, ( resp ) =>
+            {
+                Debug.Log($"SetUserInfo => { resp }");
+            },
+            () => Debug.LogError("SetUserInfo failed") );
+
             _socket.SetCharacter(_currentCharacter, (response) =>
             {
                 Debug.Log($"SetCharacters => {response}");
-            }, () => Debug.LogError("SetCharacter failed"));
+            },
+            () => Debug.LogError("SetCharacter failed"));
         }
 
         public void Load( Action<bool> onComplete )
@@ -53,6 +60,7 @@ namespace Scripts.Common.Data
             _socket.LoginWithDeviceId( deviceId, ( resp ) =>
             {
                 userInfo = resp;
+                Debug.Log($"userInfo => {userInfo}");
 
                 _socket.GetCharacters( "", ( characters ) =>
                 {

@@ -108,6 +108,18 @@ namespace SocketIOExt
                 else onError?.Invoke();
             });
         }
+
+        public static void SetUserInfo( this SocketIOComponent socket, User user, Action<BaseResponse> onSuccess, Action onError )
+        {
+            var json = user.ToJson();
+            var jsObject = new JSONObject( json );
+
+            socket.Emit<BaseResponse>(LobbyEvents.SET_USER_INFO, jsObject, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response);
+                else onError?.Invoke();
+            });
+        }
         
         public static void GetCharacters(this SocketIOComponent socket, string id, Action<Character[]> onSuccess, Action onError)
         {
