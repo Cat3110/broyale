@@ -1,4 +1,5 @@
 ﻿using Bootstrappers;
+using RemoteConfig;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -45,10 +46,12 @@ public class CharacterPresenterSystem : ComponentSystem
     private MainConfig _config;
     private FXData _fxData;
     private UIController _uiController;
+    private AppConfig _appConfig;
+
     protected override void OnCreate()
     {
         base.OnCreate();
-
+        _appConfig = ClientBootstrapper.Container.Resolve<AppConfig>();
         _config = ClientBootstrapper.Container.Resolve<MainConfig>();
         _fxData = ClientBootstrapper.Container.Resolve<FXData>();
         _uiController = ClientBootstrapper.Container.Resolve<UIController>();
@@ -136,9 +139,14 @@ public class CharacterPresenterSystem : ComponentSystem
             {
                 if (data.AttackTransId != attack.Seed)
                 {
-                    Debug.Log($"Client:Attack To => {attack.Target} => {attack.AttackType} => {data.AttackTransId} != {attack.Seed}");
+                    var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
                     
-                    bindData.Animator.SetInteger(Type, player.primarySkillId);
+                    Debug.Log($"Client:Attack {skillInfo.Id} " +
+                              $"To => {attack.Target} => {attack.AttackType} =>" +
+                              $"Direction => {attack.AttackDirection} =>" +
+                              $" {data.AttackTransId} != {attack.Seed}");
+                    
+                    bindData.Animator.SetInteger(Type, _appConfig.GetSkillIndex(skillInfo));
                     bindData.Animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
                     EntityManager.SetComponentData(e, data);
@@ -149,7 +157,7 @@ public class CharacterPresenterSystem : ComponentSystem
                         attackDirection = go.transform.forward;
                     }
                     
-                    _fxData.Start(player.primarySkillId, go, bindData.Weapom.transform, attackDirection);
+                    _fxData.Start(skillInfo, go, bindData.Weapom.transform, attackDirection);
                 }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
                 
                 var target = attack.Target;

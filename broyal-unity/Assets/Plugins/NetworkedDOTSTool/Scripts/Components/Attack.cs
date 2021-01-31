@@ -36,6 +36,30 @@ public struct DEAD : IComponentData
     public uint Reasone;
 }
 
+public struct Dot : IComponentData
+{
+    public Entity Owner;
+    
+    public float Duration;
+    public float Value;
+    public bool HaveStun;
+    public float SpeedFactor;
+    public float Radius;
+}
+
+public struct Stun : IComponentData
+{
+    public Entity Owner;
+    
+    public float Duration;
+    public float Value;
+}
+public struct SpeedMod : IComponentData
+{
+    public float Duration;
+    public float Value;
+}
+
 public static class ExtensionComponent
 {
     public static bool HaveTransition(this Attack attack) => math.abs(attack.Duration) > 0.1f;

@@ -84,6 +84,9 @@
         }
 
         public SkillInfo GetSkillByAttackType(int attackType) => Skills[attackType - 1];
+
+        public SkillInfo GetSkillConfigById(string skillId) => Skills.Find(s => s.Id == skillId);
+        public int GetSkillIndex(SkillInfo skillInfo) => Skills.FindIndex(s => s.Id == skillInfo.Id);
     }
 
 
@@ -123,6 +126,23 @@
 
     }
 
+    public enum AimType{
+        None = 0,
+        Area = 1,
+        Dot = 2,
+        Direction = 3,
+        Sector = 4,
+        Trajectory = 5
+    }
+    
+    public enum SkillType{
+        Main = 0,
+        Attack,
+        Defence,
+        Utils,
+        Passive
+    }
+    
     [Serializable]
     public struct SkillInfo
     {
@@ -145,6 +165,8 @@
         public float MagArmor { get; set; }
         public float Aiming { get; set; }
         
+        public SkillType Type { get; set; }
+        public AimType AimType { get; set; }
         public bool IsEnabled { get; set; }
     }
     
@@ -173,7 +195,12 @@
 
     public class Session
     {
-        public int SkillId { get; set; }
+        public SkillInfo MainSkill { get; set; }
+        public SkillInfo AttackSkill { get; set; }
+        public SkillInfo DefenceSkill { get; set; }
+        public SkillInfo UtilitySkill { get; set; }
+        public SkillInfo PassiveSkill { get; set; }
+        
         public CharacterInfo Character { get; set; }
         public NativeString64 UserId { get; set; }
     }

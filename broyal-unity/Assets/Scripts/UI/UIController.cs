@@ -24,9 +24,9 @@ public class UIController : MonoBehaviour, IUIOwner
     [SerializeField] private GameUI game;
     [SerializeField] private LoadingUI loading;
     [SerializeField] private GameOverUI gameOver;
-    
-    public static Vector2 AttackDirection;
-    
+
+    public static Vector2 AttackDirection { get; private set; }
+
     public MainUI MainUI => main;
     public LoadingUI LoadingUI => loading;
     public GameUI GameUI => game;
@@ -44,52 +44,45 @@ public class UIController : MonoBehaviour, IUIOwner
             
         MainUI.SetOwner(this);
         GameUI.SetOwner(this);
-        GameUI.OnButtonClickedAndDirectionSet += MainActionOnStarted;
-        //GameUI.NeedSetDirection = true;
+        
+        GameUI.OnMainButtonClickedAndDirectionSet += MainActionOnStarted;
+        GameUI.OnFirstActionButtonClickedAndDirectionSet += FirstActionOnStarted;
     }
+    
+    private const string MainKeyButton = "space";
+    private const string FirstKeyButton = "q";
 
-    private Coroutine _cleanCoroutine = null;
+    private readonly Dictionary<string, Coroutine> _cleanCoroutines = new Dictionary<string, Coroutine>();
 
     private void MainActionOnStarted(Vector2 direction)
     {
-        var device = Keyboard.current;
-        using (StateEvent.From(device, out var eventPtr))
-        {
-            ((ButtonControl) device["space"]).WriteValueIntoEvent(1.0f, eventPtr);
-            InputSystem.QueueEvent(eventPtr);
-        }
-
-        AttackDirection = direction.normalized;
-        
-        /*var leftStick = Gamepad.current;
-        using (StateEvent.From(leftStick, out var eventPtr))
-        {
-            ((ButtonControl) leftStick["rightStick"]).WriteValueIntoEvent(direction, eventPtr);
-            InputSystem.QueueEvent(eventPtr);
-        }*/
-
-        if (_cleanCoroutine != null)
-        {
-            StopCoroutine(_cleanCoroutine);
-        }
-        
-        _cleanCoroutine = StartCoroutine(CleanEvent());
-
-        /*using (StateEvent.From(device, out var eventPtr))
-        {
-            ((ButtonControl) device["space"]).WriteValueIntoEvent(0.0f, eventPtr);
-            InputSystem.QueueEvent(eventPtr);
-        }*/
-
-        //InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState());
-        //GameUI.CallAction();
-        //Keyboard.current.spaceKey.ProcessValue(1.0f);
-        //Keyboard.current.spaceKey.w
-        //_inputMaster.Player.MainAction.f
+        QueueEvent(MainKeyButton);
+        AttackDirection = direction;
     }
-
+    private void FirstActionOnStarted(Vector2 direction)          
+    {                                                            
+        QueueEvent(FirstKeyButton);                               
+        AttackDirection = direction;       
+    } 
+    
     //TODO:Have to find way out
-    IEnumerator CleanEvent()
+    private void QueueEvent(string key)
+    {
+        var device = Keyboard.current;                                                               
+        using (StateEvent.From(device, out var eventPtr))                                            
+        {                                                                                            
+            ((ButtonControl) device[key]).WriteValueIntoEvent(1.0f, eventPtr);             
+            InputSystem.QueueEvent(eventPtr);                                                        
+        }
+
+        if (_cleanCoroutines.TryGetValue(key,out var coroutine))
+        {
+            StopCoroutine(coroutine);
+        }
+        
+        _cleanCoroutines[key] = StartCoroutine(CleanEvent(key));
+    }
+    IEnumerator CleanEvent(string action)
     {
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
@@ -98,16 +91,10 @@ public class UIController : MonoBehaviour, IUIOwner
         var device = Keyboard.current;
         using (StateEvent.From(device, out var eventPtr))
         {
-            ((ButtonControl) device["space"]).WriteValueIntoEvent(0.0f, eventPtr);
+            ((ButtonControl) device[action]).WriteValueIntoEvent(0.0f, eventPtr);
             InputSystem.QueueEvent(eventPtr);
         }
     }
-    
-
-    // Update is called once per frame
-    // void Update()
-    // {
-    // }
 
     public void SetPlayerPosition(Vector3 position) => _playerPosition = position;
     public IContainer Container { get; private set; }
@@ -175,18 +162,21 @@ public class MainUI : SimpleUIController
     
     [SerializeField] private SkillsPanelData skillsPanel;
     
+    [SerializeField] private SkillsPanelData skillPanel2;
+    
     [SerializeField] private OffScreenController offScreenController;
 
     private IContainer _container;
 
-    public void Show( CharactersConfig characters, IList<string> skillIds)
+    public void Show( CharactersConfig characters, IList<string> primarySkills, IList<string> attackSkills )
     { 
         base.Show();
         
         offScreenController.gameObject.SetActive(true);
         
         startButton.onClick.RemoveAllListeners();
-        startButton.onClick.AddListener( () => OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, characters[offScreenController.SelectedIndex]) );
+        startButton.onClick.AddListener( () => 
+            OnGameStarted?.Invoke(skillsPanel.CurrentSkillId, skillPanel2.CurrentSkillId, characters[offScreenController.SelectedIndex]) );
         
         nextCharacterButton.onClick.RemoveAllListeners();
         nextCharacterButton.onClick.AddListener( () => offScreenController.Next() );
@@ -200,13 +190,21 @@ public class MainUI : SimpleUIController
             offScreenController.AddCharacter(character);
         }
             
-        foreach (var skillId in skillIds)
+        foreach (var skillId in primarySkills)
         {
             //var sprite = contentFactory.GetSpriteById(skillId);
-            skillsPanel.Add(skillId, Sprite.Create( new Texture2D(1,1), new Rect(0,0,1,1),Vector2.one*0.5f));
+            skillsPanel.Add(skillId, Sprite.Create(new Texture2D(1, 1), new Rect(0, 0, 1, 1), Vector2.one * 0.5f));
         }
 
         skillsPanel.SetOn(0);
+        
+        foreach (var skillId in attackSkills)
+        {
+            //var sprite = contentFactory.GetSpriteById(skillId);
+            skillPanel2.Add(skillId, Sprite.Create( new Texture2D(1,1), new Rect(0,0,1,1),Vector2.one*0.5f));
+        }
+        
+        skillPanel2.SetOn(0);
     }
 
     public override void Hide()
@@ -219,7 +217,7 @@ public class MainUI : SimpleUIController
         skillsPanel.Clean();
     }
 
-    public event Action<string, CharacterInfo> OnGameStarted;
+    public event Action<string, string, CharacterInfo> OnGameStarted;
     
     public void SetOwner(IUIOwner owner)
     { 
@@ -237,6 +235,7 @@ public class SkillsPanelData
     [SerializeField] private ToggleGroup toggleGroup;
     [SerializeField] private SkillData skillPrefab;
     public string CurrentSkillId { get; private set; }
+    
     //[SerializeField] private Button exitButton;
     public void Clean()
     {
@@ -253,7 +252,7 @@ public class SkillsPanelData
         newInstance.SetName(skillId);
         newInstance.SetGroup(toggleGroup);
         newInstance.SetIcon(sprite);
-        newInstance.OnChangeState = s => CurrentSkillId = skillId;
+        newInstance.OnChangeState = value => CurrentSkillId = skillId;
     }
     
     public void SetOn(int index)
@@ -308,9 +307,9 @@ public class GameOverUI : SimpleUIController
 [Serializable]
 public class GameUI : SimpleUIController
 {
-    [SerializeField] private Button action1Button;
-    [SerializeField] private Button action2Button;
-    [SerializeField] private Button action3Button;
+    [SerializeField] private SkillButtonWithPopupStick action1Button;
+    [SerializeField] private SkillButtonWithPopupStick action2Button;
+    [SerializeField] private SkillButtonWithPopupStick action3Button;
 
     [SerializeField] private Slider healthBar;
        
@@ -319,22 +318,65 @@ public class GameUI : SimpleUIController
     
     [SerializeField] private MobileInputController rightStickInputController;
     [SerializeField] private GameObject attackDirectionArrow;
+    [SerializeField] private GameObject attackZone;
 
     [SerializeField] private GemsPanel gemsPanel;
+    
+    [SerializeField] private Vector3 rot;
 
     private Session _session;
-    public event Action<Vector2> OnButtonClickedAndDirectionSet;
-    public bool NeedSetDirection { get; set; }
+    public event Action<Vector2> OnMainButtonClickedAndDirectionSet;
+    public event Action<Vector2> OnFirstActionButtonClickedAndDirectionSet;
+
+    private Action<Vector2> mainActionAccept;
+    private Action<Vector2> mainActionDragging;
     
+    private Action<Vector2> attackActionAccept;
+    private Action<Vector2> attackActionDragging;
+
     public void Show(string skillId)
     {
-        mainButton.OnAcceptAction += MainButtonOnOnAcceptAction;
-        mainButton.OnDraggin += MainButtonOnOnDraggin;
-            
         _session = ClientBootstrapper.Container.Resolve<Session>();
         
-        //TODO: need make some flag in table
-        NeedSetDirection = _session.SkillId > 1;
+        var isDirectionSkill = (_session.MainSkill.AimType == AimType.Direction) 
+                            || (_session.MainSkill.AimType == AimType.Trajectory) 
+                            || (_session.MainSkill.AimType == AimType.Sector);
+        
+        var isAreaSkill = _session.MainSkill.AimType == AimType.Area || _session.MainSkill.AimType == AimType.Dot;
+        
+        if (isDirectionSkill)
+        {
+            mainActionAccept = MainButtonOnAcceptActionDirection;
+            mainActionDragging = OnDraggingDirection;
+        }
+        else if (isAreaSkill)
+        {
+            mainActionAccept = MainButtonOnAcceptActionZone;
+            mainActionDragging =  (d) => OnDraggingZone(_session.MainSkill, d);
+        }
+        
+        mainButton.OnAcceptAction += mainActionAccept;
+        mainButton.OnDragging += mainActionDragging;
+        
+        isDirectionSkill = (_session.AttackSkill.AimType == AimType.Direction) 
+                               || (_session.AttackSkill.AimType == AimType.Trajectory) 
+                               || (_session.AttackSkill.AimType == AimType.Sector);
+        
+        isAreaSkill = _session.AttackSkill.AimType == AimType.Area || _session.AttackSkill.AimType == AimType.Dot;
+        
+        if (isDirectionSkill)
+        {
+            attackActionAccept = Action1ButtonOnAcceptActionDirection;
+            attackActionDragging = OnDraggingDirection;
+        }
+        else if (isAreaSkill)
+        {
+            attackActionAccept = Action1ButtonOnAcceptActionZone;
+            attackActionDragging = (d) => OnDraggingZone(_session.AttackSkill, d);
+        }
+        
+        action1Button.OnAcceptAction += attackActionAccept;
+        action1Button.OnDragging += attackActionDragging;
         
         //TODO:Need make some skill class for ui
         //mainButton.transform.Find("Icon").GetComponent<Image>().sprite = contentFactory.GetSpriteById(skillId);
@@ -342,7 +384,7 @@ public class GameUI : SimpleUIController
         base.Show();
     }
 
-    private void MainButtonOnOnDraggin(Vector2 direction)
+    private void OnDraggingDirection(Vector2 direction)
     {
         attackDirectionArrow.SetActive(true);
         attackDirectionArrow.transform.SetParent(Owner.GetPlayerGo().transform,true);
@@ -350,91 +392,118 @@ public class GameUI : SimpleUIController
         var center = Owner.GetPlayerPosition();
         
         direction = direction.normalized;
-                
-        // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
-        // if (x < 0.0f) {
-        //     angle = -angle;
-        //     angle = angle + 360;
-        // }
-                
+
         attackDirectionArrow.transform.up = direction;
         attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
                 
-        //attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
+        //attackDirectionArrow.transform.position = new Vector3(center.x, 1.0f, center.z);
         attackDirectionArrow.transform.localPosition =  new Vector3(0,1.0f, 0);
     }
 
-    private void MainButtonOnOnAcceptAction(Vector2 obj)
+    private void OnDraggingZone(SkillInfo skill, Vector2 direction)
+    {
+        attackZone.SetActive(true);
+        
+        var center = Owner.GetPlayerPosition();
+        direction *= skill.Range;
+        
+        //Debug.Log($"OnDraggingZone:direction {direction}");
+
+        attackZone.transform.position = center + new Vector3(direction.x, 1.0f, direction.y);
+    }
+
+    private void MainButtonOnAcceptActionDirection(Vector2 direction)
     {
         attackDirectionArrow.SetActive(false);
-        OnButtonClickedAndDirectionSet?.Invoke(obj);
+        OnMainButtonClickedAndDirectionSet?.Invoke(direction);
     }
+    
+    private void MainButtonOnAcceptActionZone(Vector2 direction)
+    {
+        attackZone.SetActive(false);
+        OnMainButtonClickedAndDirectionSet?.Invoke(direction);
+    }
+    
+    private void Action1ButtonOnAcceptActionDirection(Vector2 direction)               
+    {                                                                        
+        attackDirectionArrow.SetActive(false);                               
+        OnFirstActionButtonClickedAndDirectionSet?.Invoke(direction);               
+    }   
+    
+    private void Action1ButtonOnAcceptActionZone(Vector2 direction)               
+    {                                                                        
+        attackZone.SetActive(false);                               
+        OnFirstActionButtonClickedAndDirectionSet?.Invoke(direction);               
+    }   
 
     public override void Hide()
     {
-        mainButton.OnAcceptAction -= MainButtonOnOnAcceptAction;
-        mainButton.OnDraggin -= MainButtonOnOnDraggin;
+        mainButton.OnAcceptAction -= mainActionAccept;
+        mainButton.OnDragging -= mainActionDragging;
+
+        action1Button.OnAcceptAction -= attackActionAccept;
+        action1Button.OnDragging -= attackActionDragging; 
         
         base.Hide();
     }
 
-    private void ActiveRightJoystick()
-    {
-        if (!NeedSetDirection)
-        {
-            OnButtonClickedAndDirectionSet?.Invoke(Vector2.zero);
-            return;
-        }
-            
-        rightStickInputController.gameObject.SetActive(true);
-        
-        mainButton.OnPointerUp(new PointerEventData(EventSystem.current){ button = PointerEventData.InputButton.Left } );
-        //mainButton.GetComponent<OnScreenButton>().enabled = false;
-        
-        // mainButton.OnPointerExit(new PointerEventData(EventSystem.current));
-        //mainButton.OnDeselect(new BaseEventData(EventSystem.current));
-        //mainButton.OnSubmit(new BaseEventData(EventSystem.current));
-        //EventSystem.current.SetSelectedGameObject(rightStickInputController.gameObject);
-
-        // rightStickInputController.OnBeginDrag(new PointerEventData(EventSystem.current)
-        // {
-        //     button = PointerEventData.InputButton.Left,
-        //     //position = Input.touches.Last().position,
-        //     dragging = true
-        // });
-        attackDirectionArrow.SetActive(true);
-        
-        Observable.EveryLateUpdate()
-            .TakeUntilDisable(rightStickInputController.gameObject)
-            .Subscribe(x =>
-            {
-                //var center = Owner.GetPlayerPosition();
-                var direction = rightStickInputController.Coordinate().normalized;
-                
-                // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
-                // if (x < 0.0f) {
-                //     angle = -angle;
-                //     angle = angle + 360;
-                // }
-                
-                attackDirectionArrow.transform.up = direction;
-                attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
-                
-                //attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
-            });
-        rightStickInputController.OnStopDrag += OnStopDrag;
-    }
-
-    private void OnStopDrag(Vector2 obj)
-    {
-        attackDirectionArrow.SetActive(false);
-        //mainButton.GetComponent<OnScreenButton>().enabled
-            
-        rightStickInputController.gameObject.SetActive(false);
-        rightStickInputController.OnStopDrag -= OnStopDrag;
-        
-        OnButtonClickedAndDirectionSet?.Invoke(obj);
-    }
+    // private void ActiveRightJoystick()
+    // {
+    //     if (!_needSetDirection)
+    //     {
+    //         OnMainButtonClickedAndDirectionSet?.Invoke(Vector2.zero);
+    //         return;
+    //     }
+    //         
+    //     rightStickInputController.gameObject.SetActive(true);
+    //     
+    //     mainButton.OnPointerUp(new PointerEventData(EventSystem.current){ button = PointerEventData.InputButton.Left } );
+    //     //mainButton.GetComponent<OnScreenButton>().enabled = false;
+    //     
+    //     // mainButton.OnPointerExit(new PointerEventData(EventSystem.current));
+    //     //mainButton.OnDeselect(new BaseEventData(EventSystem.current));
+    //     //mainButton.OnSubmit(new BaseEventData(EventSystem.current));
+    //     //EventSystem.current.SetSelectedGameObject(rightStickInputController.gameObject);
+    //
+    //     // rightStickInputController.OnBeginDrag(new PointerEventData(EventSystem.current)
+    //     // {
+    //     //     button = PointerEventData.InputButton.Left,
+    //     //     //position = Input.touches.Last().position,
+    //     //     dragging = true
+    //     // });
+    //     attackDirectionArrow.SetActive(true);
+    //     
+    //     Observable.EveryLateUpdate()
+    //         .TakeUntilDisable(rightStickInputController.gameObject)
+    //         .Subscribe(x =>
+    //         {
+    //             //var center = Owner.GetPlayerPosition();
+    //             var direction = rightStickInputController.Coordinate().normalized;
+    //             
+    //             // float angle = Vector3.Angle(new Vector3(0.0f, 1.0f, 0.0f), new Vector3(direction.x, direction.y, 0.0f));
+    //             // if (x < 0.0f) {
+    //             //     angle = -angle;
+    //             //     angle = angle + 360;
+    //             // }
+    //             
+    //             attackDirectionArrow.transform.up = direction;
+    //             attackDirectionArrow.transform.rotation = Quaternion.Euler(new Vector3(90.0f,-90.0f, attackDirectionArrow.transform.rotation.eulerAngles.z));
+    //             
+    //             //attackDirectionArrow.transform.position = new Vector3(center.x,1.0f, center.z);
+    //         });
+    //     rightStickInputController.OnStopDrag += OnStopDrag;
+    // }
+    //
+    // private void OnStopDrag(Vector2 obj)
+    // {
+    //     attackDirectionArrow.SetActive(false);
+    //     //mainButton.GetComponent<OnScreenButton>().enabled
+    //         
+    //     rightStickInputController.gameObject.SetActive(false);
+    //     rightStickInputController.OnStopDrag -= OnStopDrag;
+    //     
+    //     OnMainButtonClickedAndDirectionSet?.Invoke(obj);
+    // }
 
     public void SetHealth(int playerDataHealth) => healthBar.value = playerDataHealth;
 

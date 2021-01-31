@@ -16,11 +16,11 @@ public class AttackSystem : ComponentSystem
     private EntityQuery _query;
     private bool IsServer { get; set; }
     private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
-    
+    private EntityArchetype _archetypeDot;
     protected override void OnCreate()
     {
         base.OnCreate();
-        
+        _archetypeDot = EntityManager.CreateArchetype(typeof(Translation), typeof(Dot));
         IsServer = World.GetExistingSystem<ServerSimulationSystemGroup>() != null;
         
         _query = GetEntityQuery(
@@ -48,26 +48,28 @@ public class AttackSystem : ComponentSystem
             {
                 attack.NeedApplyDamage = false;
 
+                var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
                 var distance = GetDistanceByAttackType(attack.AttackType);
+                var direction = new float3(attack.AttackDirection.x,0,attack.AttackDirection.y);
+                var byDirection = skillInfo.AimType == AimType.Direction || skillInfo.AimType == AimType.Sector || skillInfo.AimType == AimType.Trajectory;
+                var center = byDirection ? translation.Value : direction * skillInfo.Range;
             
                 var enemy = players
                     .Where(e => e != player)
                     .FirstOrDefault(x => 
-                        math.distancesq(translation.Value, 
+                        math.distancesq(center, 
                             EntityManager.GetComponentData<Translation>(x).Value) < distance * 2);
 
                 Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
 
                 attack.Target = enemy;
             
-                if (enemy != Entity.Null)
+                if (enemy != Entity.Null && skillInfo.Type == SkillType.Main)
                 {
                     var damage = EntityManager.GetComponentData<Damage>(enemy);
-
-                    Vector3 forward = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
                     Vector3 other = EntityManager.GetComponentData<Translation>(enemy).Value - translation.Value;
 
-                    var dot = Vector3.Dot(forward, other );
+                    var dot = Vector3.Dot(direction, other );
                     
                     Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy} => d => {dot}");
 
@@ -79,6 +81,20 @@ public class AttackSystem : ComponentSystem
                 
                         EntityManager.SetComponentData(enemy, damage);
                     }
+                }
+                else if(skillInfo.Type == SkillType.Attack)
+                {
+                    var e = EntityManager.CreateEntity(_archetypeDot);
+                    EntityManager.SetComponentData(e, new Translation{ Value = center} );
+                    EntityManager.SetComponentData(e, new Dot
+                    {
+                        Owner = player, 
+                        Duration = (skillInfo.ImpactTime * pdata.magic)/1000.0f,
+                        Value = (pdata.magic * skillInfo.MagDMG) + (pdata.power * skillInfo.PhysDMG),
+                        SpeedFactor = skillInfo.SpeedEffect,
+                        HaveStun = skillInfo.Id == SkillId.ID_Magicjump,
+                        Radius = skillInfo.Radius
+                    } );
                 }
             }
             else if (attack.AttackType != 0)
@@ -99,7 +115,7 @@ public class AttackSystem : ComponentSystem
     private float GetDistanceByAttackType(int attackType)
     {
         var skill = _appConfig.GetSkillByAttackType(attackType);
-        return skill.Range;
+        return skill.Radius;
     }
 
     private void ApplyDamageByAttackType(PlayerData pdata, int attackType, int seed, Entity attacker, ref Damage damage)

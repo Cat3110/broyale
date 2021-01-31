@@ -120,6 +120,12 @@ MonoBehaviour:
       quantization: -1
       interpolate: 0
     - name: inventory
+      quantization: -1
+      interpolate: 0
+    - name: attackSkillId
+      quantization: -1
+      interpolate: 0
+    - name: defenceSkillId
       quantization: 1
       interpolate: 0
     manualFieldList: 1
@@ -190,6 +196,8 @@ MonoBehaviour:
   maxHealth: 0
   level: 1
   primarySkillId: 0
+  attackSkillId: 0
+  defenceSkillId: 0
   magic: 0
   power: 0
   inventory: 0

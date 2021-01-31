@@ -1,22 +1,23 @@
-﻿using System.Collections.Generic;
-using Scripts.Common.Data.Data;
-using SocketIO.Data.Responses;
-using UniRx;
-using Unity.Physics.Systems;
-using Utils;
-
-namespace Bootstrappers
+﻿namespace Bootstrappers
 {
     using System;
     using System.Linq;
+    using System.Collections.Generic;
+    
     using UnityEngine;
+    using Unity.Physics.Systems;
     using Unity.Entities;
     using Unity.Rendering;
     using Unity.NetCode;
     using Unity.Networking.Transport;
     using RemoteConfig;
+    
+    using UniRx;
     using UniRx.Async;
-
+    using Utils;
+    
+    using Scripts.Common.Data.Data;
+    using SocketIO.Data.Responses;
 
     public class ClientBootstrapper : BaseBootStrapper
     {
@@ -63,7 +64,10 @@ namespace Bootstrappers
             if (globalSession!= null && globalSession.IsValid) StartBattle(_appConfig, globalSession.User, globalSession.Character);
             else
             {
-                uiController.MainUI.Show(_appConfig.Characters, _appConfig.Skills.Where( s => s.IsEnabled).Select(c => c.Id).ToList());
+                uiController.MainUI.Show(_appConfig.Characters, 
+                    _appConfig.Skills.Where( s => s.IsEnabled && s.Type == SkillType.Main).Select(c => c.Id).ToList(),
+                    _appConfig.Skills.Where( s => s.IsEnabled && s.Type == SkillType.Attack).Select(c => c.Id).ToList()
+                    );
                 uiController.MainUI.OnGameStarted += StartLocalBattle;
             }
         }
@@ -81,20 +85,21 @@ namespace Bootstrappers
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(globalCharacter.skill_set.main_skill); })
+                        uiController.GameUI.Show(); })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
         } 
 
 
-        private void StartLocalBattle(string skillId, RemoteConfig.CharacterInfo character)
+        private void StartLocalBattle(string skillId, string attackSkillId, RemoteConfig.CharacterInfo character)
         {
             Container.Register(new Session {
-                SkillId = _appConfig.Skills.FindIndex( s => s.Id == skillId),
+                MainSkill = _appConfig.GetSkillConfigById(skillId),
+                AttackSkill = _appConfig.GetSkillConfigById(attackSkillId),
                 Character = character
             } );
-                
+            
             uiController.MainUI.Hide();
             uiController.LoadingUI.Show();
 

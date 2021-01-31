@@ -49,6 +49,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Stick"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""FirstAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""5e704a8f-edaf-4625-bcbd-9e8bdd35be3b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -238,6 +246,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""StartAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0725e0e3-a160-4d81-9651-8477b1b4a570"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FirstAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -277,6 +296,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_StartAction = m_Player.FindAction("StartAction", throwIfNotFound: true);
         m_Player_AttackDirection = m_Player.FindAction("AttackDirection", throwIfNotFound: true);
+        m_Player_FirstAction = m_Player.FindAction("FirstAction", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -330,6 +350,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_StartAction;
     private readonly InputAction m_Player_AttackDirection;
+    private readonly InputAction m_Player_FirstAction;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -338,6 +359,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @StartAction => m_Wrapper.m_Player_StartAction;
         public InputAction @AttackDirection => m_Wrapper.m_Player_AttackDirection;
+        public InputAction @FirstAction => m_Wrapper.m_Player_FirstAction;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -359,6 +381,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @AttackDirection.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackDirection;
                 @AttackDirection.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackDirection;
                 @AttackDirection.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttackDirection;
+                @FirstAction.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFirstAction;
+                @FirstAction.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFirstAction;
+                @FirstAction.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFirstAction;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -375,6 +400,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @AttackDirection.started += instance.OnAttackDirection;
                 @AttackDirection.performed += instance.OnAttackDirection;
                 @AttackDirection.canceled += instance.OnAttackDirection;
+                @FirstAction.started += instance.OnFirstAction;
+                @FirstAction.performed += instance.OnFirstAction;
+                @FirstAction.canceled += instance.OnFirstAction;
             }
         }
     }
@@ -394,5 +422,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnStartAction(InputAction.CallbackContext context);
         void OnAttackDirection(InputAction.CallbackContext context);
+        void OnFirstAction(InputAction.CallbackContext context);
     }
 }

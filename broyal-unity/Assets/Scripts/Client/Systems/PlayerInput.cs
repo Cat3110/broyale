@@ -113,7 +113,8 @@ public class SamplePlayerInput : ComponentSystem
         input.tick = World.GetExistingSystem<ClientSimulationSystemGroup>().ServerTick;
 
         var movement = _inputMaster.Player.Movement.ReadValue<Vector2>();
-        var action = (short)_inputMaster.Player.MainAction.ReadValue<float>();
+        var mainAttack = _inputMaster.Player.MainAction.ReadValue<float>();
+        var attackSkill = _inputMaster.Player.FirstAction.ReadValue<float>();
 
         input.horizontal = (short)math.round(movement.x * 10);
         input.vertical = (short)math.round(movement.y * 10);
@@ -128,7 +129,7 @@ public class SamplePlayerInput : ComponentSystem
         // var haveDubCmd = inputBuffer.GetDataAtTick(input.tick, out var dupCmd) && dupCmd.Tick == input.tick;
         // if (!haveDubCmd)
         // {
-             input.attackType = action;
+             input.attackType = (short)(mainAttack > 0 ? 1 : (attackSkill > 0 ? 2 : 0));
              input.attackDirectionX = (short)math.round(UIController.AttackDirection.x * 10);
              input.attackDirectionY = (short)math.round(UIController.AttackDirection.y * 10);
              

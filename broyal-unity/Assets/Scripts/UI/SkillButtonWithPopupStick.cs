@@ -48,7 +48,7 @@ namespace UnityEngine.InputSystem.OnScreen
         }
         
         public event Action<Vector2> OnAcceptAction = (x) => { };
-        public event Action<Vector2> OnDraggin = (x) => { };
+        public event Action<Vector2> OnDragging = (x) => { };
 
         protected override string controlPathInternal
         {
@@ -112,7 +112,7 @@ namespace UnityEngine.InputSystem.OnScreen
                 (PointPosition.x * ((joystickBg.rect.size.x-joystickHandler.rect.size.x)/2) * offset) + joystickBg.position.x, 
                 (PointPosition.y * ((joystickBg.rect.size.y-joystickHandler.rect.size.y)/2) * offset) + joystickBg.position.y);
 
-            OnDraggin.Invoke(PointPosition);
+            OnDragging?.Invoke(PointPosition);
         }
 
         public void OnPointerUp(PointerEventData eventData)

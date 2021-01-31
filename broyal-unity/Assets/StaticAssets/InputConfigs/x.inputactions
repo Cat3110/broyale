@@ -36,6 +36,14 @@
                     "expectedControlType": "Stick",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "FirstAction",
+                    "type": "Button",
+                    "id": "5e704a8f-edaf-4625-bcbd-9e8bdd35be3b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -223,6 +231,17 @@
                     "processors": "",
                     "groups": "Default",
                     "action": "StartAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0725e0e3-a160-4d81-9651-8477b1b4a570",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FirstAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -36,7 +36,11 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 var characterInfo  = _appConfig.Characters[0];
                 
                 var userId = req.userId.ToString();
+                
                 var mainSkillId = req.skillId;
+                var attackSkillId = req.skill2Id;
+                var defenceSkillId = req.skill3Id;
+                
                 var characterNameId = req.characterId;
                 var skinId = req.skinId;
                 NativeString64 skinSetting = "";
@@ -47,6 +51,9 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     var skinData = new CurrentSkinData(character);
                     
                     mainSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.main_skill);
+                    attackSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.attack_skill);
+                    defenceSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.defence_skill);
+                    
                     characterNameId = _mainConfig.GetNameId(character.sex == "male" ? "ID_MALE" : "ID_FEMALE").Id;
                     skinSetting = new CurrentSkinData(character).ToString();
                 }
@@ -69,7 +76,11 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 var spawnPosition = EntityManager.GetComponentData<Translation>(spawnPoint);
                 
                 EntityManager.SetComponentData(spawnPoint, 
-                    new SpawnPoint{ radius = spawnComponent.radius, spawnCount = spawnComponent.spawnCount + 1});
+                    new SpawnPoint
+                    {
+                        radius = spawnComponent.radius,
+                        spawnCount = spawnComponent.spawnCount + 1
+                    });
                 
                 EntityManager.SetComponentData(player, new Translation{ Value = spawnPosition.Value});
                 EntityManager.SetComponentData(player, new PlayerData{ 
@@ -77,10 +88,22 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     health = characterInfo.Health,
                     power = characterInfo.Power,
                     magic = characterInfo.Magic,
-                    primarySkillId = mainSkillId});
-                EntityManager.SetComponentData(player, new PrefabCreator{ NameId = characterNameId, SkinId = skinId, SkinSetting = skinSetting} );
+                    primarySkillId = mainSkillId,
+                    attackSkillId = attackSkillId,
+                    defenceSkillId = defenceSkillId,
+                });
+                EntityManager.SetComponentData(player, new PrefabCreator
+                {
+                    NameId = characterNameId,
+                    SkinId = skinId, 
+                    SkinSetting = skinSetting
+                });
+                
                 EntityManager.SetComponentData(player, 
-                    new MovableCharacterComponent { PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value});
+                    new MovableCharacterComponent
+                    {
+                        PlayerId = EntityManager.GetComponentData<NetworkIdComponent>(reqSrc.SourceConnection).Value
+                    });
 
                 PostUpdateCommands.AddBuffer<PlayerInput>(player);
                 PostUpdateCommands.SetComponent(reqSrc.SourceConnection, new CommandTargetComponent { targetEntity = player });

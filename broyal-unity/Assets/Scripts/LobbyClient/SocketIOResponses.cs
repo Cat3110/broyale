@@ -141,6 +141,8 @@ namespace SocketIO.Data.Responses
     public class Skill_Set
     {
         public string main_skill { get; set; }
+        public string attack_skill { get; set; }
+        public string defence_skill { get; set; }
     }
     
     public class ServerInfo

@@ -147,6 +147,7 @@
             serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<ItemSpawnerSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<LootItemSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<ZoneDamageSystem>());
+            serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<DotDamageSystem>());
         }
         
         [CUDLR.Command("reload сonfig", "Reload config file from gdoc")]

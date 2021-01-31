@@ -37,14 +37,14 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.20749143, g: 0.21147497, b: 0.14576834, a: 1}
+  m_Sun: {fileID: 661392666}
+  m_IndirectSpecularColor: {r: 0.28308114, g: 0.36943316, b: 0.50111055, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 11
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -72,7 +72,7 @@ LightmapSettings:
     m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 1
-    m_BakeBackend: 1
+    m_BakeBackend: 2
     m_PVRSampling: 1
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 256
@@ -97,7 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: ec35ccf0ef0b12d42bc4e993831d4120,
+    type: 2}
   m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
@@ -121,6 +122,46 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!21 &20953767
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI Extensions/SoftMaskShader
+  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaMask:
+        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
+        m_Scale: {x: 0.008196721, y: 0.008196721}
+        m_Offset: {x: -2.8196719, y: 1.9918032}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _CutOff: 0.2
+    - _FlipAlphaMask: 0
+    - _HardBlend: 0
+    - _NoOuterClip: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &39318852
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,6 +373,46 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a22fd403b90b3d4ab3db382f21d62c9, type: 3}
+--- !u!21 &84808826
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI Extensions/SoftMaskShader
+  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaMask:
+        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
+        m_Scale: {x: 0.007207131, y: 0.007091428}
+        m_Offset: {x: 3.5211573, y: -0.88756007}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _CutOff: 0
+    - _FlipAlphaMask: 0
+    - _HardBlend: 0
+    - _NoOuterClip: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!21 &91468868
 Material:
   serializedVersion: 6
@@ -841,6 +922,46 @@ Material:
     - _Width: 41
     m_Colors:
     - _Radius: {r: 5.96, g: 5.96, b: 5.96, a: 5.96}
+--- !u!21 &577897884
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI Extensions/SoftMaskShader
+  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaMask:
+        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
+        m_Scale: {x: 0.013513514, y: 0.013513514}
+        m_Offset: {x: -3.8891895, y: 1.7972974}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _CutOff: 0.2
+    - _FlipAlphaMask: 0
+    - _HardBlend: 0
+    - _NoOuterClip: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!21 &589365343
 Material:
   serializedVersion: 6
@@ -956,8 +1077,24 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1881390180968854205, guid: 1d35110047a707b4e96d102bbcf6a3f0,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1881390180968854205, guid: 1d35110047a707b4e96d102bbcf6a3f0,
+        type: 3}
+      propertyPath: m_Lightmapping
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1d35110047a707b4e96d102bbcf6a3f0, type: 3}
+--- !u!108 &661392666 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 1881390180968854205, guid: 1d35110047a707b4e96d102bbcf6a3f0,
+    type: 3}
+  m_PrefabInstance: {fileID: 661392665}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &760282446
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,7 +1230,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &915944620
+--- !u!21 &936100820
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -1114,8 +1251,8 @@ Material:
     m_TexEnvs:
     - _AlphaMask:
         m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
-        m_Scale: {x: 0.008196721, y: 0.008196721}
-        m_Offset: {x: -2.8196719, y: 1.9918032}
+        m_Scale: {x: 0.013513514, y: 0.013513514}
+        m_Offset: {x: -3.418919, y: 3.3094597}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -1584,6 +1721,46 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+--- !u!21 &1636883084
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI Extensions/SoftMaskShader
+  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaMask:
+        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
+        m_Scale: {x: 0.013513514, y: 0.013513514}
+        m_Offset: {x: -5.3364854, y: 1.4040542}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _CutOff: 0.2
+    - _FlipAlphaMask: 0
+    - _HardBlend: 0
+    - _NoOuterClip: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1649284290 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7333020597863722981, guid: 3c74732ba79cb8e4f940f4b38fccb522,
@@ -1909,46 +2086,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b3b42d2d8783944f909cd90e5d20331, type: 3}
---- !u!21 &2108478957
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI Extensions/SoftMaskShader
-  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _AlphaMask:
-        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
-        m_Scale: {x: 0.007207131, y: 0.007091428}
-        m_Offset: {x: 3.5211573, y: -0.88756007}
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _CutOff: 0
-    - _FlipAlphaMask: 0
-    - _HardBlend: 0
-    - _NoOuterClip: 0
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &65930338986236433
 Transform:
   m_ObjectHideFlags: 0
@@ -4345,11 +4482,16 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 116613771}
+    - target: {fileID: 1830771527785499770, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 1636883084}
     - target: {fileID: 2242465565544847102, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 915944620}
+      objectReference: {fileID: 20953767}
     - target: {fileID: 3853839697270168137, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Sprite
@@ -4360,6 +4502,11 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 352731970}
+    - target: {fileID: 3935230844801742384, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 577897884}
     - target: {fileID: 4239174487900925550, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Sprite
@@ -4384,11 +4531,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: '[UI]'
-      objectReference: {fileID: 0}
-    - target: {fileID: 4239174489391012772, guid: caf741df06d8914439eff23d2a065a0a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4239174489391012775, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
@@ -4449,7 +4591,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2108478957}
+      objectReference: {fileID: 84808826}
+    - target: {fileID: 7144797870283474065, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 936100820}
     - target: {fileID: 7486667310724769629, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Sprite
@@ -6454,11 +6601,6 @@ PrefabInstance:
       propertyPath: uiController
       value: 
       objectReference: {fileID: 658588163}
-    - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
-        type: 3}
-      propertyPath: useLocalServer
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
         type: 3}
       propertyPath: fxData.DamageZone

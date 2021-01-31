@@ -230,7 +230,8 @@ public class MoveSystem : SystemBase
         var colliders = BaseBootStrapper.Container.Resolve<List<ColliderData>>();
         _colliders = new NativeArray<ColliderData>(colliders.ToArray(), Allocator.Persistent);
         
-        var skillMap =  _appConfig.Skills.Select(x => x.Cooldown).ToArray();
+        //var skillMap =  _appConfig.Skills.Select(x => x.Cooldown).ToArray();
+        var skillMap =  _appConfig.Skills.Select(x => 2.0f).ToArray();
         _skillMap = new NativeArray<float>(skillMap, Allocator.Persistent);
 
         // otherPlayers = GetEntityQuery(
@@ -314,10 +315,7 @@ public class MoveSystem : SystemBase
                 //     //Debug.DrawLine(lastPos, trans.Value, Color.blue);
                 // }
             }
-
-            
-            
-            
+          
             var collided = false;
 
             //if (_isServer)
@@ -362,12 +360,13 @@ public class MoveSystem : SystemBase
                 attack.AttackDirection = direction;
             }
 
-            if (input.attackType == 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
+            if (input.attackType >= 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
             { 
                 //Debug.Log(
                 //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
-                SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
+                if(input.attackType == 1) SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
+                else SetAttackByType(skillsMap, pdata.attackSkillId, ref attack, input.attackType * time);
                 //EntityManager.SetComponentData(e, attack);
             }
         }).Run(); //.ScheduleParallel();
@@ -413,31 +412,33 @@ public class MoveSystem : SystemBase
     private static void SetAttackByType(NativeArray<float> skillMaps, int skillId, ref Attack attack, int seed)
     {
         //Debug.Log($"{(_isServer ? "Server" : "Client")}:Attack Start  => {skill.Id}");
-
         attack.Duration = skillMaps[skillId] * 0.5f;
         attack.AttackType = skillId + 1;
         attack.ProccesedId = attack.AttackType;
         attack.Seed = seed;
         
-        if (attack.AttackType == 1)
-        {
-            attack.DamageTime = 0.5f;
-            attack.NeedApplyDamage = true;
-        }
-        else if (attack.AttackType == 2)
-        {
-            attack.DamageTime = 0.5f;
-            attack.NeedApplyDamage = true;
-        }
-        else if (attack.AttackType == 3)
-        {
-            attack.DamageTime = 0.5f;
-            attack.NeedApplyDamage = true;
-        }
-        else if (attack.AttackType == 4)
-        {
-            attack.DamageTime = 0.5f;
-            attack.NeedApplyDamage = true;
-        }
+        attack.DamageTime = 0.5f;
+        attack.NeedApplyDamage = true;
+        
+        // if (attack.AttackType == 1)
+        // {
+        //     attack.DamageTime = 0.5f;
+        //     attack.NeedApplyDamage = true;
+        // }
+        // else if (attack.AttackType == 2)
+        // {
+        //     attack.DamageTime = 0.5f;
+        //     attack.NeedApplyDamage = true;
+        // }
+        // else if (attack.AttackType == 3)
+        // {
+        //     attack.DamageTime = 0.5f;
+        //     attack.NeedApplyDamage = true;
+        // }
+        // else if (attack.AttackType == 4)
+        // {
+        //     attack.DamageTime = 0.5f;
+        //     attack.NeedApplyDamage = true;
+        // }
     }
 }
