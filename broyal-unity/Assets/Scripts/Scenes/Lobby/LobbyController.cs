@@ -1,6 +1,5 @@
 ﻿
 using Scripts.Core.StateMachine;
-using SocketIO.Data.Responses;
 
 namespace Scripts.Scenes.Lobby
 {
@@ -21,13 +20,13 @@ namespace Scripts.Scenes.Lobby
         Settings,
         Rating,
         Shop,
-        BattlePass
+        BattlePass,
+        BattleResult
     }
 
     public class LobbyController : BaseStateMachine
     {
         public JSONObject user;
         public JSONObject chat;
-        public User userData;
     }
 }

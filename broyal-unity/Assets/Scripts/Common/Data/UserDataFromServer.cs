@@ -13,6 +13,7 @@ namespace Scripts.Common.Data
 
         private Character _currentCharacter;
         private SocketIOComponent _socket;
+        private User userInfo;
 
         private void Awake()
         {
@@ -33,31 +34,51 @@ namespace Scripts.Common.Data
             Save();
         }
 
+        public User GetUserInfo() => userInfo;
         public Character[] GetCharacters() => characters;
         public Character GetCurrentCharacter() => _currentCharacter;
         public void SetCurrentCharacter(int index) => _currentCharacter = characters[index];
 
         public void Save()
         {
+            _socket.SetUserInfo( userInfo, ( resp ) =>
+            {
+                Debug.Log($"SetUserInfo => { resp }");
+            },
+            () => Debug.LogError("SetUserInfo failed") );
+
             _socket.SetCharacter(_currentCharacter, (response) =>
             {
                 Debug.Log($"SetCharacters => {response}");
-            }, () => Debug.LogError("SetCharacter failed"));
+            },
+            () => Debug.LogError("SetCharacter failed"));
         }
 
-        public void Load(Action<bool> onComplete)
+        public void Load( Action<bool> onComplete )
         {
-            _socket.GetCharacters("", (characters) =>
+            string deviceId = Constants.GetDeviceID();
+            _socket.LoginWithDeviceId( deviceId, ( resp ) =>
             {
-                Debug.Log($"GetCharacters => {characters}");
-                this.characters = characters;
-                _currentCharacter = this.characters.First();
-                onComplete?.Invoke(true);
-            }, () =>
+                userInfo = resp;
+                Debug.Log($"userInfo => {userInfo}");
+
+                _socket.GetCharacters( "", ( characters ) =>
+                {
+                    Debug.Log($"GetCharacters => {characters}");
+                    this.characters = characters;
+                    _currentCharacter = this.characters.First();
+                    onComplete?.Invoke(true);
+                }, () =>
+                {
+                    Debug.LogError("GetCharacters failed");
+                    onComplete?.Invoke(false);
+                });
+            },
+            () =>
             {
-                Debug.LogError("GetCharacters failed");
-                onComplete?.Invoke(false);
-            });
+                Debug.LogError("LoginWithDeviceId failed");
+                onComplete?.Invoke( false );
+            } );
         }
     }
 }

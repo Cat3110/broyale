@@ -10,6 +10,8 @@ namespace Scripts.Scenes.Lobby.States
     {
         [Inject] private ILobbyContentFactory contentFactory;
 
+        [SerializeField] private GameObject[] states;
+
         private GameObject skinPerson = null;
 
         public override void OnStartState( IStateMachine stateMachine, params object[] args )
@@ -19,6 +21,8 @@ namespace Scripts.Scenes.Lobby.States
 
             skinPerson = contentFactory.GetPlayerPerson();
             skinPerson.SetActive( false );
+
+            OnPressedSetState( 0 );
         }
 
         public override void OnEndState()
@@ -26,6 +30,14 @@ namespace Scripts.Scenes.Lobby.States
             base.OnEndState();
 
             skinPerson.SetActive( true );
+        }
+
+        public void OnPressedSetState( int state )
+        {
+            for ( int i = 0; i < states.Length; i++ )
+            {
+                states[ i ].SetActive( i == state );
+            }
         }
 
         public void OnPressedGoToSettings()

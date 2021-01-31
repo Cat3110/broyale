@@ -76,7 +76,7 @@ const characterSchema = mongoose.Schema({
 	body_color: { type: String, default: "#000000" },
 	pants_color: { type: String, default: "#000000" },
 
-	skill_set: { type: Map,	of: String, default: { main_skill: "ID_Melee" }  },	
+	skill_set: { type: Map,	of: String, default: { main_skill: "ID_Melee", attack_skill: "ID_Thunder" }  },	
 
 	created_at: { type: Date, default: Date.now() },
 	updated_at: { type: Date, default: Date.now() },

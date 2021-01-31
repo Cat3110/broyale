@@ -16,6 +16,8 @@ namespace Scripts.Scenes.Lobby.States
 {
     public class InitState : BaseStateMachineState
     {
+        public static bool ShowBattleResult = false; // temporary solution
+
         [Inject] private IUserData userData;
         [Inject] private ILobbyContentFactory contentFactory;
 
@@ -64,29 +66,34 @@ namespace Scripts.Scenes.Lobby.States
                 yield return new WaitForSeconds( 0.5f );
             }
 
-            var deviceId = Application.isEditor ? "Editor_" + SystemInfo.deviceUniqueIdentifier : SystemInfo.deviceUniqueIdentifier;
-
-            _socket.LoginWithDeviceId(deviceId, (response) =>
+            userData.Load( ( success ) =>
             {
-                ((LobbyController)stateMachine).userData = response;
-                
-                userData.Load((status) =>
+                if ( success )
                 {
-                    if (status)
+                    var newSession = new GlobalSession
                     {
-                        var newSession = new GlobalSession
-                        {
-                            User = response,
-                            Character = userData.GetCurrentCharacter()
-                        };
-                        MainContainer.Container.Register<IGlobalSession>(newSession);
-                        
+                        User = userData.GetUserInfo(),
+                        Character = userData.GetCurrentCharacter()
+                    };
+                    MainContainer.Container.Register<IGlobalSession>( newSession );
+
+                    if ( ShowBattleResult ) // TODO FIXIT
+                    {
+                        stateMachine.SetState( ( int ) LobbyState.BattleResult );
+                    }
+                    else
+                    {
                         ToNextState();
                     }
-                    //TODO: else ErrorStat?
-                });
-                
-            }, () => Debug.LogError("LoginWithDeviceId failed"));
+
+                    ShowBattleResult = false;
+                }
+                else
+                {
+                    Debug.LogError( "LoginWithDeviceId failed" );
+                    // send to show error state
+                }
+            } );
         }
     }
 }

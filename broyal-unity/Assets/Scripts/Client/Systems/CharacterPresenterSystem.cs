@@ -1,5 +1,8 @@
 ﻿using Bootstrappers;
 using RemoteConfig;
+using Scripts.Common;
+using Scripts.Scenes.Client;
+using Scripts.Scenes.Lobby.States;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -46,8 +49,12 @@ public class CharacterPresenterSystem : ComponentSystem
     private MainConfig _config;
     private FXData _fxData;
     private UIController _uiController;
-    private AppConfig _appConfig;
 
+    private AppConfig _appConfig;
+    private IGameMinimap gameMinimap = null;
+    private int initForMinimapForPlayers = 0;
+    private bool gameOverIsShowed = false;
+    
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -76,11 +83,37 @@ public class CharacterPresenterSystem : ComponentSystem
         );
     }
 
+    private void InitCharactersForMinimap( NativeArray<Entity> entities )
+    {
+        foreach ( var e in entities )
+        {
+            var isMyPlayer = EntityManager.HasComponent<PlayerInput>( e );
+            var bindData = EntityManager.GetComponentObject<CharactersBindData>( e );
+
+            if ( bindData.gameObject.GetComponent<EntityMinimapViewHelper>() == null )
+            {
+                var minimapCharHelper = bindData.gameObject.AddComponent<EntityMinimapViewHelper>();
+                minimapCharHelper.SetEntityType( isMyPlayer ? MinimapEntityType.LocalCharacter : MinimapEntityType.OtherCharacter );
+            }
+        }
+    }
+
     protected override void OnUpdate()
     {
         var deltaTime = Time.DeltaTime;
         var groupEntities = _group.ToEntityArray(Allocator.TempJob);
         var otherPlayer = _otherPlayers.ToEntityArray(Allocator.TempJob);
+
+        if ( initForMinimapForPlayers < groupEntities.Length )
+        {
+            InitCharactersForMinimap( groupEntities );
+            initForMinimapForPlayers = groupEntities.Length;
+        }
+
+        if ( gameMinimap == null )
+        {
+            gameMinimap = GameObject.FindObjectOfType<GameMinimap>();
+        }
 
         foreach (var e in groupEntities)
         {
@@ -105,6 +138,8 @@ public class CharacterPresenterSystem : ComponentSystem
 
             if (isMyPlayer)
             {
+                gameMinimap?.SetDeadZoneRadius( player.damageRadius );
+
                 _fxData.SetDeadZoneRadius(player.damageRadius);
                 _uiController.SetPlayerGo(go);
                 _uiController.SetPlayerPosition(translation.Value);
@@ -121,11 +156,12 @@ public class CharacterPresenterSystem : ComponentSystem
                     bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * RunAnimationSmoothFactor) );
                 }
                 
-                if (player.health <= 0.0f)
+                if (player.health <= 0.0f && ! gameOverIsShowed )
                 {
-                    //TODO: Unable to reload netcode worlds _(
-                    _uiController.GameOver.Show( () => SceneManager.LoadScene("Lobby") );
-                    //_uiController.GameOver.Show( () => Application.Quit() );
+                    _uiController.GameUI.HideBottom();
+                    _uiController.GameOver.Setup( new Scripts.Scenes.Client.UI.RewardData() );
+                    _uiController.GameOver.Show( () => { InitState.ShowBattleResult = true; SceneManager.LoadScene( Constants.SCENE_LOBBY ); } );
+                    gameOverIsShowed = true;
                 }
             }
             else

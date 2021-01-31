@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Bootstrappers;
 using RemoteConfig;
-using Scripts.Common.Factories;
+using Scripts.Scenes.Client.UI;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -14,7 +14,6 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.OnScreen;
 using UnityEngine.UI;
 using Utils;
-using Adic;
 using CharacterInfo = RemoteConfig.CharacterInfo;
 using Object = UnityEngine.Object;
 
@@ -291,6 +290,17 @@ public class LoadingUI : SimpleUIController
 public class GameOverUI : SimpleUIController
 {
     [SerializeField] private Button exitButton;
+    [SerializeField] private TextMeshProUGUI placeValue;
+    [SerializeField] private TextMeshProUGUI skillRewardValue;
+    [SerializeField] private TextMeshProUGUI skillCoinsValue;
+
+    public void Setup( RewardData reward )
+    {
+        placeValue.text = "#" + reward.Place.ToString();
+        skillRewardValue.text = reward.SkillReward.ToString();
+        skillCoinsValue.text = reward.CoinsReward.ToString();
+    }
+
     public void Show(Action onExit)
     {
         base.Show();
@@ -323,6 +333,8 @@ public class GameUI : SimpleUIController
     [SerializeField] private GemsPanel gemsPanel;
     
     [SerializeField] private Vector3 rot;
+
+    [SerializeField] private GameObject[] bottomBlocks;
 
     private Session _session;
     public event Action<Vector2> OnMainButtonClickedAndDirectionSet;
@@ -382,6 +394,14 @@ public class GameUI : SimpleUIController
         //mainButton.transform.Find("Icon").GetComponent<Image>().sprite = contentFactory.GetSpriteById(skillId);
         
         base.Show();
+    }
+    
+    public void HideBottom()
+    {
+        foreach ( var b in bottomBlocks )
+        {
+            b.SetActive( false );
+        }
     }
 
     private void OnDraggingDirection(Vector2 direction)

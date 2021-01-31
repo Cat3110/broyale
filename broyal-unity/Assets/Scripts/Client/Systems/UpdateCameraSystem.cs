@@ -13,8 +13,6 @@ public class CameraSettings
 [DisableAutoCreation]
 public class UpdateCameraSystem : SystemBase
 {
-    private const string MiniMapCameraTag = "MiniMapCamera";
-    
     private Vector3 targetPosition;
     private float smoothPosition = 0.1f;
     private Vector3 velocity = Vector3.zero;
@@ -22,7 +20,6 @@ public class UpdateCameraSystem : SystemBase
     //private EntityQuery currentPlayerQuery;
 
     private Camera _mainCamera;
-    private Camera _miniMapCamera;
 
     private CameraSettings _cameraSettings;
 
@@ -32,17 +29,10 @@ public class UpdateCameraSystem : SystemBase
 
         _cameraSettings = Bootstrappers.ClientBootstrapper.Container.Resolve<CameraSettings>();
         _mainCamera = Camera.main;
-        _miniMapCamera = GameObject.FindWithTag(MiniMapCameraTag)?.GetComponent<Camera>();
         
         if (_mainCamera == null)
         {
             Debug.LogError($"UpdateCameraSystem: Dont have main camera on scene");
-            Enabled = false;
-        }
-
-        if (_miniMapCamera == null)
-        {
-            Debug.LogError($"UpdateCameraSystem: Dont have minimap camera on scene");
             Enabled = false;
         }
 
@@ -56,7 +46,6 @@ public class UpdateCameraSystem : SystemBase
             .ForEach((Entity entity, in GameObject go, in Translation translation, in MovableCharacterComponent movable, in CharacterPresenter characterPresenter) =>
             {
                 MoveMainCamera(_mainCamera, go.transform.position, _cameraSettings.Bounds);
-                MoveMiniMapCamera(_miniMapCamera, go.transform.position);
             }).Run();
     }
 

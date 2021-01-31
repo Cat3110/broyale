@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using FullSerializer;
 using Scripts.Common.Data;
-using Scripts.Scenes.Lobby;
 using SocketIO;
 using SocketIO.Data.Responses;
 
@@ -107,6 +105,18 @@ namespace SocketIOExt
             socket.Emit<VerifyResponse>(LobbyEvents.LOGIN_WITH_DEVICEID, deviceId, (response) =>
             {
                 if (response.IsSuccess) onSuccess?.Invoke(response.data.user);
+                else onError?.Invoke();
+            });
+        }
+
+        public static void SetUserInfo( this SocketIOComponent socket, User user, Action<BaseResponse> onSuccess, Action onError )
+        {
+            var json = user.ToJson();
+            var jsObject = new JSONObject( json );
+
+            socket.Emit<BaseResponse>(LobbyEvents.SET_USER_INFO, jsObject, (response) =>
+            {
+                if (response.IsSuccess) onSuccess?.Invoke(response);
                 else onError?.Invoke();
             });
         }
