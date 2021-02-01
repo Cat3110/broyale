@@ -74,8 +74,11 @@
         
         private void StartBattle(AppConfig appConfig, User globalUser, Character globalCharacter)
         {
-            Container.Register(new Session {UserId = globalUser._id} );
+            var mainSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.main_skill);
+            var attackSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.attack_skill);
             
+            Container.Register(new Session {UserId = globalUser._id} );
+
             uiController.LoadingUI.Show();
 
             //TODO: need to find way for make it better
@@ -85,7 +88,7 @@
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(); })
+                        uiController.GameUI.Show(mainSkill, attackSkill); })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
@@ -94,9 +97,12 @@
 
         private void StartLocalBattle(string skillId, string attackSkillId, RemoteConfig.CharacterInfo character)
         {
+            var mainSkill = _appConfig.GetSkillConfigById(skillId);
+            var attackSkill = _appConfig.GetSkillConfigById(attackSkillId);
+            
             Container.Register(new Session {
-                MainSkill = _appConfig.GetSkillConfigById(skillId),
-                AttackSkill = _appConfig.GetSkillConfigById(attackSkillId),
+                MainSkill = mainSkill,
+                AttackSkill = attackSkill,
                 Character = character
             } );
             
@@ -110,7 +116,7 @@
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(skillId); })
+                        uiController.GameUI.Show(mainSkill, attackSkill); })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : _appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);

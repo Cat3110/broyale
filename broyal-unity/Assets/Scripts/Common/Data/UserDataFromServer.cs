@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using RemoteConfig;
 using SocketIO;
 using SocketIO.Data.Responses;
 using SocketIOExt;
@@ -13,7 +14,8 @@ namespace Scripts.Common.Data
 
         private Character _currentCharacter;
         private SocketIOComponent _socket;
-        private User userInfo;
+        private User _userInfo;
+        private AppConfig _appConfig;
 
         private void Awake()
         {
@@ -30,18 +32,44 @@ namespace Scripts.Common.Data
 
         public void SetSkill(string skillId)
         {
-            _currentCharacter.skill_set.main_skill = skillId;
+            var skillInfo = _appConfig.GetSkillConfigById(skillId);
+            switch (skillInfo.Type)
+            {
+                case SkillType.Main:
+                    _currentCharacter.skill_set.main_skill = skillId;
+                    break;
+                case SkillType.Attack:
+                    _currentCharacter.skill_set.attack_skill = skillId;
+                    break;
+                case SkillType.Defence:
+                    _currentCharacter.skill_set.defence_skill = skillId;
+                    break;
+                case SkillType.Passive:
+                    _currentCharacter.skill_set.passive_skill = skillId;
+                    break;
+                case SkillType.Utils:
+                    _currentCharacter.skill_set.utils_skill = skillId;
+                    break;
+                default:
+                    Debug.LogError($"Unknown skill type:{skillInfo.Type}");
+                    return;
+            }
+            
             Save();
         }
 
-        public User GetUserInfo() => userInfo;
+        public User GetUserInfo() => _userInfo;
         public Character[] GetCharacters() => characters;
         public Character GetCurrentCharacter() => _currentCharacter;
         public void SetCurrentCharacter(int index) => _currentCharacter = characters[index];
+        public void SetSkillConfig(AppConfig appConfig)
+        {
+            _appConfig = appConfig;
+        }
 
         public void Save()
         {
-            _socket.SetUserInfo( userInfo, ( resp ) =>
+            _socket.SetUserInfo( _userInfo, ( resp ) =>
             {
                 Debug.Log($"SetUserInfo => { resp }");
             },
@@ -59,8 +87,8 @@ namespace Scripts.Common.Data
             string deviceId = Constants.GetDeviceID();
             _socket.LoginWithDeviceId( deviceId, ( resp ) =>
             {
-                userInfo = resp;
-                Debug.Log($"userInfo => {userInfo}");
+                _userInfo = resp;
+                Debug.Log($"userInfo => {_userInfo}");
 
                 _socket.GetCharacters( "", ( characters ) =>
                 {

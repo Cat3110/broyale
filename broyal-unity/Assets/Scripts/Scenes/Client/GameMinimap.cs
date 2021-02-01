@@ -20,7 +20,7 @@ namespace Scripts.Scenes.Client
 
         public void SetDeadZoneRadius( int radius )
         {
-            Debug.Log( "SetDeadZoneRadius - " + radius );
+            //Debug.Log( "SetDeadZoneRadius - " + radius );
 
             Vector2 leftZonePos = new Vector2( -radius * offsetKoeff.x, 0 );
             damageZoneSides[ 0 ].anchoredPosition = leftZonePos;

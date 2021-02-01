@@ -336,7 +336,6 @@ public class GameUI : SimpleUIController
 
     [SerializeField] private GameObject[] bottomBlocks;
 
-    private Session _session;
     public event Action<Vector2> OnMainButtonClickedAndDirectionSet;
     public event Action<Vector2> OnFirstActionButtonClickedAndDirectionSet;
 
@@ -346,15 +345,13 @@ public class GameUI : SimpleUIController
     private Action<Vector2> attackActionAccept;
     private Action<Vector2> attackActionDragging;
 
-    public void Show(string skillId)
+    public void Show(SkillInfo mainSkill, SkillInfo attackSkill)
     {
-        _session = ClientBootstrapper.Container.Resolve<Session>();
+        var isDirectionSkill = (mainSkill.AimType == AimType.Direction) 
+                               || (mainSkill.AimType == AimType.Trajectory) 
+                               || (mainSkill.AimType == AimType.Sector);
         
-        var isDirectionSkill = (_session.MainSkill.AimType == AimType.Direction) 
-                            || (_session.MainSkill.AimType == AimType.Trajectory) 
-                            || (_session.MainSkill.AimType == AimType.Sector);
-        
-        var isAreaSkill = _session.MainSkill.AimType == AimType.Area || _session.MainSkill.AimType == AimType.Dot;
+        var isAreaSkill = mainSkill.AimType == AimType.Area || mainSkill.AimType == AimType.Dot;
         
         if (isDirectionSkill)
         {
@@ -364,17 +361,17 @@ public class GameUI : SimpleUIController
         else if (isAreaSkill)
         {
             mainActionAccept = MainButtonOnAcceptActionZone;
-            mainActionDragging =  (d) => OnDraggingZone(_session.MainSkill, d);
+            mainActionDragging =  (d) => OnDraggingZone(mainSkill, d);
         }
         
         mainButton.OnAcceptAction += mainActionAccept;
         mainButton.OnDragging += mainActionDragging;
         
-        isDirectionSkill = (_session.AttackSkill.AimType == AimType.Direction) 
-                               || (_session.AttackSkill.AimType == AimType.Trajectory) 
-                               || (_session.AttackSkill.AimType == AimType.Sector);
+        isDirectionSkill = (attackSkill.AimType == AimType.Direction) 
+                               || (attackSkill.AimType == AimType.Trajectory) 
+                               || (attackSkill.AimType == AimType.Sector);
         
-        isAreaSkill = _session.AttackSkill.AimType == AimType.Area || _session.AttackSkill.AimType == AimType.Dot;
+        isAreaSkill = attackSkill.AimType == AimType.Area || attackSkill.AimType == AimType.Dot;
         
         if (isDirectionSkill)
         {
@@ -384,7 +381,7 @@ public class GameUI : SimpleUIController
         else if (isAreaSkill)
         {
             attackActionAccept = Action1ButtonOnAcceptActionZone;
-            attackActionDragging = (d) => OnDraggingZone(_session.AttackSkill, d);
+            attackActionDragging = (d) => OnDraggingZone(attackSkill, d);
         }
         
         action1Button.OnAcceptAction += attackActionAccept;

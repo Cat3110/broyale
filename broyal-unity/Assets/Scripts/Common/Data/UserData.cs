@@ -1,5 +1,6 @@
 ﻿
 using System;
+using RemoteConfig;
 using SocketIO.Data.Responses;
 using UnityEngine;
 
@@ -46,6 +47,11 @@ namespace Scripts.Common.Data
         public void SetCurrentCharacter(int index)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void SetSkillConfig(AppConfig appConfig)
+        {
+            throw new NotImplementedException();
         }
 
         public void Save()

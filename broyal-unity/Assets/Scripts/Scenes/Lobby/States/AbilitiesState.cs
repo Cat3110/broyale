@@ -71,6 +71,9 @@ namespace Scripts.Scenes.Lobby.States
 
             var appConfig = MainContainer.Container.Resolve<AppConfig>();
             var availableSkills = appConfig.Skills.Where( s => s.IsEnabled).ToList();
+            
+            //TODO: just for test
+            userData.SetSkillConfig(appConfig);
 
             foreach ( var skill in availableSkills )
             {

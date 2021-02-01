@@ -1,5 +1,6 @@
 ﻿
 using System;
+using RemoteConfig;
 using SocketIO.Data.Responses;
 
 namespace Scripts.Common.Data
@@ -18,5 +19,6 @@ namespace Scripts.Common.Data
         User GetUserInfo();
 
         void SetCurrentCharacter(int index);
+        void SetSkillConfig(AppConfig appConfig);
     }
 }
