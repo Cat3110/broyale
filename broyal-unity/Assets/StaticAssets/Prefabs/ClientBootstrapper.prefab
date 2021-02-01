@@ -54,7 +54,7 @@ MonoBehaviour:
       width: 0
       height: 0
   uiController: {fileID: 0}
-  useLocalServer: 1
+  useLocalServer: 0
   maxFps: 30
   fxData:
     FireBall: {fileID: 2665613612625701359, guid: 3281e648ae351414e9ea16f22290f54f,
@@ -62,7 +62,6 @@ MonoBehaviour:
     MagicRay: {fileID: 3687497356245865499, guid: 32132a4156613ed4fbd55dfcb5a5b027,
       type: 3}
     DamageZone: {fileID: 0}
-    AttackDirection: {fileID: 0}
     Thunder: {fileID: 137106, guid: 2f374f7995cc3f446a42f0970df1fa1a, type: 3}
     MagicJump: {fileID: 2318817693669206316, guid: d8b60909811578241bd979a77d6b3e64,
       type: 3}

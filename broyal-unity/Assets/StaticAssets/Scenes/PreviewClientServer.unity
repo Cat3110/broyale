@@ -373,46 +373,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a22fd403b90b3d4ab3db382f21d62c9, type: 3}
---- !u!21 &84808826
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI Extensions/SoftMaskShader
-  m_Shader: {fileID: 4800000, guid: 947afae4d36f1274ea2e4098262ceef6, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _AlphaMask:
-        m_Texture: {fileID: 2800000, guid: 54b8502585d246249bd1f7540a8bf2b9, type: 3}
-        m_Scale: {x: 0.007207131, y: 0.007091428}
-        m_Offset: {x: 3.5211573, y: -0.88756007}
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _CutOff: 0
-    - _FlipAlphaMask: 0
-    - _HardBlend: 0
-    - _NoOuterClip: 0
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!21 &91468868
 Material:
   serializedVersion: 6
@@ -4492,6 +4452,16 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 20953767}
+    - target: {fileID: 3581664022868176803, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3581664022868176803, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3853839697270168137, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Sprite
@@ -4587,11 +4557,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4898861061625420285, guid: caf741df06d8914439eff23d2a065a0a,
+    - target: {fileID: 6406539267905356722, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 84808826}
+      objectReference: {fileID: 0}
+    - target: {fileID: 6406539267905356722, guid: caf741df06d8914439eff23d2a065a0a,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7144797870283474065, guid: caf741df06d8914439eff23d2a065a0a,
         type: 3}
       propertyPath: m_Material
@@ -6601,6 +6576,11 @@ PrefabInstance:
       propertyPath: uiController
       value: 
       objectReference: {fileID: 658588163}
+    - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
+        type: 3}
+      propertyPath: useLocalServer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
         type: 3}
       propertyPath: fxData.DamageZone
