@@ -28,12 +28,16 @@ namespace Scripts.Scenes.Lobby.States
         [SerializeField] private AbilitySelectedItem abilityMainIcon;
         [SerializeField] private Transform mainAbilityRoot;
 
+        [SerializeField] private AbilitySelectedItem[] activeAbilityIcons;
+        [SerializeField] private Transform activeAbilitiesRoot;
+
         [SerializeField] private GameObject draggingBlock;
         [SerializeField] private GameObject mainAbilityLeftBlock;
-        [SerializeField] private ScrollRect mainAbilityScrollRect;
+        [SerializeField] private GameObject activeAbilityLeftBlock;
 
         private GameObject skinPerson = null;
         private List<GameObject> curMainAbilities = new List<GameObject>();
+        private List<GameObject> curActiveAbilities = new List<GameObject>();
 
         private GameObject leftBlockCopy = null;
         private AbilityDraggingItem rightItemCopy = null;
@@ -54,6 +58,7 @@ namespace Scripts.Scenes.Lobby.States
             skinPerson.SetActive( false );
 
             SetupMainAbilities();
+            SetupActiveAbilities();
         }
 
         public override void OnEndState()
@@ -63,6 +68,28 @@ namespace Scripts.Scenes.Lobby.States
             skinPerson.SetActive( true );
         }
 
+        private void SetupActiveAbilities()
+        {
+            ClearAbilities( curActiveAbilities );
+
+            var activeSkills = userData.GetCurrentCharacter().skill_set.active_skills;
+            for ( int i = 0; i < activeAbilityIcons.Length && i < activeSkills.Length; i++ )
+            {
+                activeAbilityIcons[ i ].Setup( contentFactory.GetSpriteById( activeSkills[ i ] ) );
+            }
+
+
+            var appConfig = MainContainer.Container.Resolve<AppConfig>();
+            var availableSkills = appConfig.Skills.Where( s => s.IsEnabled && s.Type != SkillType.Main && s.Type != SkillType.Passive ).ToList();
+
+            foreach ( var skill in availableSkills )
+            {
+                AbilityDraggingItem newItem = contentFactory.CreateDraggingAbility( skill, activeAbilitiesRoot );
+                newItem.SetOneListener( this );
+                curActiveAbilities.Add( newItem.gameObject );
+            }
+        }
+
         private void SetupMainAbilities()
         {
             ClearAbilities( curMainAbilities );
@@ -70,7 +97,7 @@ namespace Scripts.Scenes.Lobby.States
             abilityMainIcon.Setup( contentFactory.GetSpriteById( userData.GetCurrentCharacter().skill_set.main_skill ) );
 
             var appConfig = MainContainer.Container.Resolve<AppConfig>();
-            var availableSkills = appConfig.Skills.Where( s => s.IsEnabled).ToList();
+            var availableSkills = appConfig.Skills.Where( s => s.IsEnabled && s.Type == SkillType.Main ).ToList();
             
             //TODO: just for test
             userData.SetSkillConfig(appConfig);
@@ -89,7 +116,7 @@ namespace Scripts.Scenes.Lobby.States
             {
                 AbilityDraggingEventArgs evArgs = ( AbilityDraggingEventArgs ) args;
 
-                bool canReplace = userData.GetCurrentCharacter().skill_set.main_skill != evArgs.SkillInfo.Id;
+                bool canReplace = CanReplaceThisAbility( evArgs.SkillInfo );
                 commonView.SetActive( false );
                 abilityViewPopup.gameObject.SetActive( true );
                 abilityViewPopup.Setup( evArgs.SkillInfo, sender.gameObject, canReplace );
@@ -108,21 +135,37 @@ namespace Scripts.Scenes.Lobby.States
             }
         }
 
+        private bool CanReplaceThisAbility( SkillInfo skillInfo )
+        {
+            if ( skillInfo.Type == SkillType.Main )
+            {
+                return userData.GetCurrentCharacter().skill_set.main_skill != skillInfo.Id;
+            }
+
+            return ! userData.GetCurrentCharacter().skill_set.active_skills.Contains( skillInfo.Id );
+        }
+
         private void LightSkillsForSelect( SkillInfo skillInfo, GameObject senderObj )
         {
             CloseAbilityViewPopup();
 
             draggingBlock.SetActive( true );
 
-            leftBlockCopy = Instantiate( mainAbilityLeftBlock, draggingBlock.transform );
+            var leftAbilitiesBlock = GetLeftAbilitiesBlock( skillInfo );
+            var leftAbilitiesSourceItems = GetLeftSourceItems( skillInfo );
+
+            leftBlockCopy = Instantiate( leftAbilitiesBlock, draggingBlock.transform );
             leftBlockCopy.GetComponent<RectTransform>().anchorMax = Vector2.one * 0.5f;
             leftBlockCopy.GetComponent<RectTransform>().anchorMin = Vector2.one * 0.5f;
             leftBlockCopy.GetComponent<RectTransform>().sizeDelta = mainAbilityLeftBlock.GetComponent<RectTransform>().sizeDelta;
-            leftBlockCopy.transform.position = mainAbilityLeftBlock.transform.position;
+            leftBlockCopy.transform.position = leftAbilitiesBlock.transform.position;
 
             AbilitySelectedItem[] copySelItems = leftBlockCopy.GetComponentsInChildren<AbilitySelectedItem>();
-            foreach ( var ab in copySelItems )
+            for ( int i = 0; i < copySelItems.Length && i < leftAbilitiesSourceItems.Length; i++ )
             {
+                var ab = copySelItems[ i ];
+
+                ab.SetSourceItem( leftAbilitiesSourceItems[ i ], i );
                 ab.SetOneListener( this );
                 ab.SetLighted( true );
             }
@@ -135,10 +178,24 @@ namespace Scripts.Scenes.Lobby.States
             selectedSkillInfo = skillInfo;
         }
 
+        private AbilitySelectedItem[] GetLeftSourceItems( SkillInfo skillInfo )
+        {
+            if ( skillInfo.Type == SkillType.Main ) return new AbilitySelectedItem[] { abilityMainIcon };
+
+            return activeAbilityIcons;
+        }
+
+        private GameObject GetLeftAbilitiesBlock( SkillInfo skillInfo )
+        {
+            if ( skillInfo.Type == SkillType.Main ) return mainAbilityLeftBlock;
+
+            return activeAbilityLeftBlock;
+        }
+
         private void ApplyAbilityTo( AbilitySelectedItem selItem )
         {
-            userData.SetSkill( selectedSkillInfo.Id );
-            abilityMainIcon.Setup( contentFactory.GetSpriteById( selectedSkillInfo.Id ) );
+            userData.SetSkillByIndex( selectedSkillInfo.Id, selItem.SourceItemIndex );
+            selItem.SourceItem.Setup( contentFactory.GetSpriteById( selectedSkillInfo.Id ) );
 
             GameObject.Destroy( leftBlockCopy ); leftBlockCopy = null;
             GameObject.Destroy( rightItemCopy.gameObject ); rightItemCopy = null;

@@ -30,6 +30,33 @@ namespace Scripts.Common.Data
             Save();
         }
 
+        public void SetSkillByIndex( string skillId, int index )
+        {
+            var skillInfo = _appConfig.GetSkillConfigById( skillId );
+
+            if ( skillInfo.Type == SkillType.Main )
+            {
+                _currentCharacter.skill_set.main_skill = skillId;
+            }
+            else if ( skillInfo.Type != SkillType.Passive )
+            {
+                if ( index == 1 )
+                {
+                    _currentCharacter.skill_set.defence_skill = skillId;
+                }
+                else if ( index == 2 )
+                {
+                    _currentCharacter.skill_set.utils_skill = skillId;
+                }
+                else
+                {
+                    _currentCharacter.skill_set.attack_skill = skillId;
+                }
+            }
+
+            Save();
+        }
+
         public void SetSkill(string skillId)
         {
             var skillInfo = _appConfig.GetSkillConfigById(skillId);

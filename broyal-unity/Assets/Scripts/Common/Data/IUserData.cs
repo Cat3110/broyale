@@ -14,6 +14,7 @@ namespace Scripts.Common.Data
         CurrentSkinData GetSkin();
         void SetSkin( CurrentSkinData skinData );
         void SetSkill( string skillId );
+        void SetSkillByIndex( string skillId, int index );
         Character[] GetCharacters();
         Character GetCurrentCharacter();
         User GetUserInfo();

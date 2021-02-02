@@ -25,6 +25,7 @@ namespace Scripts.Common.Factories
 
         [SerializeField] private List<SkillIdToSprite> namedSprites;
         [SerializeField] private GameObject abilityDraggingItemPrefab;
+        [SerializeField] private Sprite defaultAbilityTexture;
 
         private string lobbyPlayerSkin = "";
         private GameObject lobbyPlayerPerson = null;
@@ -53,6 +54,8 @@ namespace Scripts.Common.Factories
 
         public Sprite GetSpriteById( string id )
         {
+            if ( string.IsNullOrEmpty( id ) ) return defaultAbilityTexture;
+
             return namedSprites.FirstOrDefault( i => i.Id == id )?.Sprite;
         }
 

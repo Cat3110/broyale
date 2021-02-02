@@ -29,6 +29,7 @@ namespace Scripts.Scenes.Lobby.States
         [SerializeField] private Transform personRoot;
 
         [SerializeField] private AbilitySelectedItem mainAbilityIcon;
+        [SerializeField] private AbilitySelectedItem[] activeAbilityIcons;
 
         private SocketIOComponent _socket;
         private Game[] _games;
@@ -47,7 +48,15 @@ namespace Scripts.Scenes.Lobby.States
             _socket.On( LobbyEvents.GAME_UPDATE, OnGameUpdate );
             _socket.On( LobbyEvents.GAME_STARTED, OnGameStarted );
 
+
+
             mainAbilityIcon.Setup( contentFactory.GetSpriteById(userData.GetCurrentCharacter().skill_set.main_skill) );
+
+            var activeSkills = userData.GetCurrentCharacter().skill_set.active_skills;
+            for ( int i = 0; i < activeAbilityIcons.Length && i < activeSkills.Length; i++ )
+            {
+                activeAbilityIcons[ i ].Setup( contentFactory.GetSpriteById( activeSkills[ i ] ) );
+            }
         }
 
         public override void OnEndState()
