@@ -8,7 +8,6 @@ using Scripts.Common.Tools.UI;
 using Scripts.Common.Factories;
 using Scripts.Core.StateMachine;
 using SocketIO;
-using SocketIOExt;
 using UniRx.Async;
 using UnityEngine;
 

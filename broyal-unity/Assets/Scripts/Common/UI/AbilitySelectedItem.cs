@@ -1,5 +1,4 @@
 ﻿
-using System;
 using Scripts.Core.Events;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,6 +10,9 @@ namespace Scripts.Common.UI
     {
         public const string EVENT_TAP_LIGHTED_ABILITY = "TapLightedAbility";
 
+        public AbilitySelectedItem SourceItem { get; private set; }
+        public int SourceItemIndex { get; private set; }
+
         [SerializeField] private Image itemImg;
         [SerializeField] private GameObject[] unlightLightFrames;
 
@@ -20,6 +22,12 @@ namespace Scripts.Common.UI
         public void Setup( Sprite sprite )
         {
             itemImg.sprite = sprite;
+        }
+
+        public void SetSourceItem( AbilitySelectedItem src, int index )
+        {
+            SourceItem = src;
+            SourceItemIndex = index;
         }
 
         public void SetLighted( bool flag )

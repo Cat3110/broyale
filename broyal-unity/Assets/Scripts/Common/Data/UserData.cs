@@ -29,6 +29,11 @@ namespace Scripts.Common.Data
             throw new NotImplementedException();
         }
 
+        public void SetSkillByIndex( string skillId, int index )
+        {
+            throw new NotImplementedException();
+        }
+
         public Character[] GetCharacters()
         {
             throw new System.NotImplementedException();
