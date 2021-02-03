@@ -1,4 +1,5 @@
 ﻿
+using System.Collections;
 using UnityEngine;
 
 namespace Scripts.Scenes.Client
@@ -24,14 +25,34 @@ namespace Scripts.Scenes.Client
 
         private void Start()
         {
-            minimap = GameObject.FindObjectOfType<GameMinimap>();
-            if ( minimap != null )
+            StartCoroutine( _RegisterOnTheMinimap() );
+        }
+
+        private IEnumerator _RegisterOnTheMinimap()
+        {
+            while ( minimap == null )
             {
-                minimap.RegisterPersonage( this.transform, entityType, entitySecondParameter );
+                minimap = GameObject.FindObjectOfType<GameMinimap>();
+                if ( minimap != null )
+                {
+                    minimap.RegisterPersonage( this.transform, entityType, entitySecondParameter );
+                }
+
+                yield return new WaitForSeconds( 0.1f );
             }
         }
 
+        private void OnDisable()
+        {
+            ClearOnTheMinimap();
+        }
+
         private void OnDestroy()
+        {
+            ClearOnTheMinimap();
+        }
+
+        private void ClearOnTheMinimap()
         {
             if ( minimap != null )
             {

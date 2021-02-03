@@ -92,7 +92,7 @@ namespace Scripts.Scenes.Client
         {
             if ( dictMapView.ContainsKey( tr ) )
             {
-                GameObject.Destroy( dictMapView[ tr ] );
+                GameObject.Destroy( dictMapView[ tr ].gameObject );
                 dictMapView.Remove( tr );
             }
 
