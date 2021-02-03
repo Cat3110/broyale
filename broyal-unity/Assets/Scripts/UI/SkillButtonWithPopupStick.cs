@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using Adic;
 using RemoteConfig;
-using Unity.Animation;
-using Unity.Mathematics;
+using Scripts.Common.Data;
+using Scripts.Common.Factories;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.UI;
 
@@ -19,6 +19,11 @@ namespace UnityEngine.InputSystem.OnScreen
     [AddComponentMenu("Input/Skill Button with popup Stick")]
     public class SkillButtonWithPopupStick : OnScreenControl, IPointerDownHandler, IPointerUpHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
+        [Inject] private IUserData userData;
+        [Inject] private IGameContentFactory gameContentFactory;
+
+        [SerializeField] private SkillType skillType;
+
         [SerializeField] private RectTransform parent;
         
         [SerializeField] public Image icon;
@@ -58,7 +63,21 @@ namespace UnityEngine.InputSystem.OnScreen
         
         private void Start()
         {
+            this.Inject();
+
             joystickBg.gameObject.SetActive(false);
+
+            SetupSkillIcon();
+        }
+
+        private void SetupSkillIcon()
+        {
+            string skillId = userData.GetCurrentCharacter().skill_set.main_skill;
+            if ( skillType == SkillType.Attack ) { skillId = userData.GetCurrentCharacter().skill_set.attack_skill; }
+            else if ( skillType == SkillType.Defence ) { skillId = userData.GetCurrentCharacter().skill_set.defence_skill; }
+            else if ( skillType == SkillType.Utils ) { skillId = userData.GetCurrentCharacter().skill_set.utils_skill; }
+
+            icon.sprite = gameContentFactory.GetSpriteById( skillId );
         }
 
         public void OnPointerDown(PointerEventData eventData)
