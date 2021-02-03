@@ -54,7 +54,7 @@ MonoBehaviour:
       width: 0
       height: 0
   uiController: {fileID: 0}
-  useLocalServer: 0
+  useLocalServer: 1
   maxFps: 30
   fxData:
     FireBall: {fileID: 2665613612625701359, guid: 3281e648ae351414e9ea16f22290f54f,
@@ -63,11 +63,10 @@ MonoBehaviour:
       type: 3}
     DamageZone: {fileID: 0}
     Thunder: {fileID: 137106, guid: 2f374f7995cc3f446a42f0970df1fa1a, type: 3}
-    MagicJump: {fileID: 2318817693669206316, guid: d8b60909811578241bd979a77d6b3e64,
+    MagicJump: {fileID: 1811713027996290, guid: 87dcdbfd8e17c764baeb32d8f0e90a51,
       type: 3}
     Poison: {fileID: 168730, guid: 432814e98f47a364fb2407e79fc0c3c5, type: 3}
-    TimeSlow: {fileID: 8376217717712272291, guid: 91fe9b532e0b87642ac539d2beaabedd,
-      type: 3}
+    TimeSlow: {fileID: 1000013058370874, guid: 1a024933031657344a0b72127c5571a1, type: 3}
     FireWork: {fileID: 2318817693669206316, guid: d8b60909811578241bd979a77d6b3e64,
       type: 3}
     FxSpeed: 10

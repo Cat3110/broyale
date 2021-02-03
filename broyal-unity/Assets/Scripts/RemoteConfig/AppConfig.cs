@@ -136,6 +136,7 @@
     }
     
     public enum SkillType{
+        None = -1,
         Main = 0,
         Attack,
         Defence,
@@ -168,6 +169,7 @@
         public SkillType Type { get; set; }
         public AimType AimType { get; set; }
         public bool IsEnabled { get; set; }
+        public float Duration { get; set; }
     }
     
     [Serializable]

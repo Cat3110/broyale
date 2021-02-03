@@ -76,7 +76,12 @@
         {
             var mainSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.main_skill);
             var attackSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.attack_skill);
-            
+            var defenceSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.defence_skill);
+            var utilsSkill = _appConfig.GetSkillConfigById(globalCharacter.skill_set.utils_skill);
+
+            var skills = new[] {mainSkill, attackSkill, defenceSkill, utilsSkill}
+                .Where(skill => skill.Type != SkillType.None).ToArray();
+
             Container.Register(new Session {UserId = globalUser._id} );
 
             uiController.LoadingUI.Show();
@@ -88,7 +93,7 @@
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(mainSkill, attackSkill); })
+                        uiController.GameUI.Show(skills); })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
@@ -116,7 +121,7 @@
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(mainSkill, attackSkill); })
+                        uiController.GameUI.Show(new []{ mainSkill, attackSkill }); })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : _appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);

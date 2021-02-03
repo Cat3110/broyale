@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using AnimeRx;
 using RemoteConfig;
+using UniRx;
 using Unity.Animation;
 using Unity.Mathematics;
 using UnityEngine.EventSystems;
@@ -34,55 +36,97 @@ namespace UnityEngine.InputSystem.OnScreen
         
         [InputControl(layout = "Vector2")]
         [SerializeField] private string controlPath;
+        
+        [Header("Input Values")] 
+        public float Horizontal = 0;
+        public float Vertical = 0;
      
         private Vector3 _startPos;
         private Vector2 _pointerDownPos;
 
         private Coroutine waitForDrag = null;
         private bool isDragStarted = false;
+        private Vector2 PointPosition;
+
+        private Button button;
         
         public float MovementRange
         {
             get => movementRange;
             set => movementRange = value;
         }
+        public Vector2 Coordinate => new Vector2(Horizontal,Vertical);
         
-        public event Action<Vector2> OnAcceptAction = (x) => { };
-        public event Action<Vector2> OnDragging = (x) => { };
+        public Action<Vector2> OnAcceptAction = (x) => { };
+        public Action<Vector2> OnDragging = (x) => { };
 
         protected override string controlPathInternal
         {
             get => controlPath;
             set => controlPath = value;
         }
-        
+
+        public bool IsInteractable
+        {
+            get => button.interactable;
+            set => button.interactable = value;
+        }
+
+        public bool UseDrag { get; set; }
+
         private void Start()
         {
+            button = GetComponent<Button>();
             joystickBg.gameObject.SetActive(false);
         }
 
-        public void OnPointerDown(PointerEventData eventData)
+        public void StartCooldownTimer(float time)
         {
-            if (eventData == null) throw new ArgumentNullException(nameof(eventData));
+            IsInteractable = false;
+            cooldownTimer.gameObject.SetActive(true);
+            
+            var animator = Easing.Linear(time);
 
-            // if (waitForDrag != null)
-            // {
-            //     StopCoroutine(waitForDrag);
-            // }
-
-            //waitForDrag = StartCoroutine(WaitForDrag(dragDelay));
-            //SendValueToControl(1.0f);
+            Anime.Play(0.0f, 1.0f, animator)
+                .Subscribe( 
+                    value => cooldownTimer.fillAmount = value,
+                    onCompleted: () => { 
+                        IsInteractable = true;
+                        cooldownTimer.gameObject.SetActive(false); })
+                .AddTo(this);
         }
 
-        private IEnumerator WaitForDrag()
+        public void OnPointerUp(PointerEventData eventData)
         {
-            return null;
+            if (!IsInteractable) return;
+            if (!isDragStarted) OnAcceptAction.Invoke(Vector2.zero);
+        }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (!IsInteractable) return;
+            if (eventData == null) throw new ArgumentNullException(nameof(eventData));
+        }
+        
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (!IsInteractable) return;
+            if (!UseDrag) return;
+            
+            joystickBg.gameObject.SetActive(true);
+            isDragStarted = true;
+
+            _startPos = Vector3.zero;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parent, eventData.position, eventData.pressEventCamera, out _pointerDownPos);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!IsInteractable) return;
+            if (!UseDrag) return;
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
-
+            
             // RectTransformUtility.ScreenPointToLocalPointInRectangle(
             //     parent, eventData.position, eventData.pressEventCamera, out var position);
             //
@@ -115,26 +159,11 @@ namespace UnityEngine.InputSystem.OnScreen
             OnDragging?.Invoke(PointPosition);
         }
 
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            if( !isDragStarted )
-                OnAcceptAction.Invoke(Vector2.zero);
-        }
-
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            joystickBg.gameObject.SetActive(true);
-            isDragStarted = true;
-
-            _startPos = Vector3.zero;
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                parent, eventData.position, eventData.pressEventCamera, out _pointerDownPos);
-        }
-
-        Vector2 PointPosition;
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (!IsInteractable) return;
+            if (!UseDrag) return;
+            
             joystickBg.gameObject.SetActive(false);
             isDragStarted = false;
             
@@ -149,19 +178,9 @@ namespace UnityEngine.InputSystem.OnScreen
             OnAcceptAction.Invoke(position);
         }
         
-        void Update () {
+        private void Update () {
             Horizontal = PointPosition.x;
             Vertical = PointPosition.y;
         }
-
-        public Vector2 Coordinate()
-        {
-            return new Vector2(Horizontal,Vertical);
-        }
-        
-        [Header("Input Values")] 
-        public float Horizontal = 0;
-        public float Vertical = 0;
-
     }
 }

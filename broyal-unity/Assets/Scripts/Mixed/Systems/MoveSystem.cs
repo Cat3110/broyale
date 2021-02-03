@@ -219,7 +219,7 @@ public class MoveSystem : SystemBase
     private bool _isServer;
     private AppConfig _appConfig;
     private NativeArray<ColliderData> _colliders;
-    private NativeArray<float> _skillMap;
+    private NativeArray<float> _skillsDurationMap;
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -230,9 +230,8 @@ public class MoveSystem : SystemBase
         var colliders = BaseBootStrapper.Container.Resolve<List<ColliderData>>();
         _colliders = new NativeArray<ColliderData>(colliders.ToArray(), Allocator.Persistent);
         
-        //var skillMap =  _appConfig.Skills.Select(x => x.Cooldown).ToArray();
-        var skillMap =  _appConfig.Skills.Select(x => 2.0f).ToArray();
-        _skillMap = new NativeArray<float>(skillMap, Allocator.Persistent);
+        var skillsDurationMap =  _appConfig.Skills.Select(x => x.Duration).ToArray();
+        _skillsDurationMap = new NativeArray<float>(skillsDurationMap, Allocator.Persistent);
 
         // otherPlayers = GetEntityQuery(
         //     ComponentType.ReadWrite<PlayerData>(),
@@ -251,7 +250,7 @@ public class MoveSystem : SystemBase
         var time = (int)(Time.ElapsedTime);
 
         var colliders = _colliders;
-        var skillsMap = _skillMap;
+        var skillsMap = _skillsDurationMap;
 
         Entities.WithoutBurst().WithReadOnly(colliders).ForEach((Entity e, DynamicBuffer<PlayerInput> inputBuffer,
             ref Attack attack, ref Damage damage,
@@ -409,10 +408,10 @@ public class MoveSystem : SystemBase
         return (math.abs(posA.x - posB.x) < d && math.abs(posA.z - posB.z) < d);
     }
 
-    private static void SetAttackByType(NativeArray<float> skillMaps, int skillId, ref Attack attack, int seed)
+    private static void SetAttackByType(NativeArray<float> skillsDurationMap, int skillId, ref Attack attack, int seed)
     {
         //Debug.Log($"{(_isServer ? "Server" : "Client")}:Attack Start  => {skill.Id}");
-        attack.Duration = skillMaps[skillId] * 0.5f;
+        attack.Duration = skillsDurationMap[skillId];
         attack.AttackType = skillId + 1;
         attack.ProccesedId = attack.AttackType;
         attack.Seed = seed;

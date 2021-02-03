@@ -31,7 +31,6 @@ public class UIController : MonoBehaviour, IUIOwner
     public GameUI GameUI => game;
     public GameOverUI GameOver => gameOver;
 
-
     private Vector3 _playerPosition;
     private GameObject _playerGo;
     
@@ -44,25 +43,19 @@ public class UIController : MonoBehaviour, IUIOwner
         MainUI.SetOwner(this);
         GameUI.SetOwner(this);
         
-        GameUI.OnMainButtonClickedAndDirectionSet += MainActionOnStarted;
-        GameUI.OnFirstActionButtonClickedAndDirectionSet += FirstActionOnStarted;
+        GameUI.OnUseSkill += OnUseSkill;
     }
+    private readonly string[] ButtonsMap = {"space", "q"};
     
-    private const string MainKeyButton = "space";
-    private const string FirstKeyButton = "q";
-
     private readonly Dictionary<string, Coroutine> _cleanCoroutines = new Dictionary<string, Coroutine>();
-
-    private void MainActionOnStarted(Vector2 direction)
+    
+    private void OnUseSkill(int skillIndex, SkillInfo skill, Vector2 direction)
     {
-        QueueEvent(MainKeyButton);
+        var button = ButtonsMap[skillIndex];
+        
+        QueueEvent(button);
         AttackDirection = direction;
     }
-    private void FirstActionOnStarted(Vector2 direction)          
-    {                                                            
-        QueueEvent(FirstKeyButton);                               
-        AttackDirection = direction;       
-    } 
     
     //TODO:Have to find way out
     private void QueueEvent(string key)
@@ -335,62 +328,67 @@ public class GameUI : SimpleUIController
     [SerializeField] private Vector3 rot;
 
     [SerializeField] private GameObject[] bottomBlocks;
+    public event Action<int,SkillInfo,Vector2> OnUseSkill;
 
-    public event Action<Vector2> OnMainButtonClickedAndDirectionSet;
-    public event Action<Vector2> OnFirstActionButtonClickedAndDirectionSet;
+    private SkillButtonWithPopupStick[] _skillButtons;
 
-    private Action<Vector2> mainActionAccept;
-    private Action<Vector2> mainActionDragging;
-    
-    private Action<Vector2> attackActionAccept;
-    private Action<Vector2> attackActionDragging;
-
-    public void Show(SkillInfo mainSkill, SkillInfo attackSkill)
+    public void Show(SkillInfo[] skills)
     {
-        var isDirectionSkill = (mainSkill.AimType == AimType.Direction) 
-                               || (mainSkill.AimType == AimType.Trajectory) 
-                               || (mainSkill.AimType == AimType.Sector);
+        _skillButtons = new []{ mainButton, action1Button, action2Button, action3Button};
         
-        var isAreaSkill = mainSkill.AimType == AimType.Area || mainSkill.AimType == AimType.Dot;
-        
-        if (isDirectionSkill)
+        for (int i = 0; i < skills.Length; i++)
         {
-            mainActionAccept = MainButtonOnAcceptActionDirection;
-            mainActionDragging = OnDraggingDirection;
+            var skill = skills[i];
+            var skillButton = _skillButtons[i];
+
+            SetupSkillButton(i, skill, skillButton);
         }
-        else if (isAreaSkill)
-        {
-            mainActionAccept = MainButtonOnAcceptActionZone;
-            mainActionDragging =  (d) => OnDraggingZone(mainSkill, d);
-        }
-        
-        mainButton.OnAcceptAction += mainActionAccept;
-        mainButton.OnDragging += mainActionDragging;
-        
-        isDirectionSkill = (attackSkill.AimType == AimType.Direction) 
-                               || (attackSkill.AimType == AimType.Trajectory) 
-                               || (attackSkill.AimType == AimType.Sector);
-        
-        isAreaSkill = attackSkill.AimType == AimType.Area || attackSkill.AimType == AimType.Dot;
-        
-        if (isDirectionSkill)
-        {
-            attackActionAccept = Action1ButtonOnAcceptActionDirection;
-            attackActionDragging = OnDraggingDirection;
-        }
-        else if (isAreaSkill)
-        {
-            attackActionAccept = Action1ButtonOnAcceptActionZone;
-            attackActionDragging = (d) => OnDraggingZone(attackSkill, d);
-        }
-        
-        action1Button.OnAcceptAction += attackActionAccept;
-        action1Button.OnDragging += attackActionDragging;
-        
+
         //TODO:Need make some skill class for ui
         //mainButton.transform.Find("Icon").GetComponent<Image>().sprite = contentFactory.GetSpriteById(skillId);
-        
         base.Show();
+    }
+
+    private void SetupSkillButton(int index, SkillInfo skill, SkillButtonWithPopupStick button)
+    {
+        var isDirectionSkill = (skill.AimType == AimType.Direction) 
+                               || (skill.AimType == AimType.Trajectory) 
+                               || (skill.AimType == AimType.Sector);
+        
+        var isAreaSkill = skill.AimType == AimType.Area || skill.AimType == AimType.Dot;
+
+        if (isDirectionSkill)
+        {
+            button.OnAcceptAction = (direction) =>
+            {
+                attackDirectionArrow.SetActive(false);
+                OnUseSkill?.Invoke( index, skill, direction );
+
+                button.StartCooldownTimer(skill.Cooldown);
+            };
+            button.OnDragging = OnDraggingDirection;
+            button.UseDrag = true;
+        }
+        else if (isAreaSkill)
+        {
+            button.OnAcceptAction = (direction) =>
+            {
+                attackZone.SetActive(false);
+                OnUseSkill?.Invoke(index, skill, direction );
+                button.StartCooldownTimer(skill.Cooldown);
+            };
+            button.OnDragging = (direction) => OnDraggingZone(skill, direction );
+            button.UseDrag = true;
+        }
+        else if( skill.AimType == AimType.None )
+        {
+            button.OnAcceptAction = (direction) =>
+            {
+                OnUseSkill?.Invoke(index, skill, direction);
+                button.StartCooldownTimer(skill.Cooldown);
+            };
+        }
+        else Debug.LogError($"[{nameof(GameUI)}:SetupSkillButton] Unknown skill aim type {skill.Id} => {skill.AimType}");
     }
     
     public void HideBottom()
@@ -429,38 +427,8 @@ public class GameUI : SimpleUIController
         attackZone.transform.position = center + new Vector3(direction.x, 1.0f, direction.y);
     }
 
-    private void MainButtonOnAcceptActionDirection(Vector2 direction)
-    {
-        attackDirectionArrow.SetActive(false);
-        OnMainButtonClickedAndDirectionSet?.Invoke(direction);
-    }
-    
-    private void MainButtonOnAcceptActionZone(Vector2 direction)
-    {
-        attackZone.SetActive(false);
-        OnMainButtonClickedAndDirectionSet?.Invoke(direction);
-    }
-    
-    private void Action1ButtonOnAcceptActionDirection(Vector2 direction)               
-    {                                                                        
-        attackDirectionArrow.SetActive(false);                               
-        OnFirstActionButtonClickedAndDirectionSet?.Invoke(direction);               
-    }   
-    
-    private void Action1ButtonOnAcceptActionZone(Vector2 direction)               
-    {                                                                        
-        attackZone.SetActive(false);                               
-        OnFirstActionButtonClickedAndDirectionSet?.Invoke(direction);               
-    }   
-
     public override void Hide()
     {
-        mainButton.OnAcceptAction -= mainActionAccept;
-        mainButton.OnDragging -= mainActionDragging;
-
-        action1Button.OnAcceptAction -= attackActionAccept;
-        action1Button.OnDragging -= attackActionDragging; 
-        
         base.Hide();
     }
 

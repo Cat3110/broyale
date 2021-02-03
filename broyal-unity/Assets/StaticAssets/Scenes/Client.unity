@@ -548,6 +548,11 @@ PrefabInstance:
       objectReference: {fileID: 1361646116}
     - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
         type: 3}
+      propertyPath: useLocalServer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3288588311094332147, guid: bf8161ff6ee91dd428e314747c44d94e,
+        type: 3}
       propertyPath: fxData.DamageZone
       value: 
       objectReference: {fileID: 1912803188}

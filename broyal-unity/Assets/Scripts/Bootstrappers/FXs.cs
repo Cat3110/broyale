@@ -35,19 +35,19 @@ public partial class FXData
                 UniRx.MainThreadDispatcher.StartCoroutine(FxStartRay(MagicRay, root, orig, direction,0.6f,FxTime));
                 break;
             case SkillId.ID_Thunder:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Thunder, root, orig,root.transform.position + (direction * skillInfo.Range),2.0f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Thunder, root, orig,root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
                 break;
             case SkillId.ID_Magicjump:
                 UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(MagicJump, root, orig,root.transform.position,2.0f,FxTime));
                 break;
             case SkillId.ID_Poison:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Poison, root, orig, root.transform.position + (direction * skillInfo.Range),2.0f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Poison, root, orig, root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
                 break;
             case SkillId.ID_Timeslow:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(TimeSlow, root, orig, root.transform.position + (direction * skillInfo.Range),2.0f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(TimeSlow, root, orig, root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
                 break;
             case SkillId.ID_Fireworks:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(FireWork, root, orig, root.transform.position + (direction * skillInfo.Range),2.0f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(FireWork, root, orig, root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
                 break;
             default:
                 Debug.LogWarning($"Dont have fx for {skillInfo.Id}");
