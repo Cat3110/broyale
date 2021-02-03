@@ -88,6 +88,7 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostPlayerData.inventory = snapshotData.GetPlayerDatainventory(deserializerState);
                 ghostPlayerData.attackSkillId = snapshotData.GetPlayerDataattackSkillId(deserializerState);
                 ghostPlayerData.defenceSkillId = snapshotData.GetPlayerDatadefenceSkillId(deserializerState);
+                ghostPlayerData.utilsSkillId = snapshotData.GetPlayerDatautilsSkillId(deserializerState);
                 ghostPrefabCreator.NameId = snapshotData.GetPrefabCreatorNameId(deserializerState);
                 ghostPrefabCreator.SkinId = snapshotData.GetPrefabCreatorSkinId(deserializerState);
                 ghostPrefabCreator.SkinSetting = snapshotData.GetPrefabCreatorSkinSetting(deserializerState);

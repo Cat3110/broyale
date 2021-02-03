@@ -44,6 +44,22 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "SecondAction",
+                    "type": "Button",
+                    "id": "87092658-0882-4c56-a4d1-aca4dfaec7ae",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "ThirdAction",
+                    "type": "Button",
+                    "id": "a43b1b28-071c-4243-b0f7-04943bedda7c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -242,6 +258,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "FirstAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aecbb0cb-40d0-4733-a7da-83ab594deabc",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SecondAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68bcfff3-66a3-419c-b3b1-b25458d10419",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThirdAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

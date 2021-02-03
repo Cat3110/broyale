@@ -45,13 +45,13 @@ public class UIController : MonoBehaviour, IUIOwner
         
         GameUI.OnUseSkill += OnUseSkill;
     }
-    private readonly string[] ButtonsMap = {"space", "q"};
+    private readonly string[] _buttonsMap = {"space", "q", "w", "e"};
     
     private readonly Dictionary<string, Coroutine> _cleanCoroutines = new Dictionary<string, Coroutine>();
     
     private void OnUseSkill(int skillIndex, SkillInfo skill, Vector2 direction)
     {
-        var button = ButtonsMap[skillIndex];
+        var button = _buttonsMap[skillIndex];
         
         QueueEvent(button);
         AttackDirection = direction;
@@ -193,7 +193,7 @@ public class MainUI : SimpleUIController
         foreach (var skillId in attackSkills)
         {
             //var sprite = contentFactory.GetSpriteById(skillId);
-            skillPanel2.Add(skillId, Sprite.Create( new Texture2D(1,1), new Rect(0,0,1,1),Vector2.one*0.5f));
+            skillPanel2.Add(skillId, Sprite.Create( new Texture2D(1,1), new Rect(0,0,1,1),Vector2.one*0.5f), true);
         }
         
         skillPanel2.SetOn(0);
@@ -209,7 +209,7 @@ public class MainUI : SimpleUIController
         skillsPanel.Clean();
     }
 
-    public event Action<string, string, CharacterInfo> OnGameStarted;
+    public event Action<HashSet<string>, HashSet<string>, CharacterInfo> OnGameStarted;
     
     public void SetOwner(IUIOwner owner)
     { 
@@ -226,7 +226,7 @@ public class SkillsPanelData
         
     [SerializeField] private ToggleGroup toggleGroup;
     [SerializeField] private SkillData skillPrefab;
-    public string CurrentSkillId { get; private set; }
+    public HashSet<string> CurrentSkillId = new HashSet<string>();
     
     //[SerializeField] private Button exitButton;
     public void Clean()
@@ -237,14 +237,18 @@ public class SkillsPanelData
         }
     }
 
-    public void Add(string skillId, Sprite sprite)
+    public void Add(string skillId, Sprite sprite, bool multiSelect = false)
     {
         var newInstance = Object.Instantiate(skillPrefab, root.transform, false);
         
         newInstance.SetName(skillId);
-        newInstance.SetGroup(toggleGroup);
+        if (!multiSelect) newInstance.SetGroup(toggleGroup);
         newInstance.SetIcon(sprite);
-        newInstance.OnChangeState = value => CurrentSkillId = skillId;
+        newInstance.OnChangeState = value =>
+        {
+            if(!multiSelect)CurrentSkillId.Clear();
+            CurrentSkillId.Add(skillId);
+        };
     }
     
     public void SetOn(int index)

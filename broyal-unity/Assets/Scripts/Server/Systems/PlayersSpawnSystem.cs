@@ -40,6 +40,7 @@ public class PlayerSpawnServerSystem : ComponentSystem
                 var mainSkillId = req.skillId;
                 var attackSkillId = req.skill2Id;
                 var defenceSkillId = req.skill3Id;
+                var utilsSkillId = req.skill4Id;
                 
                 var characterNameId = req.characterId;
                 var skinId = req.skinId;
@@ -50,9 +51,10 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     var character = _globalSession.CharactersInGame.First(c => c.user_id == userId);
                     var skinData = new CurrentSkinData(character);
                     
-                    mainSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.main_skill);
-                    attackSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.attack_skill);
-                    defenceSkillId = _appConfig.Skills.FindIndex(s => s.Id == character.skill_set.defence_skill);
+                    mainSkillId = (short)_appConfig.Skills.FindIndex(s => s.Id == character.skill_set.main_skill);
+                    attackSkillId = (short)_appConfig.Skills.FindIndex(s => s.Id == character.skill_set.attack_skill);
+                    defenceSkillId = (short)_appConfig.Skills.FindIndex(s => s.Id == character.skill_set.defence_skill);
+                    utilsSkillId = (short)_appConfig.Skills.FindIndex(s => s.Id == character.skill_set.utils_skill);
                     
                     characterNameId = _mainConfig.GetNameId(character.sex == "male" ? "ID_MALE" : "ID_FEMALE").Id;
                     skinSetting = new CurrentSkinData(character).ToString();
@@ -91,6 +93,7 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     primarySkillId = mainSkillId,
                     attackSkillId = attackSkillId,
                     defenceSkillId = defenceSkillId,
+                    utilsSkillId = utilsSkillId
                 });
                 EntityManager.SetComponentData(player, new PrefabCreator
                 {

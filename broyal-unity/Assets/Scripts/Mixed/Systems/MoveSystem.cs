@@ -360,12 +360,26 @@ public class MoveSystem : SystemBase
             }
 
             if (input.attackType >= 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
-            { 
-                //Debug.Log(
-                //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
-                //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
-                if(input.attackType == 1) SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
-                else SetAttackByType(skillsMap, pdata.attackSkillId, ref attack, input.attackType * time);
+            {
+                switch (input.attackType)
+                {
+                    //Debug.Log(
+                    //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
+                    //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
+                    case 1:
+                        SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);
+                        break;
+                    case 2:
+                        SetAttackByType(skillsMap, pdata.attackSkillId, ref attack, input.attackType * time);
+                        break;
+                    case 3:
+                        SetAttackByType(skillsMap, pdata.defenceSkillId, ref attack, input.attackType * time);
+                        break;
+                    case 4:
+                        SetAttackByType(skillsMap, pdata.utilsSkillId, ref attack, input.attackType * time);
+                        break;
+                }
+
                 //EntityManager.SetComponentData(e, attack);
             }
         }).Run(); //.ScheduleParallel();

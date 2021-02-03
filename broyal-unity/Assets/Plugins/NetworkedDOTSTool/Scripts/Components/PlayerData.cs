@@ -12,6 +12,7 @@ public struct PlayerData : IComponentData {
         public int primarySkillId;
         public int attackSkillId;
         public int defenceSkillId;
+        public int utilsSkillId;
         
         public int magic;
         public int power;
@@ -19,6 +20,7 @@ public struct PlayerData : IComponentData {
         public uint inventory;
 
         public int damageRadius;
+        
 }
 
 

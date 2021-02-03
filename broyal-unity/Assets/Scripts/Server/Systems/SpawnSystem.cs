@@ -29,8 +29,10 @@ public class PlayerSpawnClientSystem : ComponentSystem
                 {
                     PostUpdateCommands.AddComponent(req, new PlayerSpawnRequest
                     {
-                        skillId = _appConfig.GetSkillIndex(_session.MainSkill),
-                        skill2Id = _appConfig.GetSkillIndex(_session.AttackSkill),
+                        skillId = (short)_appConfig.GetSkillIndex(_session.MainSkill),
+                        skill2Id = (short)_appConfig.GetSkillIndex(_session.AttackSkill),
+                        skill3Id = (short)_appConfig.GetSkillIndex(_session.DefenceSkill),
+                        skill4Id = (short)_appConfig.GetSkillIndex(_session.UtilitySkill),
                         characterId = _mainConfig.GetNameId(_session.Character.Id).Id,
                         skinId = _session.Character.SkinType
                     });

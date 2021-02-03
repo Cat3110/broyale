@@ -6,9 +6,10 @@ using Unity.Networking.Transport;
 [BurstCompile]
 public struct PlayerSpawnRequest : IRpcCommand
 {
-    public int skillId;
-    public int skill2Id;
-    public int skill3Id;
+    public short skillId;
+    public short skill2Id;
+    public short skill3Id;
+    public short skill4Id;
     
     public uint characterId;
     public uint skinId;
@@ -28,9 +29,10 @@ public struct PlayerSpawnRequest : IRpcCommand
 
     public void Serialize(ref DataStreamWriter writer)
     {
-        writer.WriteInt(skillId);
-        writer.WriteInt(skill2Id);
-        writer.WriteInt(skill3Id);
+        writer.WriteShort(skillId);
+        writer.WriteShort(skill2Id);
+        writer.WriteShort(skill3Id);
+        writer.WriteShort(skill4Id);
         writer.WriteInt((int)characterId);
         writer.WriteInt((int)skinId);
         writer.WriteString(userId);
@@ -38,9 +40,10 @@ public struct PlayerSpawnRequest : IRpcCommand
 
     public void Deserialize(ref DataStreamReader reader)
     {
-        skillId = reader.ReadInt();
-        skill2Id = reader.ReadInt();
-        skill3Id = reader.ReadInt();
+        skillId = reader.ReadShort();
+        skill2Id = reader.ReadShort();
+        skill3Id = reader.ReadShort();
+        skill4Id = reader.ReadShort();
         characterId = (uint)reader.ReadInt();
         skinId = (uint)reader.ReadInt();
         userId = reader.ReadString();

@@ -213,6 +213,7 @@ MonoBehaviour:
   primarySkillId: 0
   attackSkillId: 0
   defenceSkillId: 0
+  utilsSkillId: 0
   magic: 0
   power: 0
   inventory: 0

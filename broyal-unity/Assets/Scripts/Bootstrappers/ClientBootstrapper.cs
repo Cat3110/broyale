@@ -66,7 +66,7 @@
             {
                 uiController.MainUI.Show(_appConfig.Characters, 
                     _appConfig.Skills.Where( s => s.IsEnabled && s.Type == SkillType.Main).Select(c => c.Id).ToList(),
-                    _appConfig.Skills.Where( s => s.IsEnabled && s.Type == SkillType.Attack).Select(c => c.Id).ToList()
+                    _appConfig.Skills.Where( s => s.IsEnabled && s.Type != SkillType.Main).Select(c => c.Id).ToList()
                     );
                 uiController.MainUI.OnGameStarted += StartLocalBattle;
             }
@@ -100,14 +100,21 @@
         } 
 
 
-        private void StartLocalBattle(string skillId, string attackSkillId, RemoteConfig.CharacterInfo character)
+        private void StartLocalBattle(HashSet<string> skillId, HashSet<string> attackSkillIds, RemoteConfig.CharacterInfo character)
         {
-            var mainSkill = _appConfig.GetSkillConfigById(skillId);
-            var attackSkill = _appConfig.GetSkillConfigById(attackSkillId);
-            
+            var mainSkill = _appConfig.GetSkillConfigById(skillId.First());
+            List<SkillInfo> skillInfos = new List<SkillInfo>() {mainSkill};
+            foreach (var skill  in attackSkillIds)
+            {
+                var skillInfo = _appConfig.GetSkillConfigById(skill);
+                skillInfos.Add(skillInfo);
+            }
+
             Container.Register(new Session {
                 MainSkill = mainSkill,
-                AttackSkill = attackSkill,
+                AttackSkill = skillInfos[1],
+                DefenceSkill = skillInfos[2],
+                UtilitySkill = skillInfos[3],
                 Character = character
             } );
             
@@ -121,7 +128,8 @@
                     () => {  
                         Container.Resolve<InputMaster>().Enable();
                         uiController.LoadingUI.Hide();
-                        uiController.GameUI.Show(new []{ mainSkill, attackSkill }); })
+                        uiController.GameUI.Show(skillInfos.Take(4).ToArray());
+                    })
                 .AddTo(this);
 
             InitWorlds( useLocalServer ? "127.0.0.1" : _appConfig.Main.ServerAddress, useLocalServer ? (ushort)7979 : _appConfig.Main.ServerPort);
