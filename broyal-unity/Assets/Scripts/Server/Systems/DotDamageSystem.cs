@@ -51,7 +51,7 @@ public class DotDamageSystem : ComponentSystem
                 var component = EntityManager.GetComponentData<Dot>(dot);
                 foreach (var player in players)
                 {
-                    //if(player == component.Owner) continue;
+                    if(player == component.Owner) continue;
                     
                     var playerPos = EntityManager.GetComponentData<Translation>(player).Value;
                     var playerData = EntityManager.GetComponentData<PlayerData>(player);
@@ -66,8 +66,9 @@ public class DotDamageSystem : ComponentSystem
                         damage.Seed = (int)dt * 1000;
                         EntityManager.SetComponentData(player, damage);
 
-                        if (component.SpeedFactor > 0 && !EntityManager.HasComponent<SpeedMod>(player) )
+                        if (math.abs(component.SpeedFactor) > 0 && !EntityManager.HasComponent<SpeedMod>(player) )
                         {
+                            playerData.speedMod += component.SpeedFactor;
                             EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration, Value = component.SpeedFactor});
                         }
                     }

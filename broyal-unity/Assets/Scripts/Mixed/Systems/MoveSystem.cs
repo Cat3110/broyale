@@ -267,6 +267,8 @@ public class MoveSystem : SystemBase
             }
 
             if (pdata.health <= 0) return;
+            
+            speed = speed * pdata.speedMod;
 
             //inputBuffer.GetDataAtTick(tick, out PlayerInput input);
 

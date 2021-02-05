@@ -22,6 +22,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     private int PlayerDataattackSkillId;
     private int PlayerDatadefenceSkillId;
     private int PlayerDatautilsSkillId;
+    private float PlayerDataspeedMod;
     private uint PrefabCreatorNameId;
     private uint PrefabCreatorSkinId;
     private NativeString64 PrefabCreatorSkinSetting;
@@ -276,6 +277,22 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
     {
         PlayerDatautilsSkillId = (int)val;
     }
+    public float GetPlayerDataspeedMod(GhostDeserializerState deserializerState)
+    {
+        return PlayerDataspeedMod;
+    }
+    public float GetPlayerDataspeedMod()
+    {
+        return PlayerDataspeedMod;
+    }
+    public void SetPlayerDataspeedMod(float val, GhostSerializerState serializerState)
+    {
+        PlayerDataspeedMod = val;
+    }
+    public void SetPlayerDataspeedMod(float val)
+    {
+        PlayerDataspeedMod = val;
+    }
     public uint GetPrefabCreatorNameId(GhostDeserializerState deserializerState)
     {
         return (uint)PrefabCreatorNameId;
@@ -410,16 +427,17 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         changeMask0 |= (PlayerDataattackSkillId != baseline.PlayerDataattackSkillId) ? (1u<<12) : 0;
         changeMask0 |= (PlayerDatadefenceSkillId != baseline.PlayerDatadefenceSkillId) ? (1u<<13) : 0;
         changeMask0 |= (PlayerDatautilsSkillId != baseline.PlayerDatautilsSkillId) ? (1u<<14) : 0;
-        changeMask0 |= (PrefabCreatorNameId != baseline.PrefabCreatorNameId) ? (1u<<15) : 0;
-        changeMask0 |= (PrefabCreatorSkinId != baseline.PrefabCreatorSkinId) ? (1u<<16) : 0;
-        changeMask0 |= PrefabCreatorSkinSetting.Equals(baseline.PrefabCreatorSkinSetting) ? 0 : (1u<<17);
+        changeMask0 |= (PlayerDataspeedMod != baseline.PlayerDataspeedMod) ? (1u<<15) : 0;
+        changeMask0 |= (PrefabCreatorNameId != baseline.PrefabCreatorNameId) ? (1u<<16) : 0;
+        changeMask0 |= (PrefabCreatorSkinId != baseline.PrefabCreatorSkinId) ? (1u<<17) : 0;
+        changeMask0 |= PrefabCreatorSkinSetting.Equals(baseline.PrefabCreatorSkinSetting) ? 0 : (1u<<18);
         changeMask0 |= (RotationValueX != baseline.RotationValueX ||
                                            RotationValueY != baseline.RotationValueY ||
                                            RotationValueZ != baseline.RotationValueZ ||
-                                           RotationValueW != baseline.RotationValueW) ? (1u<<18) : 0;
+                                           RotationValueW != baseline.RotationValueW) ? (1u<<19) : 0;
         changeMask0 |= (TranslationValueX != baseline.TranslationValueX ||
                                            TranslationValueY != baseline.TranslationValueY ||
-                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<19) : 0;
+                                           TranslationValueZ != baseline.TranslationValueZ) ? (1u<<20) : 0;
         writer.WritePackedUIntDelta(changeMask0, baseline.changeMask0, compressionModel);
         if ((changeMask0 & (1 << 0)) != 0)
             writer.WritePackedIntDelta(AttackAttackType, baseline.AttackAttackType, compressionModel);
@@ -455,19 +473,21 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         if ((changeMask0 & (1 << 14)) != 0)
             writer.WritePackedIntDelta(PlayerDatautilsSkillId, baseline.PlayerDatautilsSkillId, compressionModel);
         if ((changeMask0 & (1 << 15)) != 0)
-            writer.WritePackedUIntDelta(PrefabCreatorNameId, baseline.PrefabCreatorNameId, compressionModel);
+            writer.WritePackedFloatDelta(PlayerDataspeedMod, baseline.PlayerDataspeedMod, compressionModel);
         if ((changeMask0 & (1 << 16)) != 0)
-            writer.WritePackedUIntDelta(PrefabCreatorSkinId, baseline.PrefabCreatorSkinId, compressionModel);
+            writer.WritePackedUIntDelta(PrefabCreatorNameId, baseline.PrefabCreatorNameId, compressionModel);
         if ((changeMask0 & (1 << 17)) != 0)
-            writer.WritePackedStringDelta(PrefabCreatorSkinSetting, baseline.PrefabCreatorSkinSetting, compressionModel);
+            writer.WritePackedUIntDelta(PrefabCreatorSkinId, baseline.PrefabCreatorSkinId, compressionModel);
         if ((changeMask0 & (1 << 18)) != 0)
+            writer.WritePackedStringDelta(PrefabCreatorSkinSetting, baseline.PrefabCreatorSkinSetting, compressionModel);
+        if ((changeMask0 & (1 << 19)) != 0)
         {
             writer.WritePackedIntDelta(RotationValueX, baseline.RotationValueX, compressionModel);
             writer.WritePackedIntDelta(RotationValueY, baseline.RotationValueY, compressionModel);
             writer.WritePackedIntDelta(RotationValueZ, baseline.RotationValueZ, compressionModel);
             writer.WritePackedIntDelta(RotationValueW, baseline.RotationValueW, compressionModel);
         }
-        if ((changeMask0 & (1 << 19)) != 0)
+        if ((changeMask0 & (1 << 20)) != 0)
         {
             writer.WritePackedIntDelta(TranslationValueX, baseline.TranslationValueX, compressionModel);
             writer.WritePackedIntDelta(TranslationValueY, baseline.TranslationValueY, compressionModel);
@@ -547,18 +567,22 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
         else
             PlayerDatautilsSkillId = baseline.PlayerDatautilsSkillId;
         if ((changeMask0 & (1 << 15)) != 0)
+            PlayerDataspeedMod = reader.ReadPackedFloatDelta(baseline.PlayerDataspeedMod, compressionModel);
+        else
+            PlayerDataspeedMod = baseline.PlayerDataspeedMod;
+        if ((changeMask0 & (1 << 16)) != 0)
             PrefabCreatorNameId = reader.ReadPackedUIntDelta(baseline.PrefabCreatorNameId, compressionModel);
         else
             PrefabCreatorNameId = baseline.PrefabCreatorNameId;
-        if ((changeMask0 & (1 << 16)) != 0)
+        if ((changeMask0 & (1 << 17)) != 0)
             PrefabCreatorSkinId = reader.ReadPackedUIntDelta(baseline.PrefabCreatorSkinId, compressionModel);
         else
             PrefabCreatorSkinId = baseline.PrefabCreatorSkinId;
-        if ((changeMask0 & (1 << 17)) != 0)
+        if ((changeMask0 & (1 << 18)) != 0)
             PrefabCreatorSkinSetting = reader.ReadPackedStringDelta(baseline.PrefabCreatorSkinSetting, compressionModel);
         else
             PrefabCreatorSkinSetting = baseline.PrefabCreatorSkinSetting;
-        if ((changeMask0 & (1 << 18)) != 0)
+        if ((changeMask0 & (1 << 19)) != 0)
         {
             RotationValueX = reader.ReadPackedIntDelta(baseline.RotationValueX, compressionModel);
             RotationValueY = reader.ReadPackedIntDelta(baseline.RotationValueY, compressionModel);
@@ -572,7 +596,7 @@ public struct CharacterSnapshotData : ISnapshotData<CharacterSnapshotData>
             RotationValueZ = baseline.RotationValueZ;
             RotationValueW = baseline.RotationValueW;
         }
-        if ((changeMask0 & (1 << 19)) != 0)
+        if ((changeMask0 & (1 << 20)) != 0)
         {
             TranslationValueX = reader.ReadPackedIntDelta(baseline.TranslationValueX, compressionModel);
             TranslationValueY = reader.ReadPackedIntDelta(baseline.TranslationValueY, compressionModel);

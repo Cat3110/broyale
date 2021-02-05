@@ -20,7 +20,7 @@ public struct PlayerData : IComponentData {
         public uint inventory;
 
         public int damageRadius;
-        
+        public float speedMod;
 }
 
 

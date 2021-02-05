@@ -52,13 +52,13 @@ public class AttackSystem : ComponentSystem
                 var distance = GetDistanceByAttackType(attack.AttackType);
                 var direction = new float3(attack.AttackDirection.x,0,attack.AttackDirection.y);
                 var byDirection = skillInfo.AimType == AimType.Direction || skillInfo.AimType == AimType.Sector || skillInfo.AimType == AimType.Trajectory;
-                var center = byDirection ? translation.Value : direction * skillInfo.Range;
+                var center = byDirection ? translation.Value : translation.Value + (direction * skillInfo.Radius);
             
                 var enemy = players
                     .Where(e => e != player)
                     .FirstOrDefault(x => 
                         math.distancesq(center, 
-                            EntityManager.GetComponentData<Translation>(x).Value) < distance * 2);
+                            EntityManager.GetComponentData<Translation>(x).Value) < distance * distance);
 
                 Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
 
@@ -82,7 +82,7 @@ public class AttackSystem : ComponentSystem
                         EntityManager.SetComponentData(enemy, damage);
                     }
                 }
-                else if(skillInfo.Type == SkillType.Attack)
+                else if(skillInfo.AimType == AimType.Area || skillInfo.AimType == AimType.Dot || skillInfo.AimType == AimType.None )
                 {
                     var e = EntityManager.CreateEntity(_archetypeDot);
                     EntityManager.SetComponentData(e, new Translation{ Value = center} );
@@ -91,7 +91,7 @@ public class AttackSystem : ComponentSystem
                         Owner = player, 
                         Duration = (skillInfo.ImpactTime * pdata.magic)/1000.0f,
                         Value = (pdata.magic * skillInfo.MagDMG) + (pdata.power * skillInfo.PhysDMG),
-                        SpeedFactor = skillInfo.SpeedEffect,
+                        SpeedFactor = skillInfo.SpeedEffect * pdata.power,
                         HaveStun = skillInfo.Id == SkillId.ID_Magicjump,
                         Radius = skillInfo.Radius
                     } );
@@ -115,7 +115,7 @@ public class AttackSystem : ComponentSystem
     private float GetDistanceByAttackType(int attackType)
     {
         var skill = _appConfig.GetSkillByAttackType(attackType);
-        return skill.Radius;
+        return skill.Range;
     }
 
     private void ApplyDamageByAttackType(PlayerData pdata, int attackType, int seed, Entity attacker, ref Damage damage)

@@ -144,10 +144,11 @@
             ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>());
             
             var serverSimulationSystemGroup = world.GetOrCreateSystem<ServerSimulationSystemGroup >();
-            serverSimulationSystemGroup.AddSystemToUpdateList(world.CreateSystem<ItemSpawnerSystem>());
+            serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<ItemSpawnerSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<LootItemSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<ZoneDamageSystem>());
             serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<DotDamageSystem>());
+            serverSimulationSystemGroup.AddSystemToUpdateList( world.CreateSystem<DotRemoveSystem>());
         }
         
         [CUDLR.Command("reload сonfig", "Reload config file from gdoc")]
