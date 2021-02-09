@@ -4966,7 +4966,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5
+      scalar: 2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -9376,7 +9376,7 @@ GameObject:
   - component: {fileID: 8598702971767589656}
   - component: {fileID: 8598306896619213698}
   m_Layer: 0
-  m_Name: Fireball_inHand
+  m_Name: Laser_End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9715,7 +9715,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.7
       minScalar: 1
       maxCurve:
         serializedVersion: 2
