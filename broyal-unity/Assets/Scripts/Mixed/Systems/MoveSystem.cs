@@ -326,7 +326,8 @@ public class MoveSystem : SystemBase
                     var collider = colliders[i];
                     if (collider.Type == ColliderType.Box)
                     {
-                        collided = Intersect(collider.Min, collider.Max, trans.Value, new float3(0.5f));
+                        collided = IntersectWithCircle(trans.Value.xz, 0.5f, new float3(collider.Position).xz, new float3(collider.Size).xz);
+                        //collided = Intersect(collider.Min, collider.Max, trans.Value, new float3(0.5f));
                         if (collided)
                         {
                             trans.Value = lastPos;
@@ -416,6 +417,23 @@ public class MoveSystem : SystemBase
         float2 max2 = new float2(math.max(x1, x2), math.max(y1, y2));
 
         return (min1.x <= max2.x && max1.x >= min2.x) && (min1.y <= max2.y && max1.y >= min2.y);
+    }
+    
+    public static bool IntersectWithCircle(float2 circle, float circleRadius, float2 rect, float2 rectSize)
+    {
+        var circleDistanceX = math.abs(circle.x - rect.x);
+        var circleDistanceY = math.abs(circle.y - rect.y);
+
+        if (circleDistanceX > (rectSize.x/2 + circleRadius)) { return false; }
+        if (circleDistanceY > (rectSize.y/2 + circleRadius)) { return false; }
+
+        if (circleDistanceX <= (rectSize.x/2)) { return true; } 
+        if (circleDistanceY <= (rectSize.y/2)) { return true; }
+
+        var cornerDistance_sq = (circleDistanceX - rectSize.x/2)*(circleDistanceX - rectSize.x/2) +
+            (circleDistanceY - rectSize.y/2)*(circleDistanceY - rectSize.y/2);
+
+        return (cornerDistance_sq <= (circleRadius*circleRadius));
     }
     
     static bool AreSquaresOverlapping(float3 posA, float sizeA, float3 posB, float sizeB)

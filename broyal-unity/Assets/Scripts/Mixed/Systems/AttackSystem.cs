@@ -89,7 +89,7 @@ public class AttackSystem : ComponentSystem
                     EntityManager.SetComponentData(e, new Dot
                     {
                         Owner = player, 
-                        Duration = (skillInfo.ImpactTime * pdata.magic)/1000.0f,
+                        Duration = (skillInfo.ImpactTime * pdata.magic),
                         Value = (pdata.magic * skillInfo.MagDMG) + (pdata.power * skillInfo.PhysDMG),
                         SpeedFactor = skillInfo.SpeedEffect * pdata.power,
                         HaveStun = skillInfo.Id == SkillId.ID_Magicjump,

@@ -55,7 +55,9 @@ public class testColliders : MonoBehaviour
                 var collider = _colliders[i];
                 if (collider.Type == ColliderType.Box)
                 {
-                    collided = MoveSystem.Intersect(collider.Min, collider.Max, transform.position, new float3(0.5f));
+                    collided = MoveSystem.IntersectWithCircle(new float3(transform.position).xz, 0.5f,
+                        new float3(collider.Position).xz, new float3(collider.Size).xz);
+                    //collided = MoveSystem.Intersect(collider.Min, collider.Max, transform.position, new float3(0.5f));
                     if (collided)
                     {
                         break;

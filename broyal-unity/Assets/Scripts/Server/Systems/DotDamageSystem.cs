@@ -69,7 +69,8 @@ public class DotDamageSystem : ComponentSystem
                         if (math.abs(component.SpeedFactor) > 0 && !EntityManager.HasComponent<SpeedMod>(player) )
                         {
                             playerData.speedMod += component.SpeedFactor;
-                            EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration, Value = component.SpeedFactor});
+                            EntityManager.SetComponentData(player, playerData);
+                            EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration*1000f, Value = component.SpeedFactor});
                         }
                     }
                 }
