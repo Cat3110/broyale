@@ -33,14 +33,21 @@ namespace Scripts.Scenes.Lobby.States
 
             _socket = GameObject.FindObjectOfType<SocketIOComponent>();
 
-            AppConfig.LoadByUrlAsync().ContinueWith( json =>
+            if ( !_socket.isConnected )
             {
-                var config = BaseBootStrapper.OnConfigLoaded(json);
-                _socket.url = config.Main.LobbyAddress;
-                _socket.Connect();
-                
-                StartCoroutine( _InitNetworkReady() );
-            });
+                AppConfig.LoadByUrlAsync().ContinueWith( json =>
+                {
+                    var config = BaseBootStrapper.OnConfigLoaded( json );
+                    _socket.url = config.Main.LobbyAddress;
+                    _socket.Connect();
+
+                    StartCoroutine( _InitNetworkReady() );
+                } );
+            }
+            else
+            {
+                SetToNextState();
+            }
         }
 
         public override void OnEndState()
@@ -76,16 +83,7 @@ namespace Scripts.Scenes.Lobby.States
                     };
                     MainContainer.Container.Register<IGlobalSession>( newSession );
 
-                    if ( ShowBattleResult ) // TODO FIXIT
-                    {
-                        stateMachine.SetState( ( int ) LobbyState.BattleResult );
-                    }
-                    else
-                    {
-                        ToNextState();
-                    }
-
-                    ShowBattleResult = false;
+                    SetToNextState();
                 }
                 else
                 {
@@ -93,6 +91,20 @@ namespace Scripts.Scenes.Lobby.States
                     // send to show error state
                 }
             } );
+        }
+
+        private void SetToNextState()
+        {
+            if ( ShowBattleResult ) // TODO FIXIT
+            {
+                stateMachine.SetState( ( int ) LobbyState.BattleResult );
+            }
+            else
+            {
+                ToNextState();
+            }
+
+            ShowBattleResult = false;
         }
     }
 }
