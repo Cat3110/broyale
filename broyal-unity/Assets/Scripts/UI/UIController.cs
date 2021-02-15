@@ -45,7 +45,7 @@ public class UIController : MonoBehaviour, IUIOwner
         
         GameUI.OnUseSkill += OnUseSkill;
     }
-    private readonly string[] _buttonsMap = {"space", "q", "w", "e"};
+    private readonly string[] _buttonsMap = {"space", "1", "2", "3"};
     
     private readonly Dictionary<string, Coroutine> _cleanCoroutines = new Dictionary<string, Coroutine>();
     

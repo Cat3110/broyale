@@ -266,7 +266,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0725e0e3-a160-4d81-9651-8477b1b4a570"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -277,7 +277,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""aecbb0cb-40d0-4733-a7da-83ab594deabc"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""path"": ""<Keyboard>/2"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -288,7 +288,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""68bcfff3-66a3-419c-b3b1-b25458d10419"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""path"": ""<Keyboard>/3"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

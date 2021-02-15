@@ -273,8 +273,7 @@ public class MoveSystem : SystemBase
             //inputBuffer.GetDataAtTick(tick, out PlayerInput input);
 
             var direction = new float2(input.horizontal / 10.0f, input.vertical / 10.0f);
-            var lastPos = trans.Value;
-
+         
             // if( math.length(direction) > 0.0f )
             //     if(_isServer)
             //     {
@@ -288,11 +287,8 @@ public class MoveSystem : SystemBase
 
             if (input.attackType == 0 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
-                if (math.abs(input.horizontal) > 0)
-                    trans.Value.x += input.horizontal / 10.0f * deltaTime * speed;
-
-                if (math.abs(input.vertical) > 0)
-                    trans.Value.z += input.vertical / 10.0f * deltaTime * speed;
+                var inputDirection = new float3(input.horizontal / 10.0f * deltaTime * speed, 0,
+                    input.vertical / 10.0f * deltaTime * speed);
                 
                 // if( math.length(direction) > 0)
                 //     if(_isServer)
@@ -315,43 +311,11 @@ public class MoveSystem : SystemBase
                 // {
                 //     //Debug.DrawLine(lastPos, trans.Value, Color.blue);
                 // }
+                
+                var collided = CheckCollisions( trans.Value, inputDirection, colliders, _appConfig.Main.PhysicsCollisionResolveType,out var newPosition);
+
+                trans.Value = newPosition;
             }
-          
-            var collided = false;
-
-            //if (_isServer)
-            {
-                for (int i = 0; i < colliders.Length; i++)
-                {
-                    var collider = colliders[i];
-                    if (collider.Type == ColliderType.Box)
-                    {
-                        collided = IntersectWithCircle(trans.Value.xz, 0.5f, new float3(collider.Position).xz, new float3(collider.Size).xz);
-                        //collided = Intersect(collider.Min, collider.Max, trans.Value, new float3(0.5f));
-                        if (collided)
-                        {
-                            trans.Value = lastPos;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            //physicsVelocity.Linear = new float3(h * deltaTime * _appConfig.Characters[0].Speed * 50.0f,
-            //    0, v * deltaTime * _appConfig.Characters[0].Speed * 50.0f);
-
-            /*if (input.horizontal > 0)
-                trans.Value.x += input.horizontal/10.0f * deltaTime;
-            if (input.horizontal < 0)
-                trans.Value.x -= input.horizontal/10.0f * deltaTime;
-            if (input.vertical > 0)
-                trans.Value.z += input.vertical/10.0f * deltaTime;
-            if (input.vertical < 0)
-                trans.Value.z -= input.vertical/10.0f * deltaTime;*/
-            // if (math.abs(input.horizontal) > 0 || math.abs(input.vertical) > 0)
-            // {
-            //     attack.PredTrans = new float3(input.horizontal, 0, input.vertical);
-            // }
 
             if (math.abs(input.attackDirectionX) > 0 || math.abs(input.attackDirectionY) > 0)
             {
@@ -387,7 +351,93 @@ public class MoveSystem : SystemBase
             }
         }).Run(); //.ScheduleParallel();
     }
-    
+
+    private bool CheckCollisions(float3 position, float3 direction, NativeArray<ColliderData> colliders, PhysicsCollisionResolveType collisionResolveType, out float3 newPosition)
+    {
+        const float size = 0.55f;
+        
+        var collided = false;
+        newPosition = position;
+        
+        if (collisionResolveType == PhysicsCollisionResolveType.None)
+        {
+            foreach (var collider in colliders)
+            {
+                if (collider.Type != ColliderType.Box) continue;
+                
+                collided = IntersectWithCircle(position.xz, 0.5f, new float3(collider.Position).xz, new float3(collider.Size).xz);
+                if (collided)
+                {
+                    newPosition = position + direction;
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            var box = new Box(position.x - size * 0.5f, position.z - size * 0.5f, size, size, direction.x, direction.z );
+           
+            float moveX = 0.0f;
+            float moveY = 0.0f;
+            float normalX = 0.0f;
+            float normalY = 0.0f;
+            float collisionTime = 0.0f;
+            
+            for (var index = 0; index < colliders.Length; index++)
+            {
+                var collider = colliders[index];
+                if (collider.Type != ColliderType.Box) continue;
+                
+                var broadPhaseBox = SweptAABB.GetBroadPhaseBox(box);
+                var block = collider.ToBox();
+
+                if (SweptAABB.CheckAABB(broadPhaseBox, block, ref moveX, ref moveY))
+                {
+                    collided = true;
+                    //_withColliderIndex = index;
+                    
+                    collisionTime = SweptAABB.Swept(box, block, ref normalX, ref normalY);
+                    Debug.Log($"Collided {index} {direction} {collisionTime} {normalX} {normalY}");
+                    break;
+                }
+            }
+
+            if (collided)
+            {
+                var remainingtime = 1.0f - collisionTime;
+
+                if (collisionResolveType == PhysicsCollisionResolveType.Push)
+                {
+                    float magnitude = math.sqrt((box.vx * box.vx + box.vy * box.vy)) * remainingtime; 
+                    float dotprod = box.vx * normalY + box.vy * normalX; 
+                    
+                    if (dotprod > 0.0f) dotprod = 1.0f; 
+                    else if (dotprod < 0.0f) dotprod = -1.0f; 
+                    
+                    box.vx = dotprod * normalY * magnitude; 
+                    box.vy = dotprod * normalX * magnitude;
+                    
+                    newPosition = new Vector3(position.x + (box.vx), 0, position.z + (box.vy));
+                }
+                else
+                {
+                    float dotprod = (box.vx * normalY + box.vy * normalX) * remainingtime;
+
+                    box.vx = dotprod * normalY; 
+                    box.vy = dotprod * normalX;
+                
+                    newPosition = new Vector3(position.x + (box.vx), 0, position.z + (box.vy));
+                }
+            }
+            else
+            {
+                newPosition = new Vector3(position.x + box.vx, 0, position.z + box.vy);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static bool Intersect(float3 posA, float3 sizeA, float3 posB, float3 sizeB)
     {
         float minAX = posA.x - sizeA.x * 0.5f;

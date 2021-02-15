@@ -89,6 +89,12 @@
         public int GetSkillIndex(SkillInfo skillInfo) => Skills.FindIndex(s => s.Id == skillInfo.Id);
     }
 
+    public enum PhysicsCollisionResolveType
+    {
+        None = 0,
+        Slide = 1,
+        Push = 2
+    }
 
     public sealed class MainConfig
     {
@@ -101,6 +107,8 @@
         public float MapAreaSize;
         public float MapAreaDecreaseTick;
         public float MapAreaDecreaseAmount;
+
+        public PhysicsCollisionResolveType PhysicsCollisionResolveType;
     }
 
     public sealed class LocalizationConfig
