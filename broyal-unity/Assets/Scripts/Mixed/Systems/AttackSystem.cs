@@ -92,7 +92,7 @@ public class AttackSystem : ComponentSystem
                         Duration = (skillInfo.ImpactTime * pdata.magic),
                         Value = (pdata.magic * skillInfo.MagDMG) + (pdata.power * skillInfo.PhysDMG),
                         SpeedFactor = skillInfo.SpeedEffect * pdata.power,
-                        HaveStun = skillInfo.Id == SkillId.ID_Magicjump,
+                        HaveStun = skillInfo.Id == SkillId.ID_Thunder,
                         Radius = skillInfo.Radius
                     } );
                 }

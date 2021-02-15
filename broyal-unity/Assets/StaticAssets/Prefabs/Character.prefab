@@ -132,7 +132,10 @@ MonoBehaviour:
       quantization: 100
       interpolate: 0
     - name: speedMod
-      quantization: 0
+      quantization: -1
+      interpolate: 0
+    - name: stun
+      quantization: 1
       interpolate: 0
     manualFieldList: 1
     entityIndex: 0
@@ -210,6 +213,7 @@ MonoBehaviour:
   inventory: 0
   damageRadius: 0
   speedMod: 1
+  stun: 0
 --- !u!114 &7185640376147542688
 MonoBehaviour:
   m_ObjectHideFlags: 0

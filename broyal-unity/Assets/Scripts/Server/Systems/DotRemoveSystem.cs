@@ -32,5 +32,16 @@ public class DotRemoveSystem : ComponentSystem
                 }
                 else speedMod.Duration -= dt;
             });
+        
+        Entities.WithAll<Stun, PlayerData>()
+            .ForEach((Entity entity, ref Stun stun, ref PlayerData playerData) =>
+            {
+                if (stun.Duration <= 0)
+                {
+                    playerData.stun = false;
+                    PostUpdateCommands.RemoveComponent<Stun>(entity);
+                }
+                else stun.Duration -= dt;
+            });
     }
 }

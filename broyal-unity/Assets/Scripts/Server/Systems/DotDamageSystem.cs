@@ -72,6 +72,12 @@ public class DotDamageSystem : ComponentSystem
                             EntityManager.SetComponentData(player, playerData);
                             EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration*1000f, Value = component.SpeedFactor});
                         }
+                        else if((math.abs(component.SpeedFactor) > 0 && !EntityManager.HasComponent<Stun>(player)))
+                        {
+                            playerData.stun = true;
+                            EntityManager.SetComponentData(player, playerData);
+                            EntityManager.AddComponentData(player, new Stun{Duration = component.Duration*1000f});
+                        }
                     }
                 }
 

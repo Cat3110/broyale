@@ -21,6 +21,7 @@ public struct PlayerData : IComponentData {
 
         public int damageRadius;
         public float speedMod;
+        public bool stun;
 }
 
 

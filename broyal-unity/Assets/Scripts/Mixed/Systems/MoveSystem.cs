@@ -266,10 +266,10 @@ public class MoveSystem : SystemBase
                 // LogServer(isServer, $"Did run server-side prediction because available input had tick {input.Tick} matching the predicting tick {predictingTick}");
             }
 
-            if (pdata.health <= 0) return;
-            
+            if(pdata.health <= 0) return;
+            if(pdata.stun) return;
+                
             speed = speed * pdata.speedMod;
-
             //inputBuffer.GetDataAtTick(tick, out PlayerInput input);
 
             var direction = new float2(input.horizontal / 10.0f, input.vertical / 10.0f);
