@@ -181,18 +181,18 @@
             //Debug.Log("MainAction " + controls.Player.Movement.ReadValue<Vector2>() );
         }
 
-        private void OnDrawGizmos()
-        {
-            if (Container.TryResolve(typeof(List<ColliderData>), out object obj))
-            {
-                List<ColliderData> colliders = (List<ColliderData>)obj;
-                foreach (var collider in colliders)
-                {
-                    GizmoDrawCollider(collider, Color.magenta);
-                    //break;
-                }
-            }
-        }
+        // private void OnDrawGizmos()
+        // {
+        //     if (Container.TryResolve(typeof(List<ColliderData>), out object obj))
+        //     {
+        //         List<ColliderData> colliders = (List<ColliderData>)obj;
+        //         foreach (var collider in colliders)
+        //         {
+        //             GizmoDrawCollider(collider, Color.magenta);
+        //             //break;
+        //         }
+        //     }
+        // }
 
         public static void GizmoDrawCollider(ColliderData collider, Color color)
         {

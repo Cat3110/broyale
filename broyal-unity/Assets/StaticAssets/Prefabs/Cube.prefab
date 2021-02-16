@@ -219,6 +219,7 @@ MonoBehaviour:
   inventory: 0
   damageRadius: 0
   speedMod: 0
+  stun: 0
 --- !u!114 &367846395590210669
 MonoBehaviour:
   m_ObjectHideFlags: 0
