@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using RemoteConfig;
+using Unity.Mathematics;
 using UnityEngine;
 
 [Serializable]
@@ -24,15 +25,15 @@ public partial class FXData
     public float FxScale = 2.5f;
     private static readonly int Radius = Shader.PropertyToID("_Radius");
 
-    public void Start(SkillInfo skillInfo, GameObject root, Transform orig, Vector3 direction)
+    public void Start(SkillInfo skillInfo, GameObject root, Transform orig, Vector3 direction, Transform target)
     {
         switch (@skillInfo.Id)
         {
             case SkillId.ID_Fireball:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartFireBall(FireBall, orig, direction,1.0f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartFireBall(FireBall, orig, direction,1.0f,FxTime, target));
                 break;
             case SkillId.ID_Magicray:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartRay(MagicRay, root, orig, direction,0.6f,FxTime));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartRay(MagicRay, root, orig, direction,0.6f,FxTime, target));
                 break;
             case SkillId.ID_Thunder:
                 UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Thunder, root, orig,root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
@@ -55,7 +56,7 @@ public partial class FXData
         }
     }
 
-    IEnumerator FxStartFireBall(GameObject prefab, Transform orig, Vector3 direction, float duration, float delay)
+    IEnumerator FxStartFireBall(GameObject prefab, Transform orig, Vector3 direction, float duration, float delay, Transform target)
     {
         yield return new WaitForSeconds(delay);
 
@@ -69,15 +70,31 @@ public partial class FXData
         {
             duration -= Time.deltaTime;
             var position = obj.transform.position;
-            position = Vector3.Lerp(position, position + direction, Time.deltaTime * 10.0f);
-            obj.transform.position = position;
+            var newPosition = Vector3.zero;
+            
+            if (target != default)
+            {
+                var targetPosition = new Vector3(target.position.x, origPosition.y, target.position.z);
+                newPosition = Vector3.MoveTowards(position, targetPosition, Time.deltaTime * 10.0f);
+                if (Vector3.Distance(newPosition, targetPosition) < 0.001f)
+                {
+                    break;
+                }
+
+                obj.transform.forward = (targetPosition - newPosition).normalized;
+            }
+            else
+            {
+                newPosition = Vector3.Lerp(position, position + direction, Time.deltaTime * 10.0f);
+            }
+            obj.transform.position = newPosition;
             yield return null;
         }
         GameObject.Destroy(obj);
         yield return null;
     }
     
-    IEnumerator FxStartRay(GameObject prefab, GameObject root, Transform orig, Vector3 direction, float duration, float delay)
+    IEnumerator FxStartRay(GameObject prefab, GameObject root, Transform orig, Vector3 direction, float duration, float delay, Transform target)
     {
         yield return new WaitForSeconds(delay);
         

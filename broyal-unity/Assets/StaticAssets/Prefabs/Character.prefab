@@ -71,6 +71,9 @@ MonoBehaviour:
     - name: AttackDirection
       quantization: 100
       interpolate: 0
+    - name: Target
+      quantization: -1
+      interpolate: 0
     manualFieldList: 1
     entityIndex: 0
   - name: Damage

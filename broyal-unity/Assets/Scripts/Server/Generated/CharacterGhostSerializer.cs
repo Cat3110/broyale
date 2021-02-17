@@ -62,6 +62,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         snapshot.SetAttackAttackType(chunkDataAttack[ent].AttackType, serializerState);
         snapshot.SetAttackSeed(chunkDataAttack[ent].Seed, serializerState);
         snapshot.SetAttackAttackDirection(chunkDataAttack[ent].AttackDirection, serializerState);
+        snapshot.SetAttackTarget(chunkDataAttack[ent].Target, serializerState);
         snapshot.SetDamageDamageType(chunkDataDamage[ent].DamageType, serializerState);
         snapshot.SetMovableCharacterComponentPlayerId(chunkDataMovableCharacterComponent[ent].PlayerId, serializerState);
         snapshot.SetPlayerDatahealth(chunkDataPlayerData[ent].health, serializerState);

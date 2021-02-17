@@ -10,6 +10,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public struct CharacterPresenter : IComponentData
 {
@@ -127,6 +128,9 @@ public class CharacterPresenterSystem : ComponentSystem
             var go = EntityManager.GetComponentObject<GameObject>(e);
             var bindData = EntityManager.GetComponentObject<CharactersBindData>(e);
             
+            float3 attackDirection = new float3(attack.AttackDirection.x,0,attack.AttackDirection.y);
+            var isAutoAttack = math.lengthsq(attackDirection) < 0.01f;
+            
             float3 prevPos = go.transform.position;
             var dist = math.distance(prevPos, translation.Value);
 
@@ -170,46 +174,54 @@ public class CharacterPresenterSystem : ComponentSystem
                 var newSpeed = dist > 0.1 ? 1 : 0;
                 bindData.Animator.SetFloat(Speed, math.lerp(prevSpeed, newSpeed,  deltaTime * RunAnimationSmoothFactor));
             }
-
+            
+            var target = attack.Target;
+            
             if (attack.ProccesedId != 0 || attack.AttackType != 0)
             {
                 if (data.AttackTransId != attack.Seed)
                 {
                     var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
                     
-                    Debug.Log($"Client:Attack {skillInfo.Id} " +
-                              $"To => {attack.Target} => {attack.AttackType} =>" +
-                              $"Direction => {attack.AttackDirection} =>" +
-                              $" {data.AttackTransId} != {attack.Seed}");
+                    // Debug.Log($"Client:Attack {skillInfo.Id} " +
+                    //           $"To => {attack.Target} => {attack.AttackType} =>" +
+                    //           $"Direction => {attack.AttackDirection} =>" +
+                    //           $" {data.AttackTransId} != {attack.Seed}");
                     
                     bindData.Animator.SetInteger(Type, _appConfig.GetSkillIndex(skillInfo));
                     bindData.Animator.SetTrigger(AttackTrigger);
                     data.AttackTransId = attack.Seed;
                     EntityManager.SetComponentData(e, data);
 
-                    Vector3 attackDirection = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
-                    if (attackDirection.sqrMagnitude < 0.01f)
-                    {
-                        attackDirection = go.transform.forward;
-                    }
+                    var fxDirection = attackDirection;
+                    Transform targetTransform = target == Entity.Null
+                        ? default
+                        : EntityManager.GetComponentObject<GameObject>(target)?.transform;
                     
-                    _fxData.Start(skillInfo, go, bindData.Weapom.transform, attackDirection);
+                    if (isAutoAttack)
+                    {
+                        if(target == Entity.Null) fxDirection = go.transform.forward;
+                        else
+                        {
+                            fxDirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
+                        }
+                    }
+   
+                    Debug.LogWarning($"Client:Attack To => {e} => {isAutoAttack} {target} {fxDirection}");
+                    _fxData.Start(skillInfo, go, bindData.Weapom.transform, fxDirection, targetTransform );
                 }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
-                
-                var target = attack.Target;
-                if (target != Entity.Null && player.primarySkillId < 2 )
+
+                if (isAutoAttack)
                 {
-                    var attackDirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
-                    go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(attackDirection), RotationSpeed * Time.DeltaTime);
-                    //go.transform.forward = math.normalize(lookdirection);
+                    if (target != Entity.Null)
+                    {
+                        var newDirection = EntityManager.GetComponentData<Translation>(target).Value - translation.Value;
+                        go.transform.forward = Vector3.Lerp(go.transform.forward, math.normalize(newDirection), RotationSpeed * Time.DeltaTime);
+                    }
                 }
                 else
                 {
-                    Vector3 attackDirection = new Vector3(attack.AttackDirection.x,0,attack.AttackDirection.y);
-                    if (attackDirection.sqrMagnitude > 0.1)
-                    {
-                        go.transform.forward = Vector3.Lerp(go.transform.forward, attackDirection, RotationSpeed * deltaTime);
-                    }
+                    go.transform.forward = Vector3.Lerp(go.transform.forward, attackDirection, RotationSpeed * deltaTime);
                 }
             }
             else

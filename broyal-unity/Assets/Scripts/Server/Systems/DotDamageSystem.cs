@@ -38,9 +38,9 @@ public class DotDamageSystem : ComponentSystem
     {
         var dt = Time.DeltaTime;
 
-        if (_lastTick <= 0)
+        //if (_lastTick <= 0)
         {
-            _lastTick = _decreaseTick;
+         //   _lastTick = _decreaseTick;
             
             var dots = _dotsQuery.ToEntityArray(Allocator.TempJob);
             var players = _playesQuery.ToEntityArray(Allocator.TempJob);
@@ -59,7 +59,7 @@ public class DotDamageSystem : ComponentSystem
                     {
                         var damage = EntityManager.GetComponentData<Damage>(player);
                     
-                        damage.Value += component.Value;
+                        damage.Value += component.Value * dt;
                         damage.DamageType = 5;
                         damage.Duration = 0.3f;
                         damage.NeedApply = true;
@@ -70,18 +70,19 @@ public class DotDamageSystem : ComponentSystem
                         {
                             playerData.speedMod += component.SpeedFactor;
                             EntityManager.SetComponentData(player, playerData);
-                            EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration*1000f, Value = component.SpeedFactor});
+                            EntityManager.AddComponentData(player, new SpeedMod{Duration = component.Duration, Value = component.SpeedFactor});
                         }
-                        else if((math.abs(component.SpeedFactor) > 0 && !EntityManager.HasComponent<Stun>(player)))
+                        if( component.HaveStun && !EntityManager.HasComponent<Stun>(player))
                         {
                             playerData.stun = true;
                             EntityManager.SetComponentData(player, playerData);
-                            EntityManager.AddComponentData(player, new Stun{Duration = component.Duration*1000f});
+                            EntityManager.AddComponentData(player, new Stun{Duration = component.Duration});
                         }
                     }
                 }
 
-                component.Duration -= _decreaseTick;
+                //component.Duration -= _decreaseTick;
+                component.Duration -= dt;
                 EntityManager.SetComponentData(dot, component);
                 
                 if(component.Duration <= 0.0f )
@@ -90,9 +91,9 @@ public class DotDamageSystem : ComponentSystem
             players.Dispose();
             dots.Dispose();
         }
-        else
-        {
-            _lastTick -= dt;
-        }
+        // else
+        // {
+        //     _lastTick -= dt;
+        // }
     }
 }

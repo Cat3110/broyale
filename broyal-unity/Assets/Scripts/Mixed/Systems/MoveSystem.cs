@@ -269,7 +269,7 @@ public class MoveSystem : SystemBase
             if(pdata.health <= 0) return;
             if(pdata.stun) return;
                 
-            speed = speed * pdata.speedMod;
+            speed = (speed + pdata.speedMod);
             //inputBuffer.GetDataAtTick(tick, out PlayerInput input);
 
             var direction = new float2(input.horizontal / 10.0f, input.vertical / 10.0f);
@@ -323,7 +323,7 @@ public class MoveSystem : SystemBase
             }
             else
             {
-                attack.AttackDirection = direction;
+                attack.AttackDirection = Vector2.zero;
             }
 
             if (input.attackType >= 1 && attack.ProccesedId == 0 && attack.AttackType == 0)

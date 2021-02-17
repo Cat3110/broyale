@@ -77,6 +77,7 @@ public class CharacterGhostUpdateSystem : JobComponentSystem
                 ghostAttack.AttackType = snapshotData.GetAttackAttackType(deserializerState);
                 ghostAttack.Seed = snapshotData.GetAttackSeed(deserializerState);
                 ghostAttack.AttackDirection = snapshotData.GetAttackAttackDirection(deserializerState);
+                ghostAttack.Target = snapshotData.GetAttackTarget(deserializerState);
                 ghostDamage.DamageType = snapshotData.GetDamageDamageType(deserializerState);
                 ghostMovableCharacterComponent.PlayerId = snapshotData.GetMovableCharacterComponentPlayerId(deserializerState);
                 ghostPlayerData.health = snapshotData.GetPlayerDatahealth(deserializerState);

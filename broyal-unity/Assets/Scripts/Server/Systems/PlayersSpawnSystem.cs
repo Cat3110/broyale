@@ -94,7 +94,7 @@ public class PlayerSpawnServerSystem : ComponentSystem
                     attackSkillId = attackSkillId,
                     defenceSkillId = defenceSkillId,
                     utilsSkillId = utilsSkillId,
-                    speedMod = 1.0f
+                    speedMod = 0.0f
                 });
                 EntityManager.SetComponentData(player, new PrefabCreator
                 {

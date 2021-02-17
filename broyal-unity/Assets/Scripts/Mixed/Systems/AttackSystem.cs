@@ -17,6 +17,7 @@ public class AttackSystem : ComponentSystem
     private bool IsServer { get; set; }
     private AppConfig _appConfig => BaseBootStrapper.Container.Resolve<AppConfig>();
     private EntityArchetype _archetypeDot;
+    private const float AttackAngle = 45.0f * 0.5f;
     protected override void OnCreate()
     {
         base.OnCreate();
@@ -43,16 +44,19 @@ public class AttackSystem : ComponentSystem
             var attack = EntityManager.GetComponentData<Attack>(player);
             var translation = EntityManager.GetComponentData<Translation>(player);
             //var input = EntityManager.GetBuffer<PlayerInput>(player);
-
+            //Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => NeedApplyDamage {attack.NeedApplyDamage}");
             if (attack.NeedApplyDamage && attack.DamageTime < 0)
             {
                 attack.NeedApplyDamage = false;
 
                 var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
                 var distance = GetDistanceByAttackType(attack.AttackType);
-                var direction = new float3(attack.AttackDirection.x,0,attack.AttackDirection.y);
+                var attackDirection = new float3(attack.AttackDirection.x,0,attack.AttackDirection.y);
                 var byDirection = skillInfo.AimType == AimType.Direction || skillInfo.AimType == AimType.Sector || skillInfo.AimType == AimType.Trajectory;
-                var center = byDirection ? translation.Value : translation.Value + (direction * skillInfo.Radius);
+                //byDirection = byDirection || math.length(direction) > 0.01f;
+                
+                var isAutoAttack = math.lengthsq(attackDirection) < 0.01f;
+                var center = byDirection ? translation.Value : translation.Value + (attackDirection * skillInfo.Radius);
             
                 var enemy = players
                     .Where(e => e != player)
@@ -69,18 +73,20 @@ public class AttackSystem : ComponentSystem
                     var damage = EntityManager.GetComponentData<Damage>(enemy);
                     Vector3 other = EntityManager.GetComponentData<Translation>(enemy).Value - translation.Value;
 
-                    var dot = Vector3.Dot(direction, other );
-                    
-                    Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy} => d => {dot}");
+                    var dot = Vector3.Dot(math.normalize(attackDirection), math.normalize(other) );
+                    var angel = math.degrees(math.acos(dot));
+                    if (isAutoAttack) angel = AttackAngle;
 
                     if (attack.AttackType == 1 || attack.AttackType == 2 ||
-                        attack.AttackType == 3 && dot > 0.0f || attack.AttackType == 4 && dot > 0.0f )
+                        attack.AttackType == 3 && angel <= AttackAngle|| attack.AttackType == 4 && angel <= AttackAngle ) 
                     {
                         ApplyDamageByAttackType(pdata, attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
                             player, ref damage);
                 
                         EntityManager.SetComponentData(enemy, damage);
                     }
+                    
+                    Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack{isAutoAttack} To => {player} => {enemy} => {attack.AttackType} => {angel} ");
                 }
                 else if(skillInfo.AimType == AimType.Area || skillInfo.AimType == AimType.Dot || skillInfo.AimType == AimType.None )
                 {
@@ -89,7 +95,7 @@ public class AttackSystem : ComponentSystem
                     EntityManager.SetComponentData(e, new Dot
                     {
                         Owner = player, 
-                        Duration = (skillInfo.ImpactTime * pdata.magic),
+                        Duration = skillInfo.ImpactTime > 1.0f ? skillInfo.ImpactTime : (skillInfo.ImpactTime * pdata.magic),
                         Value = (pdata.magic * skillInfo.MagDMG) + (pdata.power * skillInfo.PhysDMG),
                         SpeedFactor = skillInfo.SpeedEffect * pdata.power,
                         HaveStun = skillInfo.Id == SkillId.ID_Thunder,
