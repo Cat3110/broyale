@@ -33,7 +33,7 @@ public partial class FXData
                 UniRx.MainThreadDispatcher.StartCoroutine(FxStartFireBall(FireBall, orig, direction,1.0f,FxTime, target));
                 break;
             case SkillId.ID_Magicray:
-                UniRx.MainThreadDispatcher.StartCoroutine(FxStartRay(MagicRay, root, orig, direction,0.6f,FxTime, target));
+                UniRx.MainThreadDispatcher.StartCoroutine(FxStartRay(MagicRay, skillInfo, root, orig, direction,0.6f,FxTime, target));
                 break;
             case SkillId.ID_Thunder:
                 UniRx.MainThreadDispatcher.StartCoroutine(FxStartDot(Thunder, root, orig,root.transform.position + (direction * skillInfo.Range),4.0f,FxTime));
@@ -94,7 +94,8 @@ public partial class FXData
         yield return null;
     }
     
-    IEnumerator FxStartRay(GameObject prefab, GameObject root, Transform orig, Vector3 direction, float duration, float delay, Transform target)
+    IEnumerator FxStartRay(GameObject prefab, SkillInfo skillInfo, GameObject root, Transform orig, Vector3 direction,
+        float duration, float delay, Transform target)
     {
         yield return new WaitForSeconds(delay);
         
@@ -103,8 +104,8 @@ public partial class FXData
 
         var obj = GameObject.Instantiate(prefab, origPosition, Quaternion.identity );
         obj.transform.forward = direction;
-        
-        var localScale = obj.transform.localScale;
+
+        obj.transform.localScale = new float3(obj.transform.localScale.x * skillInfo.Range);
         //var scaleorig = new Vector3(localScale.x, 0.2f,localScale.y);
         //var scalenew  =  new Vector3(localScale.x, 1.0f,localScale.y);
         
@@ -114,13 +115,26 @@ public partial class FXData
         {
             duration -= Time.deltaTime;
             
-            //var scale = Vector3.Lerp(scaleorig, scalenew, (time - duration) / time );
+            var position = new Vector3(root.transform.position.x, origPosition.y, root.transform.position.z);
+            var newPosition = Vector3.zero;
             
-            //obj.transform.localScale = scale;
-            //obj.transform.up = root.transform.forward;
+            if (target != default)
+            {
+                var targetPosition = new Vector3(target.position.x, origPosition.y, target.position.z);
+                newPosition = Vector3.MoveTowards(position, targetPosition, Time.deltaTime * 10.0f);
+                if (Vector3.Distance(newPosition, targetPosition) < 0.001f)
+                {
+                    break;
+                }
+
+                obj.transform.forward = (targetPosition - newPosition).normalized;
+            }
+            else
+            {
+                newPosition = Vector3.Lerp(position, position + direction, Time.deltaTime * 10.0f);
+            }
             
-            var position = root.transform.position;
-            obj.transform.position = new Vector3( position.x, origPosition.y, position.z );
+            obj.transform.position = newPosition;
             
             yield return null;
         }

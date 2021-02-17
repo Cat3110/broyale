@@ -177,16 +177,16 @@ public class CharacterPresenterSystem : ComponentSystem
             
             var target = attack.Target;
             
-            if (attack.ProccesedId != 0 || attack.AttackType != 0)
+            if ((attack.ProccesedId != 0 || attack.AttackType != 0) && attack.NeedApplyDamage == false)
             {
                 if (data.AttackTransId != attack.Seed)
                 {
                     var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
                     
-                    // Debug.Log($"Client:Attack {skillInfo.Id} " +
-                    //           $"To => {attack.Target} => {attack.AttackType} =>" +
-                    //           $"Direction => {attack.AttackDirection} =>" +
-                    //           $" {data.AttackTransId} != {attack.Seed}");
+                    Debug.Log($" [CharacterPresenter] {skillInfo.Id} " +
+                              $"To => {attack.Target} => {attack.AttackType} =>" +
+                              $"Direction => {attack.AttackDirection} =>" +
+                              $" {data.AttackTransId} != {attack.Seed}");
                     
                     bindData.Animator.SetInteger(Type, _appConfig.GetSkillIndex(skillInfo));
                     bindData.Animator.SetTrigger(AttackTrigger);
@@ -207,7 +207,7 @@ public class CharacterPresenterSystem : ComponentSystem
                         }
                     }
    
-                    Debug.LogWarning($"Client:Attack To => {e} => {isAutoAttack} {target} {fxDirection}");
+                   // Debug.LogWarning($"Client:Attack To => {e} => {isAutoAttack} {target} {fxDirection}");
                     _fxData.Start(skillInfo, go, bindData.Weapom.transform, fxDirection, targetTransform );
                 }//else  Debug.LogWarning($"Client:Attack To => {e} => {data.AttackTransId}{attack.Seed}");
 

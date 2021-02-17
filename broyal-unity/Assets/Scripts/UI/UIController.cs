@@ -355,6 +355,8 @@ public class GameUI : SimpleUIController
 
     private void SetupSkillButton(int index, SkillInfo skill, SkillButtonWithPopupStick button)
     {
+        var isMainSkill = skill.Type == SkillType.Main;
+        
         var isDirectionSkill = (skill.AimType == AimType.Direction) 
                                || (skill.AimType == AimType.Trajectory) 
                                || (skill.AimType == AimType.Sector);
@@ -366,9 +368,11 @@ public class GameUI : SimpleUIController
             button.OnAcceptAction = (direction) =>
             {
                 attackDirectionArrow.SetActive(false);
-                OnUseSkill?.Invoke( index, skill, direction );
-
-                button.StartCooldownTimer(skill.Cooldown);
+                if ( isMainSkill || direction.sqrMagnitude > 0.01f )
+                {
+                    OnUseSkill?.Invoke(index, skill, direction );
+                    button.StartCooldownTimer(skill.Cooldown);
+                }
             };
             button.OnDragging = OnDraggingDirection;
             button.UseDrag = true;
@@ -378,8 +382,11 @@ public class GameUI : SimpleUIController
             button.OnAcceptAction = (direction) =>
             {
                 attackZone.SetActive(false);
-                OnUseSkill?.Invoke(index, skill, direction );
-                button.StartCooldownTimer(skill.Cooldown);
+                if ( isMainSkill || direction.sqrMagnitude > 0.01f )
+                {
+                    OnUseSkill?.Invoke(index, skill, direction );
+                    button.StartCooldownTimer(skill.Cooldown);
+                }
             };
             button.OnDragging = (direction) => OnDraggingZone(skill, direction );
             button.UseDrag = true;

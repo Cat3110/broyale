@@ -26,7 +26,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
 
     public int CalculateImportance(ArchetypeChunk chunk)
     {
-        return 1;
+        return 100;
     }
 
     public int SnapshotSize => UnsafeUtility.SizeOf<CharacterSnapshotData>();
@@ -63,6 +63,7 @@ public struct CharacterGhostSerializer : IGhostSerializer<CharacterSnapshotData>
         snapshot.SetAttackSeed(chunkDataAttack[ent].Seed, serializerState);
         snapshot.SetAttackAttackDirection(chunkDataAttack[ent].AttackDirection, serializerState);
         snapshot.SetAttackTarget(chunkDataAttack[ent].Target, serializerState);
+        snapshot.SetAttackNeedApplyDamage(chunkDataAttack[ent].NeedApplyDamage, serializerState);
         snapshot.SetDamageDamageType(chunkDataDamage[ent].DamageType, serializerState);
         snapshot.SetMovableCharacterComponentPlayerId(chunkDataMovableCharacterComponent[ent].PlayerId, serializerState);
         snapshot.SetPlayerDatahealth(chunkDataPlayerData[ent].health, serializerState);

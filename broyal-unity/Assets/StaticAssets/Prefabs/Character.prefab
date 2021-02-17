@@ -53,7 +53,7 @@ MonoBehaviour:
   SnapshotDataPath: Mixed/Generated/CharacterSnapshotData.cs
   UpdateSystemPath: Client/Generated/CharacterGhostUpdateSystem.cs
   SerializerPath: Server/Generated/CharacterGhostSerializer.cs
-  Importance: 1
+  Importance: 100
   PredictingPlayerNetworkId: MovableCharacterComponent.PlayerId
   Components:
   - name: Attack
@@ -72,6 +72,9 @@ MonoBehaviour:
       quantization: 100
       interpolate: 0
     - name: Target
+      quantization: -1
+      interpolate: 0
+    - name: NeedApplyDamage
       quantization: -1
       interpolate: 0
     manualFieldList: 1

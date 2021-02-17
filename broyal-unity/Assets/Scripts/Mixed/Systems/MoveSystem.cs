@@ -285,6 +285,8 @@ public class MoveSystem : SystemBase
             //         //Debug.DrawLine(lastPos, trans.Value, Color.blue);
             //     }
 
+            if(!_isServer) return;
+            
             if (input.attackType == 0 && attack.ProccesedId == 0 && attack.AttackType == 0)
             {
                 var inputDirection = new float3(input.horizontal / 10.0f * deltaTime * speed, 0,
@@ -327,11 +329,11 @@ public class MoveSystem : SystemBase
             }
 
             if (input.attackType >= 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
-            {
+            { 
+                Debug.Log(
+                    $"MoveSystem {(_isServer ? "Server" : "Client")} : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 switch (input.attackType)
                 {
-                    //Debug.Log(
-                    //    $"{(_isServer ? "Server" : "Client")}({tick}) : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                     //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
                     case 1:
                         SetAttackByType(skillsMap, pdata.primarySkillId, ref attack, input.attackType * time);

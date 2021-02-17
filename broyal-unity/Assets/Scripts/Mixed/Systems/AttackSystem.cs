@@ -10,7 +10,9 @@ using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
-[UpdateInWorld(UpdateInWorld.TargetWorld.ClientAndServer)]
+[UpdateInWorld(UpdateInWorld.TargetWorld.Server)]
+[UpdateInGroup(typeof(GhostPredictionSystemGroup))]
+[UpdateAfter(typeof(MoveSystem))]
 public class AttackSystem : ComponentSystem
 {
     private EntityQuery _query;
@@ -44,9 +46,10 @@ public class AttackSystem : ComponentSystem
             var attack = EntityManager.GetComponentData<Attack>(player);
             var translation = EntityManager.GetComponentData<Translation>(player);
             //var input = EntityManager.GetBuffer<PlayerInput>(player);
-            //Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => NeedApplyDamage {attack.NeedApplyDamage}");
+            
             if (attack.NeedApplyDamage && attack.DamageTime < 0)
             {
+                Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => NeedApplyDamage {attack.NeedApplyDamage}");
                 attack.NeedApplyDamage = false;
 
                 var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
@@ -64,7 +67,7 @@ public class AttackSystem : ComponentSystem
                         math.distancesq(center, 
                             EntityManager.GetComponentData<Translation>(x).Value) < distance * distance);
 
-                Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
+                Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
 
                 attack.Target = enemy;
             
@@ -77,16 +80,17 @@ public class AttackSystem : ComponentSystem
                     var angel = math.degrees(math.acos(dot));
                     if (isAutoAttack) angel = AttackAngle;
 
-                    if (attack.AttackType == 1 || attack.AttackType == 2 ||
-                        attack.AttackType == 3 && angel <= AttackAngle|| attack.AttackType == 4 && angel <= AttackAngle ) 
+                    if (attack.AttackType >= 1 && angel <= AttackAngle)
                     {
-                        ApplyDamageByAttackType(pdata, attack.AttackType, attack.AttackType * (int) (Time.ElapsedTime * 1000), 
+                        ApplyDamageByAttackType(pdata, attack.AttackType,
+                            attack.AttackType * (int) (Time.ElapsedTime * 1000),
                             player, ref damage);
-                
+
                         EntityManager.SetComponentData(enemy, damage);
                     }
+                    else attack.Target = Entity.Null;
                     
-                    Debug.Log($"{(IsServer?"IsServer":"Client")}:Attack{isAutoAttack} To => {player} => {enemy} => {attack.AttackType} => {angel} ");
+                    Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack{isAutoAttack} To => {player} => {enemy} => {attack.AttackType} => {angel} ");
                 }
                 else if(skillInfo.AimType == AimType.Area || skillInfo.AimType == AimType.Dot || skillInfo.AimType == AimType.None )
                 {

@@ -231,8 +231,8 @@
             _world = world;
             _entityManager = world.EntityManager;
             
-            var ghostPredictionSystemGroup = world.GetOrCreateSystem<GhostPredictionSystemGroup>();
-            ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>() );
+            //var ghostPredictionSystemGroup = world.GetOrCreateSystem<GhostPredictionSystemGroup>();
+            //ghostPredictionSystemGroup.AddSystemToUpdateList( world.CreateSystem<MoveSystem>() );
 
             var lateUpdateGroup = world.GetOrCreateSystem<PresentationSystemGroup>();
             lateUpdateGroup.AddSystemToUpdateList(world.CreateSystem<PrefabInstanciateSystem>() );
