@@ -330,8 +330,8 @@ public class MoveSystem : SystemBase
 
             if (input.attackType >= 1 && attack.ProccesedId == 0 && attack.AttackType == 0)
             { 
-                Debug.Log(
-                    $"MoveSystem {(_isServer ? "Server" : "Client")} : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
+                //Debug.Log(
+                //    $"MoveSystem {(_isServer ? "Server" : "Client")} : Attack Start  => {e} => {attack.NeedApplyDamage} => {Time.ElapsedTime}");
                 switch (input.attackType)
                 {
                     //attack = InitAttackByType(pdata.primarySkillId, trans.Value, attack, input.attackType * time);
@@ -399,7 +399,7 @@ public class MoveSystem : SystemBase
                     //_withColliderIndex = index;
                     
                     collisionTime = SweptAABB.Swept(box, block, ref normalX, ref normalY);
-                    Debug.Log($"Collided {index} {direction} {collisionTime} {normalX} {normalY}");
+                    //Debug.Log($"Collided {index} {direction} {collisionTime} {normalX} {normalY}");
                     break;
                 }
             }

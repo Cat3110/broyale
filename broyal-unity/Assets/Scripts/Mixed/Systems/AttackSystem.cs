@@ -49,7 +49,7 @@ public class AttackSystem : ComponentSystem
             
             if (attack.NeedApplyDamage && attack.DamageTime < 0)
             {
-                Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => NeedApplyDamage {attack.NeedApplyDamage}");
+                //Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => NeedApplyDamage {attack.NeedApplyDamage}");
                 attack.NeedApplyDamage = false;
 
                 var skillInfo = _appConfig.GetSkillByAttackType(attack.AttackType);
@@ -67,7 +67,7 @@ public class AttackSystem : ComponentSystem
                         math.distancesq(center, 
                             EntityManager.GetComponentData<Translation>(x).Value) < distance * distance);
 
-                Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
+                //Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack To => {player} => {enemy}");
 
                 attack.Target = enemy;
             
@@ -90,7 +90,7 @@ public class AttackSystem : ComponentSystem
                     }
                     else attack.Target = Entity.Null;
                     
-                    Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack{isAutoAttack} To => {player} => {enemy} => {attack.AttackType} => {angel} ");
+                    //Debug.Log($"[AttackSystem] {(IsServer?"IsServer":"Client")}:Attack{isAutoAttack} To => {player} => {enemy} => {attack.AttackType} => {angel} ");
                 }
                 else if(skillInfo.AimType == AimType.Area || skillInfo.AimType == AimType.Dot || skillInfo.AimType == AimType.None )
                 {
