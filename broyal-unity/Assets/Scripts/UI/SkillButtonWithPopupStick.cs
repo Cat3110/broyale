@@ -70,6 +70,7 @@ namespace UnityEngine.InputSystem.OnScreen
         
         public Action<Vector2> OnAcceptAction = (x) => { };
         public Action<Vector2> OnDragging = (x) => { };
+        public Action<Vector2> OnBeginDragging = (x) => { };
 
         protected override string controlPathInternal
         {
@@ -125,11 +126,24 @@ namespace UnityEngine.InputSystem.OnScreen
         {
             if (!IsInteractable) return;
             if (!isDragStarted) OnAcceptAction.Invoke(Vector2.zero);
+
+            if ( isDragStarted )
+            {
+                OnEndDrag( eventData );
+            }
         }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (!IsInteractable) return;
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
+
+            PointPosition = new Vector2(
+                (eventData.position.x - joystickBg.position.x) / ((joystickBg.rect.size.x - joystickHandler.rect.size.x) / 2),
+                (eventData.position.y - joystickBg.position.y) / ((joystickBg.rect.size.y - joystickHandler.rect.size.y) / 2));
+
+            OnBeginDrag( eventData );
+            OnBeginDragging?.Invoke( PointPosition );
         }
         
         public void OnBeginDrag(PointerEventData eventData)
@@ -144,6 +158,7 @@ namespace UnityEngine.InputSystem.OnScreen
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 parent, eventData.position, eventData.pressEventCamera, out _pointerDownPos);
+
         }
 
         public void OnDrag(PointerEventData eventData)

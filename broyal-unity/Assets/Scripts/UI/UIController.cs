@@ -374,6 +374,7 @@ public class GameUI : SimpleUIController
                     button.StartCooldownTimer(skill.Cooldown);
                 }
             };
+            button.OnBeginDragging = OnDraggingDirection;
             button.OnDragging = OnDraggingDirection;
             button.UseDrag = true;
         }
@@ -388,6 +389,7 @@ public class GameUI : SimpleUIController
                     button.StartCooldownTimer(skill.Cooldown);
                 }
             };
+            button.OnBeginDragging = ( direction ) => OnDraggingZone( skill, direction );
             button.OnDragging = (direction) => OnDraggingZone(skill, direction );
             button.UseDrag = true;
         }
